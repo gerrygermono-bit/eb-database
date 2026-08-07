@@ -378,10 +378,12 @@
 
     /* ---------- Calendar ---------- */
     .cal-shell { border: 1px solid var(--border-soft); border-radius: 16px; overflow: hidden; background: var(--surface-card); box-shadow: var(--shadow-sm); }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
     .cal-weekday { padding: 9px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); background: rgba(226,232,240,0.25); text-transform: uppercase; }
     .cal-day {
         min-height: 98px;
+        min-width: 0;
+        overflow: hidden;
         padding: 7px;
         border-top: 1px solid var(--border-soft);
         border-left: 1px solid var(--border-soft);
@@ -1852,7 +1854,7 @@
             .filter(a => (a.endDate || a.startDate) > today && inFlightActivity(a))
             .sort((a, b) => (a.startDate + a.start).localeCompare(b.startDate + b.start));
 
-        $("statWorkshops").textContent = active.filter(a => inFlightActivity(a)).length;
+        $("statWorkshops").textContent = active.filter(a => a.category === "Workshop" && inFlightActivity(a)).length;
         $("statUpcoming").textContent = upcoming.length;
         $("statMembers").textContent = (fullData.members || []).filter(m => m.isActive).length;
         $("statLinks").textContent = (fullData.links || []).filter(l => l.active).length;
