@@ -409,6 +409,7 @@
         text-overflow: ellipsis;
     }
     .cal-pill.dim { opacity: 0.4; }
+    .cal-pill.cont { border-radius: 3px; box-shadow: inset 3px 0 0 rgba(0,0,0,0.18); }
     .cal-more { font-size: 0.66rem; color: var(--text-muted); font-weight: 700; padding: 2px 6px; }
 
     .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
@@ -472,7 +473,7 @@
     .avail-legend .dot.c3 { background: #ec4899; border-color: #ec4899; }
     .avail-legend .dot.c4 { background: #3b82f6; border-color: #3b82f6; }
 
-    .pg-cell .chip-block { display: inline-block; padding: 1px 5px; border-radius: 5px; font-weight: 700; margin: 1px 2px 1px 0; font-size: 0.66rem; white-space: nowrap; }
+    .chip-block { display: inline-block; padding: 1px 5px; border-radius: 5px; font-weight: 700; margin: 1px 6px 1px 0; font-size: 0.66rem; white-space: nowrap; }
 
     .edit-note { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-canvas); border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
 
@@ -525,6 +526,15 @@
     .form-row { display: flex; gap: 12px; }
     .form-row .form-group { flex: 1; }
     .hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+    .sched-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+    .sched-row .sched-date { font-size: 0.8rem; font-weight: 700; min-width: 96px; color: var(--text-main); }
+    .sched-row input[type="time"] { width: 110px; padding: 7px 8px; border: 1px solid var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.8rem; background: var(--bg-canvas); color: var(--text-main); }
+    .sched-row input[type="time"]:focus { outline: none; border-color: var(--dlsu-green); }
+    .sched-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-soft); flex-wrap: wrap; }
+    .sched-toolbar input[type="time"] { width: 110px; padding: 7px 8px; border: 1px solid var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.8rem; background: var(--bg-canvas); color: var(--text-main); }
+    .sched-toolbar input[type="time"]:focus { outline: none; border-color: var(--dlsu-green); }
+    .sched-toolbar .sched-date { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
 
     .member-select-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
 
@@ -756,7 +766,6 @@
             <div style="margin-top:24px;">
                 <div class="panel-heading">
                     <span>Workshop &amp; Activity Tracker</span>
-                    <span class="sub" id="trackerCountLabel"></span>
                     <button class="btn btn-primary btn-sm" data-click="openActivityModal(null)">+ New Activity</button>
                 </div>
                 <div class="toolbar">
@@ -796,7 +805,7 @@
             </div>
             <div class="tbl-wrap">
                 <table class="tbl">
-                    <thead><tr><th>Name</th><th>Position</th><th>Section</th><th>Section</th><th>Role</th><th>Status</th><th></th></tr></thead>
+                    <thead><tr><th>Name</th><th>Position</th><th>Section</th><th>Role</th><th>Status</th><th></th></tr></thead>
                     <tbody id="memberRows"></tbody>
                 </table>
             </div>
@@ -1074,8 +1083,13 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="actDate">
+                        <label>Start Date</label>
+                        <input type="date" id="actStartDate" data-change="renderScheduleEditor()">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="actEndDate" data-change="renderScheduleEditor()">
+                        <div class="hint">Leave blank for a single-day activity.</div>
                     </div>
                     <div class="form-group">
                         <label>Mode</label>
@@ -1083,11 +1097,11 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" id="actStartGroup">
                         <label>Start</label>
                         <input type="time" id="actStart">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="actEndGroup">
                         <label>End</label>
                         <input type="time" id="actEnd">
                     </div>
@@ -1096,10 +1110,30 @@
                         <input type="text" id="actVenue" placeholder="Room / link">
                     </div>
                 </div>
+                <div class="form-group" id="actScheduleWrap" style="display:none;">
+                    <label>Daily schedule <span class="sub">optional — per-day times; set a common time first with Apply to all, then tweak individual days</span></label>
+                    <div class="sched-toolbar">
+                        <span class="sched-date">All days</span>
+                        <input type="time" id="schedDefaultStart">
+                        <input type="time" id="schedDefaultEnd">
+                        <button type="button" class="btn btn-sm btn-primary" data-click="applyAllTimes()">Apply to all</button>
+                    </div>
+                    <div id="actScheduleRows" style="margin-top:4px;"></div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Section</label>
-                        <input type="text" id="actCommittee" placeholder="e.g. Layout, Poetry, MNE, etc.">
+                        <select id="actSection">
+                            <option value="">Select section</option>
+                            <option>Art</option>
+                            <option>Poetry</option>
+                            <option>Photo</option>
+                            <option>Prose</option>
+                            <option>Screen/Play</option>
+                            <option>Marketing and Events</option>
+                            <option>Layout</option>
+                            <option>PropMan</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Owner</label>
@@ -1191,7 +1225,7 @@
                     </div>
                     <div class="form-group">
                         <label>Section</label>
-                        <input type="text" id="memberCommittee" placeholder="e.g. Layout">
+                        <input type="text" id="memberSection" placeholder="e.g. Layout">
                     </div>
                 </div>
                 <div class="form-row">
@@ -1280,6 +1314,7 @@
         "Cancelled": "#ef4444"
     };
     const CATEGORY_ORDER = ["Workshop", "ARW", "SMOOGA", "LMW", "Lakan", "General Assembly", "Orgwide Event", "Meeting", "Other"];
+    const ACT_SECTIONS = ["Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan"];
     const LINK_CATEGORIES = ["Templates", "Policies & TOR", "Sourcing & Speakers", "SMO", "ARW", "GDrive", "General"];
     const AV_START = 6 * 60;      // 6:00 AM
     const AV_SLOTS = 32;          // half-hour slots -> 6:00 AM - 10:00 PM
@@ -1314,6 +1349,7 @@
     let availToggles = {};                 // dayIdx -> array of bool
     let editingCommitmentId = null;
     let editingActivityId = null;
+    let scheduleDraft = [];
     let editingLinkId = null;
     let editingMemberEmail = null;
     let dayDrawerDate = "";
@@ -1387,6 +1423,109 @@
     }
     function isPastActivity(a) { return (a.status === "Completed" || a.status === "Cancelled"); }
     function inFlightActivity(a) { return (a.status === "Planned" || a.status === "Confirmed" || a.status === "Ongoing"); }
+
+    // ----- Multi-day activity helpers -----
+    function covers(a, iso) {
+        const s = a.startDate, e = a.endDate || a.startDate;
+        return !!(s && iso && iso >= s && iso <= e);
+    }
+    function isMultiDay(a) { return !!(a.startDate && a.endDate && a.endDate > a.startDate); }
+    function dayDiff(fromIso, toIso) {
+        return Math.round((new Date(dateOnly(toIso) + "T00:00:00") - new Date(dateOnly(fromIso) + "T00:00:00")) / 86400000);
+    }
+    function activityDateRange(a) {
+        if (!a.startDate) return "";
+        if (isMultiDay(a)) return fmtDateMed(a.startDate) + " – " + fmtDateMed(a.endDate);
+        return fmtDateMed(a.startDate);
+    }
+
+    // ----- Per-day schedule helpers -----
+    function dayTimeFor(a, iso) {
+        if (a.schedule && Array.isArray(a.schedule)) {
+            const hit = a.schedule.find(x => x.d === iso);
+            if (hit) return { start: hit.s || "", end: hit.e || "" };
+        }
+        return { start: a.start || "", end: a.end || "" };
+    }
+    function actScheduleIsUniform(a) {
+        if (!a.schedule || !a.schedule.length) return true;
+        const seen = new Set();
+        a.schedule.forEach(x => seen.add((x.s || "") + "|" + (x.e || "")));
+        return seen.size <= 1;
+    }
+    function actTimeSummary(a) {
+        const fmt = t => t ? fmtTime(t) : "";
+        if (!a.schedule || !a.schedule.length) {
+            const s = fmt(a.start), e = fmt(a.end);
+            return escHtml(s) + (e && e !== s ? " – " + escHtml(e) : "");
+        }
+        const starts = a.schedule.map(x => x.s).filter(Boolean);
+        const ends = a.schedule.map(x => x.e).filter(Boolean);
+        const minS = starts.length ? starts.slice().sort()[0] : a.start;
+        const maxE = ends.length ? ends.slice().sort()[ends.length - 1] : a.end;
+        const txt = fmt(minS) + (fmt(maxE) && fmt(maxE) !== fmt(minS) ? " – " + fmt(maxE) : "");
+        return actScheduleIsUniform(a) ? escHtml(txt) : escHtml(txt) + ' <span style="opacity:.65">(varies)</span>';
+    }
+    function collectScheduleRows() {
+        const out = [];
+        document.querySelectorAll("#actScheduleRows .sched-row").forEach(r => {
+            const d = r.getAttribute("data-d");
+            const s = r.querySelector(".sched-s").value;
+            const e = r.querySelector(".sched-e").value;
+            if (d) out.push({ d: d, s: s, e: e });
+        });
+        return out;
+    }
+    function renderScheduleEditor() {
+        const startDate = $("actStartDate").value;
+        const endDate = $("actEndDate").value || startDate;
+        const wrap = $("actScheduleWrap");
+        const rows = $("actScheduleRows");
+        const multi = !!(startDate && endDate && endDate > startDate);
+        $("actStartGroup").style.display = multi ? "none" : "";
+        $("actEndGroup").style.display = multi ? "none" : "";
+        if (!multi) {
+            wrap.style.display = "none";
+            rows.innerHTML = "";
+            scheduleDraft = [];
+            return;
+        }
+        const current = collectScheduleRows();
+        if (current.length) scheduleDraft = current;
+        const sMap = {};
+        scheduleDraft.forEach(x => { if (x.d) sMap[x.d] = x; });
+        const tbS = $("schedDefaultStart").value, tbE = $("schedDefaultEnd").value;
+        if (tbS || tbE) { $("actStart").value = tbS; $("actEnd").value = tbE; }
+        const defStart = $("actStart").value || "";
+        const defEnd = $("actEnd").value || "";
+        $("schedDefaultStart").value = defStart;
+        $("schedDefaultEnd").value = defEnd;
+        let html = "";
+        const d = new Date(dateOnly(startDate) + "T00:00:00");
+        const last = new Date(dateOnly(endDate) + "T00:00:00");
+        while (d <= last) {
+            const iso = isoFor(d.getFullYear(), d.getMonth(), d.getDate());
+            const ent = sMap[iso] || {};
+            html += `<div class="sched-row" data-d="${iso}">
+                <span class="sched-date">${escHtml(fmtDateMed(iso))}</span>
+                <input type="time" class="sched-s" value="${ent.s || defStart}">
+                <input type="time" class="sched-e" value="${ent.e || defEnd}">
+            </div>`;
+            d.setDate(d.getDate() + 1);
+        }
+        rows.innerHTML = html;
+        wrap.style.display = "block";
+    }
+    function applyAllTimes() {
+        const s = $("schedDefaultStart").value;
+        const e = $("schedDefaultEnd").value;
+        if (s && e && e <= s) { showAlert("Invalid time", "End time must be after start time."); return; }
+        $("actStart").value = s;
+        $("actEnd").value = e;
+        document.querySelectorAll("#actScheduleRows .sched-s").forEach(i => i.value = s);
+        document.querySelectorAll("#actScheduleRows .sched-e").forEach(i => i.value = e);
+        toast("Applied to all days.");
+    }
 
     // ----- Availability block helpers -----
     function parseDayBlocks(str) {
@@ -1708,10 +1847,10 @@
 
         const active = fullData.activities || [];
         const today = todayISO();
-        const todays = active.filter(a => a.date === today);
+        const todays = active.filter(a => covers(a, today));
         const upcoming = active
-            .filter(a => a.date > today && inFlightActivity(a))
-            .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+            .filter(a => (a.endDate || a.startDate) > today && inFlightActivity(a))
+            .sort((a, b) => (a.startDate + a.start).localeCompare(b.startDate + b.start));
 
         $("statWorkshops").textContent = active.filter(a => inFlightActivity(a)).length;
         $("statUpcoming").textContent = upcoming.length;
@@ -1719,7 +1858,7 @@
         $("statLinks").textContent = (fullData.links || []).filter(l => l.active).length;
 
         $("todayList").innerHTML = todays.length
-            ? todays.sort((a, b) => a.start.localeCompare(b.start)).map(activityRowHtml).join("")
+            ? todays.sort((a, b) => (dayTimeFor(a, today).start || "99:99").localeCompare(dayTimeFor(b, today).start || "99:99")).map(a => activityRowHtml(a, today)).join("")
             : '<div class="empty-state">Nothing scheduled today.</div>';
 
         $("upcomingList").innerHTML = upcoming.length
@@ -1753,13 +1892,14 @@
             : '<div class="empty-state">No availability set for today.</div>';
     }
 
-    function activityRowHtml(a) {
+    function activityRowHtml(a, iso) {
         const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+        const dt = iso ? dayTimeFor(a, iso) : { start: a.start, end: a.end };
         return `
         <div class="item-row">
-            <div class="grow" style="cursor:pointer;" data-click="openDayDrawer('${a.date}')">
+            <div class="grow" style="cursor:pointer;" data-click="openDayDrawer('${a.startDate}')">
                 <h4>${escHtml(a.title)} <span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span></h4>
-                <div class="meta">${escHtml(fmtDateMed(a.date))} · ${escHtml(fmtTime(a.start))} – ${escHtml(fmtTime(a.end))}${a.venue ? " · " + escHtml(a.venue) : ""}</div>
+                <div class="meta">${escHtml(activityDateRange(a))} · ${escHtml(fmtTime(dt.start))} – ${escHtml(fmtTime(dt.end))}${a.venue ? " · " + escHtml(a.venue) : ""}</div>
             </div>
         </div>`;
     }
@@ -1889,7 +2029,7 @@
             if (((d.getDay() + 6) % 7) !== dayIdx) continue;
             const iso = isoFromDate(d);
             (fullData.activities || []).forEach(a => {
-                if (a.date === iso && !isPastActivity(a) && a.start && timeOverlap(a.start, a.end, iv)) n++;
+                if (covers(a, iso) && !isPastActivity(a) && a.start && timeOverlap(a.start, a.end, iv)) n++;
             });
             (fullData.commitments || []).forEach(c => {
                 if (c.date === iso && c.start && timeOverlap(c.start, c.end, iv)) n++;
@@ -2234,12 +2374,13 @@
         });
     }
 
-    function findOverlapIds(acts) {
+    function findOverlapIds(acts, iso) {
         const set = new Set();
         for (let i = 0; i < acts.length; i++) {
             for (let j = i + 1; j < acts.length; j++) {
-                if (acts[j].start && acts[i].start && acts[i].end &&
-                    acts[j].start < acts[i].end && acts[i].start < acts[j].end) {
+                const a = dayTimeFor(acts[i], iso), b = dayTimeFor(acts[j], iso);
+                if (a.start && b.start && a.end && b.end &&
+                    b.start < a.end && a.start < b.end) {
                     set.add(acts[i].id);
                     set.add(acts[j].id);
                 }
@@ -2256,9 +2397,6 @@
         const total = Math.ceil((startIdx + daysInMonth) / 7) * 7;
         const today = todayISO();
         const acts = filteredActivities();
-        const actByDate = {};
-        acts.forEach(a => { (actByDate[a.date] = actByDate[a.date] || []).push(a); });
-        for (const k in actByDate) actByDate[k].sort((a, b) => a.start.localeCompare(b.start));
 
         let html = `<div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div><div class="cal-weekday">Sun</div>`;
 
@@ -2269,15 +2407,23 @@
             else if (dayNum > daysInMonth) { iso = isoFor(calYear, calMonth + 1, dayNum - daysInMonth); inMonth = false; }
             else { iso = isoFor(calYear, calMonth, dayNum); }
 
-            const dayActs = actByDate[iso] || [];
-            const overlaps = findOverlapIds(dayActs);
+            if (!inMonth) {
+                html += `<div class="cal-day out"></div>`;
+                continue;
+            }
+
+            const dayActs = acts.filter(a => covers(a, iso)).sort((a, b) => (dayTimeFor(a, iso).start || "99:99").localeCompare(dayTimeFor(b, iso).start || "99:99"));
+            const overlaps = findOverlapIds(dayActs, iso);
             const cls = "cal-day" + (inMonth ? "" : " out") + (iso === today ? " today" : "");
             let pills = "";
             dayActs.slice(0, 3).forEach(a => {
                 const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
                 const dim = isPastActivity(a) ? " dim" : "";
+                const cont = covers(a, iso) && (a.startDate < iso || (a.endDate || a.startDate) > iso) ? " cont" : "";
                 const ov = overlaps.has(a.id) ? "⚠ " : "";
-                pills += `<div class="cal-pill${dim}" style="background:${color};">${ov}${escHtml(a.start ? fmtTime(a.start) + " " : "")}${escHtml(a.title)}</div>`;
+                const dt = dayTimeFor(a, iso);
+                const label = (a.startDate < iso ? "▸ " : "") + (dt.start ? fmtTime(dt.start) + " " : "");
+                pills += `<div class="cal-pill${cont}${dim}" style="background:${color};">${ov}${escHtml(label)}${escHtml(a.title)}</div>`;
             });
             if (dayActs.length > 3) pills += `<div class="cal-more">+${dayActs.length - 3} more</div>`;
             const ovBadge = overlaps.size ? `<div class="cal-ov"></div>` : "";
@@ -2294,15 +2440,24 @@
 
     function renderOverlapBanner() {
         const acts = filteredActivities();
-        const byDate = {};
-        acts.forEach(a => { (byDate[a.date] = byDate[a.date] || []).push(a); });
-        let days = 0, total = 0;
-        for (const k in byDate) {
-            const n = findOverlapIds(byDate[k]).size;
-            if (n > 0) { days++; total += n; }
+        const first = new Date(calYear, calMonth, 1);
+        const startIdx = (first.getDay() + 6) % 7;
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+        const prevDays = new Date(calYear, calMonth, 0).getDate();
+        const total = Math.ceil((startIdx + daysInMonth) / 7) * 7;
+        let days = 0, overlapCount = 0;
+        for (let i = 0; i < total; i++) {
+            const dayNum = i - startIdx + 1;
+            let iso;
+            if (dayNum < 1) { iso = isoFor(calYear, calMonth - 1, prevDays + dayNum); }
+            else if (dayNum > daysInMonth) { iso = isoFor(calYear, calMonth + 1, dayNum - daysInMonth); }
+            else { iso = isoFor(calYear, calMonth, dayNum); }
+            const dayActs = acts.filter(a => covers(a, iso));
+            const n = findOverlapIds(dayActs, iso).size;
+            if (n > 0) { days++; overlapCount += n; }
         }
-        $("calOverlapBanner").innerHTML = total
-            ? `<div class="overlap-banner ${total >= 5 ? "warn" : ""}">⚠ ${total} activity overlap(s) across ${days} day(s) this month — click a marked day to inspect.</div>`
+        $("calOverlapBanner").innerHTML = overlapCount
+            ? `<div class="overlap-banner ${overlapCount >= 5 ? "warn" : ""}">⚠ ${overlapCount} activity overlap(s) across ${days} day(s) this month — click a marked day to inspect.</div>`
             : "";
     }
 
@@ -2310,7 +2465,7 @@
         dayDrawerDate = iso;
         $("dayDrawerTitle").textContent = fmtDateLong(iso) + " · " + weekdayShort(iso);
         const acts = (fullData.activities || [])
-            .filter(a => a.date === iso)
+            .filter(a => covers(a, iso))
             .sort((a, b) => a.start.localeCompare(b.start));
         const comms = (fullData.commitments || []).filter(c => c.date === iso);
         let html = "";
@@ -2319,16 +2474,21 @@
             html += acts.map(a => {
                 const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
                 const sColor = STATUS_META[a.status] || "#64748b";
+                const dt = dayTimeFor(a, iso);
+                const spanInfo = isMultiDay(a)
+                    ? ` · ${escHtml(fmtDateMed(a.startDate))} → ${escHtml(fmtDateMed(a.endDate))} (day ${dayDiff(a.startDate, iso) + 1} of ${dayDiff(a.startDate, a.endDate) + 1})`
+                    : "";
                 return `<div class="day-drawer-item">
                     <h4>${escHtml(a.title)}
                         <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
                         <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
                     </h4>
                     <div class="meta" style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">
-                        ${escHtml(fmtTime(a.start))} – ${escHtml(fmtTime(a.end))}
+                        ${escHtml(fmtTime(dt.start))} – ${escHtml(fmtTime(dt.end))}
+                        ${spanInfo}
                         ${a.venue ? " · " + escHtml(a.venue) : ""}
                         ${a.mode ? " · " + escHtml(a.mode) : ""}
-                        ${a.committee ? " · " + escHtml(a.committee) : ""}
+                        ${a.section ? " · " + escHtml(a.section) : ""}
                         ${a.ownerName ? " · " + escHtml(a.ownerName) : ""}
                     </div>
                     ${a.description ? `<div style="font-size:0.8rem;margin-top:6px;">${escHtml(a.description)}</div>` : ""}
@@ -2356,16 +2516,15 @@
     function renderWorkshopList() {
         const q = ($("trackerSearch").value || "").toLowerCase().trim();
         const list = filteredActivities()
-            .filter(a => !q || (a.title || "").toLowerCase().includes(q) || (a.committee || "").toLowerCase().includes(q))
-            .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
-        $("trackerCountLabel").textContent = list.length + " shown";
+            .filter(a => !q || (a.title || "").toLowerCase().includes(q) || (a.section || "").toLowerCase().includes(q))
+            .sort((a, b) => (a.startDate + a.start).localeCompare(b.startDate + b.start));
         $("workshopRows").innerHTML = list.map(a => {
             const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
             const sColor = STATUS_META[a.status] || "#64748b";
             const dim = isPastActivity(a) ? "opacity:.5" : "";
             return `<tr style="${dim}">
-                <td style="white-space:nowrap;font-weight:700;">${escHtml(fmtDateMed(a.date))}</td>
-                <td style="white-space:nowrap;">${escHtml(fmtTime(a.start))}</td>
+                <td style="white-space:nowrap;font-weight:700;">${escHtml(activityDateRange(a))}</td>
+                <td style="white-space:nowrap;">${actTimeSummary(a)}</td>
                 <td>
                     <div style="font-weight:700;">${escHtml(a.title)}</div>
                     <div style="font-size:0.72rem;color:var(--text-muted);">
@@ -2373,7 +2532,7 @@
                         ${a.link ? `<a href="${escHtml(a.link)}" target="_blank" rel="noopener" style="color:var(--dlsu-green);">link</a>` : ""}
                     </div>
                 </td>
-                <td>${escHtml(a.committee || "—")}</td>
+                <td>${escHtml(a.section || "—")}</td>
                 <td>${escHtml(a.ownerName || a.ownerEmail || "—")}</td>
                 <td style="white-space:nowrap;">${escHtml(a.venue || "—")}</td>
                 <td><span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span></td>
@@ -2400,49 +2559,78 @@
                 $("actTitle").value = a.title;
                 $("actCategory").value = a.category || "Workshop";
                 $("actStatus").value = a.status || "Planned";
-                $("actDate").value = a.date;
+                $("actStartDate").value = a.startDate;
+                $("actEndDate").value = a.endDate && a.endDate !== a.startDate ? a.endDate : "";
                 $("actMode").value = a.mode || "Onsite";
                 $("actStart").value = a.start;
                 $("actEnd").value = a.end;
                 $("actVenue").value = a.venue;
-                $("actCommittee").value = a.committee;
+                if (a.section && !ACT_SECTIONS.includes(a.section)) {
+                    const opt = document.createElement("option");
+                    opt.value = a.section;
+                    opt.textContent = a.section;
+                    $("actSection").appendChild(opt);
+                }
+                $("actSection").value = a.section;
                 $("actOwner").value = a.ownerEmail || userEmail;
                 $("actLink").value = a.link;
                 $("actDesc").value = a.description;
+                scheduleDraft = (a.schedule || []).slice();
             }
         } else {
             $("actTitle").value = "";
             $("actCategory").value = "Workshop";
             $("actStatus").value = "Planned";
-            $("actDate").value = todayISO();
+            $("actStartDate").value = todayISO();
+            $("actEndDate").value = "";
             $("actMode").value = "Onsite";
             $("actStart").value = "";
             $("actEnd").value = "";
             $("actVenue").value = "";
-            $("actCommittee").value = "";
+            $("actSection").value = "";
             $("actLink").value = "";
             $("actDesc").value = "";
+            scheduleDraft = [];
         }
+        renderScheduleEditor();
         openModal("activityModal");
     }
 
     function saveActivity() {
         if (!$("actTitle").value.trim()) { showAlert("Missing title", "Please enter a title."); return; }
-        if (!$("actDate").value) { showAlert("Missing date", "Please pick a date."); return; }
+        if (!$("actStartDate").value) { showAlert("Missing start date", "Please pick a start date."); return; }
+        const startDate = $("actStartDate").value;
+        const endDate = $("actEndDate").value || startDate;
+        if (endDate < startDate) { showAlert("Invalid date range", "End date cannot be before the start date."); return; }
         const common = {
             title: $("actTitle").value.trim(),
             category: $("actCategory").value,
             status: $("actStatus").value,
-            date: $("actDate").value,
+            startDate: startDate,
+            endDate: endDate,
             mode: $("actMode").value,
             start: $("actStart").value,
             end: $("actEnd").value,
             venue: $("actVenue").value.trim(),
-            committee: $("actCommittee").value.trim(),
+            section: $("actSection").value.trim(),
             ownerEmail: $("actOwner").value,
             link: $("actLink").value.trim(),
             description: $("actDesc").value.trim()
         };
+        const defStart = common.start, defEnd = common.end;
+        const schedule = collectScheduleRows()
+            .filter(r => {
+                const s = r.s || defStart;
+                const e = r.e || defEnd;
+                return s !== defStart || e !== defEnd;
+            })
+            .map(r => ({ d: r.d, s: r.s || defStart, e: r.e || defEnd }));
+        for (const x of schedule) {
+            if (x.s && x.e && x.e <= x.s) { showAlert("Invalid time", "End time must be after start time on " + fmtDateMed(x.d) + "."); return; }
+            if (x.s && !x.e) { showAlert("Missing end time", "Add an end time for " + fmtDateMed(x.d) + " (or set one with Apply to all)."); return; }
+            if (!x.s && x.e) { showAlert("Missing start time", "Add a start time for " + fmtDateMed(x.d) + " (or set one with Apply to all)."); return; }
+        }
+        common.schedule = schedule;
         const body = editingActivityId
             ? Object.assign({ action: "Update Activity", id: editingActivityId }, common)
             : Object.assign({ action: "Add Activity" }, common);
@@ -2577,21 +2765,21 @@
                     </div>
                 </td>
                 <td>${escHtml(m.position || "—")}</td>
-                <td>${escHtml(m.committee || "—")}</td>
                 <td>${escHtml(m.section || "—")}</td>
                 <td>${m.isManager ? '<span class="sbadge" style="background:rgba(124,58,237,0.12);color:#7c3aed;">Top 3</span>' : '<span class="sbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">EB</span>'}</td>
                 <td>${m.isActive ? '<span class="sbadge" style="background:rgba(16,185,129,0.12);color:var(--dlsu-green);">Active</span>' : '<span class="sbadge" style="background:rgba(239,68,68,0.12);color:var(--danger);">Inactive</span>'}</td>
                 <td>
-                    ${fullData.isManager ? `<div class="row-actions">
+                    ${fullData.isManager || m.email === userEmail ? `<div class="row-actions">
                         <button class="btn btn-sm btn-ghost" data-click="openMemberModal('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
-                        <button class="btn btn-sm btn-ghost" data-click="deleteMember('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
+                        ${fullData.isManager ? `<button class="btn btn-sm btn-ghost" data-click="deleteMember('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>` : ""}
                     </div>` : ""}
                 </td>
-            </tr>`).join("") || '<tr><td colspan="7"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
+            </tr>`).join("") || '<tr><td colspan="6"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
     }
 
     function openMemberModal(email) {
         editingMemberEmail = email || null;
+        const managerView = !!(fullData && fullData.isManager);
         $("memberModalTitle").textContent = email ? "Edit Member" : "Add Member";
         if (email) {
             const m = memberByEmail(email);
@@ -2601,7 +2789,7 @@
                 $("memberName").value = m.fullName;
                 $("memberNickname").value = m.nickname;
                 $("memberPosition").value = m.position;
-                $("memberCommittee").value = m.committee;
+                $("memberSection").value = m.section;
                 $("memberPronouns").value = m.pronouns;
                 $("memberManager").checked = m.isManager;
                 $("memberActive").checked = m.isActive;
@@ -2612,11 +2800,13 @@
             $("memberName").value = "";
             $("memberNickname").value = "";
             $("memberPosition").value = "";
-            $("memberCommittee").value = "";
+            $("memberSection").value = "";
             $("memberPronouns").value = "";
             $("memberManager").checked = false;
             $("memberActive").checked = true;
         }
+        $("memberManager").disabled = !managerView;
+        $("memberActive").disabled = !managerView;
         openModal("memberModal");
     }
 
@@ -2627,11 +2817,12 @@
             fullName: $("memberName").value.trim(),
             nickname: $("memberNickname").value.trim(),
             position: $("memberPosition").value.trim(),
-            committee: $("memberCommittee").value.trim(),
+            section: $("memberSection").value.trim(),
             pronouns: $("memberPronouns").value.trim(),
             isManager: $("memberManager").checked,
             isActive: $("memberActive").checked
         };
+        if (!fullData.isManager) { delete common.isManager; delete common.isActive; }
         const body = editingMemberEmail
             ? Object.assign({ action: "Update Member", email: editingMemberEmail }, common)
             : Object.assign({ action: "Add Member", email: email }, common);
