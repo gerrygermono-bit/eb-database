@@ -288,6 +288,7 @@
         font-weight: 800;
         padding: 2px 9px;
         border-radius: 100px;
+        margin-left: 4px;
     }
     .type-badge-OJT, .type-badge-Practicum, .type-badge-Thesis, .type-badge-Org, .type-badge-Personal, .type-badge-Other { color: #7c3aed; background: rgba(124,58,237,0.12); }
 
@@ -1769,6 +1770,7 @@
     let linkSearchText = "";
     let linkCatSelection = [];
     let meetFinalPick = null;
+    let meetFinalOpen = false;
 
     let gridTerm = "";
 
@@ -2260,6 +2262,7 @@
     function applyPayload(data) {
         fullData = data;
         gridTerm = fullData.currentTerm || (fullData.termList && fullData.termList[0]) || "";
+        if (!pinPendingPins) lastSavedPins = (fullData.pinnedLinkCats || []).slice();
     }
 
     function fetchUserData(cb, opts) {
@@ -2442,6 +2445,7 @@
         if (!m) return;
         currentMeetId = id;
         myMeetLoadedFor = null;
+        meetFinalOpen = false;
         $("meetHeatmapWrap").classList.add("hidden");
         $("meetMyAvailWrap").classList.add("hidden");
         $("meetDetailTitle").textContent = m.title;
@@ -2496,9 +2500,15 @@
             finRow.innerHTML = `<div style="font-weight:800;color:var(--dlsu-green);">✓ Finalized: ${escHtml(fmtDateMed(m.finalDay))} · ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`;
         } else if (canManage && isOpen && days.length) {
             finRow.classList.remove("hidden");
-            if (!meetFinalPick || days.indexOf(meetFinalPick) < 0) meetFinalPick = days[0];
-            finRow.innerHTML = `
-                <div class="panel-heading" style="font-size:0.9rem;margin-bottom:8px;"><span>Finalize this meet</span></div>
+            const allIn = resp.length >= activeMembers.length;
+            if (!allIn) {
+                finRow.innerHTML = `<button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--text-muted);" data-click="toast('${resp.length} of ${activeMembers.length} responded. Finalize unlocks when everyone has responded.')">Finalize meet · ${resp.length}/${activeMembers.length} responded</button>`;
+            } else if (!meetFinalOpen) {
+                finRow.innerHTML = `<button class="btn btn-sm btn-primary" style="width:100%;justify-content:center;" data-click="toggleMeetFinal()">Finalize meet</button>`;
+            } else {
+                if (!meetFinalPick || days.indexOf(meetFinalPick) < 0) meetFinalPick = days[0];
+                finRow.innerHTML = `
+                <div class="panel-heading" style="font-size:0.9rem;margin-bottom:8px;"><span>Finalize this meet</span><span class="sub" data-click="toggleMeetFinal()" style="cursor:pointer;margin-left:8px;">Hide</span></div>
                 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
                     <span class="mm-k" style="display:inline;margin:0;">Winning day</span>
                     ${days.map(d => `<button type="button" class="chip ${d === meetFinalPick ? "active" : ""}" data-click="pickFinalDay('${d}')">${escHtml(fmtDateMed(d))}</button>`).join("")}
@@ -2510,6 +2520,7 @@
                     <select id="meetFinalEnd">${(() => { let o = ""; for (let t = slots[0] + MEET_SLOT_MIN; t <= meetMinutes(m.timeEnd); t += MEET_SLOT_MIN) o += `<option value="${minToHHMM(t)}"${t === meetMinutes(m.timeEnd) ? " selected" : ""}>${escHtml(fmtTime(minToHHMM(t)))}</option>`; return o; })()}</select>
                     <button class="btn btn-primary btn-sm" data-once data-click="finalizeMeet('${m.id}')">Finalize</button>
                 </div>`;
+            }
         } else {
             finRow.classList.add("hidden");
             finRow.innerHTML = "";
@@ -2849,6 +2860,11 @@
 
     function pickFinalDay(d) {
         meetFinalPick = d;
+        renderMeetDetail();
+    }
+
+    function toggleMeetFinal() {
+        meetFinalOpen = !meetFinalOpen;
         renderMeetDetail();
     }
 
@@ -3679,8 +3695,13 @@
     }
 
     let pinSaveTimer = null;
+    let pinPendingPins = null;
+    let lastSavedPins = null;
+    let pinSaveChain = Promise.resolve();
+    let pinOutstanding = 0;
     function togglePinCat(cat) {
         if (!fullData || !fullData.isManager) return;
+        if (lastSavedPins === null) lastSavedPins = (fullData.pinnedLinkCats || []).slice();
         const pins = (fullData.pinnedLinkCats || []).slice();
         const i = pins.indexOf(cat);
         if (i >= 0) pins.splice(i, 1);
@@ -3688,13 +3709,51 @@
         fullData.pinnedLinkCats = pins;
         renderLinksHub();
         renderOverviewQuickLinks();
+        pinPendingPins = pins.slice();
         if (pinSaveTimer) clearTimeout(pinSaveTimer);
-        pinSaveTimer = setTimeout(() => {
-            pinSaveTimer = null;
-            sendPostRequest({ action: "Set Pinned Cats", cats: (fullData.pinnedLinkCats || []).slice() })
-                .catch(() => {});
-        }, 400);
+        pinSaveTimer = setTimeout(flushPinSave, 400);
     }
+    function flushPinSave() {
+        pinSaveTimer = null;
+        if (!pinPendingPins) return;
+        const desired = pinPendingPins;
+        pinPendingPins = null;
+        if (lastSavedPins && JSON.stringify(desired) === JSON.stringify(lastSavedPins)) return;
+        pinOutstanding++;
+        pinSaveChain = pinSaveChain.then(() => {
+            return sendPostRequest({ action: "Set Pinned Cats", cats: desired })
+                .then(res => {
+                    const srv = res && res.pinnedLinkCats ? res.pinnedLinkCats : desired;
+                    lastSavedPins = srv.slice();
+                    pinOutstanding--;
+                    if (pinOutstanding === 0 && !pinPendingPins && fullData) {
+                        fullData.pinnedLinkCats = lastSavedPins.slice();
+                        renderLinksHub();
+                        renderOverviewQuickLinks();
+                    }
+                })
+                .catch(() => {
+                    pinOutstanding--;
+                    if (pinOutstanding === 0 && !pinPendingPins && fullData) {
+                        fullData.pinnedLinkCats = (lastSavedPins || []).slice();
+                        renderLinksHub();
+                        renderOverviewQuickLinks();
+                        toast("Couldn't save pinned categories — reverted.");
+                    }
+                });
+        });
+    }
+    window.addEventListener("pagehide", function () {
+        if (pinSaveTimer) { clearTimeout(pinSaveTimer); pinSaveTimer = null; }
+        if (!pinPendingPins) return;
+        const desired = pinPendingPins;
+        pinPendingPins = null;
+        try {
+            navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({
+                token: CLIENT_API_TOKEN, email: userEmail, action: "Set Pinned Cats", cats: desired
+            }));
+        } catch (err) {}
+    });
 
     function buildLinkCatsHtml(links) {
         let html = "";
