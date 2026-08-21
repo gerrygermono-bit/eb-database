@@ -540,7 +540,7 @@
     .link-card:hover { border-color: var(--dlsu-green); transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .link-card h4 { font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
     .link-card .desc { font-size: 0.78rem; color: var(--text-muted); flex: 1; }
-    .link-card .url { font-size: 0.72rem; color: var(--dlsu-green); font-weight: 700; word-break: break-all; }
+    .link-card .url { font-size: 0.72rem; color: var(--dlsu-green); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .link-card.pinned { border-color: var(--dlsu-green); box-shadow: var(--shadow-sm); }
     .link-card .link-actions { position: absolute; top: 10px; right: 10px; display: none; gap: 4px; }
     .link-card:hover .link-actions { display: flex; }
@@ -1007,7 +1007,6 @@
         <section class="hidden" id="panelLinks">
             <div class="panel-heading">
                 <span>Links Hub</span>
-                <span class="sub">Pertinent links &amp; resources</span>
                 <button class="btn btn-primary btn-sm" data-click="openLinkModal(null)">+ Add Link</button>
             </div>
             <div class="toolbar">
@@ -3346,17 +3345,15 @@
         const pinned = l.pinned;
         const actions = withActions ? `
             <div class="link-actions">
-                <button class="btn btn-sm btn-ghost" data-click="openLinkModal('${l.id}')"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
-                <button class="btn btn-sm btn-ghost" data-click="deleteLink('${l.id}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
+                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); openLinkModal('${l.id}')" title="Edit link"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
+                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); deleteLink('${l.id}')" title="Delete link"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
             </div>` : "";
         return `
         <a class="link-card ${pinned ? "pinned" : ""}" href="${escHtml(l.url)}" target="_blank" rel="noopener">
             ${actions}
-            <h4>${pinned ? "★ " : ""}${escHtml(l.name)}
-                ${pinned ? `<span class="tbadge" style="background:var(--dlsu-green);color:#fff;">essential</span>` : ""}
-            </h4>
+            <h4>${escHtml(l.name)}</h4>
             ${l.description ? `<div class="desc">${escHtml(l.description)}</div>` : ""}
-            <div class="url">${escHtml(l.url)}</div>
+            <div class="url" title="${escHtml(l.url)}">${escHtml(l.url)}</div>
             <span class="tbadge" style="background:var(--bg-canvas);color:var(--text-muted);align-self:flex-start;">${escHtml(l.category)}</span>
         </a>`;
     }
