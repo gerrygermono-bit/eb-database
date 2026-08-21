@@ -279,7 +279,6 @@
        background subtle while lifting the text into readable territory.
        Pure CSS, so it reacts instantly to live theme switches. */
     [data-theme="dark"] .sbadge,
-    [data-theme="dark"] .chip-block,
     [data-theme="dark"] .guide-nav-btn {
         filter: brightness(1.7) saturate(0.85);
     }
@@ -387,27 +386,79 @@
     .tbl tbody tr:hover td { background: rgba(16,185,129,0.04); }
     .tbl .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
 
-    /* ---------- Plantilla grid ---------- */
-    .pg-wrap { overflow-x: auto; }
-    .pg-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 5px; font-size: 0.75rem; min-width: 860px; }
-    .pg-table th { padding: 6px 8px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-    .pg-table th:first-child { width: 23%; }
-    .pg-member { padding: 8px; font-weight: 700; }
-    .pg-member small { display: block; font-weight: 600; color: var(--text-muted); font-size: 0.68rem; }
-    .pg-cell {
-        padding: 8px;
-        border-radius: 10px;
+    /* ---------- Meets ---------- */
+    .meet-card { cursor: pointer; }
+    .mt-scroll { overflow-x: auto; }
+    .mt-grid { display: grid; gap: 3px; min-width: 0; user-select: none; -webkit-user-select: none; touch-action: none; }
+    .mt-head { text-align: center; font-size: 0.7rem; font-weight: 800; padding: 4px 2px; border-radius: 6px; }
+    .mt-head .mini { display: block; font-weight: 700; font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
+    .mt-time { font-size: 0.6rem; color: var(--text-muted); text-align: right; padding-right: 5px; align-self: center; white-space: nowrap; }
+    .mt-cell { height: 16px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: transform 0.08s; }
+    .mt-cell:hover { transform: scale(1.15); }
+    .mt-cell.mine { background: var(--accent); border-color: var(--accent); }
+    .mt-cell.mine:hover { filter: brightness(1.1); }
+    .meet-actions-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mm-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mm-by { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+    .mm-facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-bottom: 10px; }
+    .mm-k { display: block; font-size: 0.58rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 2px; }
+    .mm-fact .mm-v { font-size: 0.88rem; font-weight: 700; }
+    .mm-notes { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-canvas); border-left: 3px solid var(--dlsu-green); padding: 8px 12px; border-radius: 0 8px 8px 0; }
+    .mt-respondents { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.78rem; }
+    .mt-respondent { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border-soft); background: var(--bg-canvas); font-weight: 600; }
+    .mt-respondent.pending { opacity: 0.55; }
+    .mini-cal { border: 1px solid var(--border-soft); border-radius: 10px; padding: 7px 9px; background: var(--bg-canvas); }
+    .mc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+    .mc-head span { font-weight: 800; font-size: 0.76rem; }
+    .mc-head button { background: none; border: none; cursor: pointer; font-size: 0.95rem; line-height: 1; color: var(--text-muted); padding: 1px 8px; border-radius: 6px; }
+    .mc-head button:hover { background: var(--surface-solid); color: var(--dlsu-green); }
+    .mc-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .mc-dow { font-size: 0.56rem; font-weight: 800; color: var(--text-muted); text-align: center; padding: 1px 0; }
+    .mc-day { height: 26px; border: none; background: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 700; color: var(--text-main); padding: 0; }
+    .mc-day:hover { background: var(--surface-solid); }
+    .mc-day.sel { background: var(--dlsu-green); color: #fff; }
+    .mchip { display: inline-flex; align-items: center; gap: 5px; background: var(--bg-canvas); border: 1px solid var(--border-soft); border-radius: 999px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; }
+    .mchip button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.7rem; padding: 0; line-height: 1; }
+    .mchip button:hover { color: #e11d48; }
+    .qmark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--bg-canvas);
         border: 1px solid var(--border-soft);
-        background: var(--surface-card);
-        vertical-align: middle;
-        text-align: center;
-        font-size: 0.7rem;
-        line-height: 1.35;
-        color: var(--text-main);
+        color: var(--text-muted);
+        font-size: 0.62rem;
+        font-weight: 800;
+        cursor: help;
+        position: relative;
+        flex-shrink: 0;
     }
-    .pg-cell .blk { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; font-weight: 600; }
-    .pg-cell .blk .chip-block { margin: 0; white-space: normal; }
-    .pg-cell.empty { color: var(--text-muted); opacity: 0.55; }
+    .qmark:hover { color: var(--dlsu-green); border-color: var(--dlsu-green); }
+    .qmark:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface-solid);
+        color: var(--text-main);
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-md);
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 240px;
+        white-space: normal;
+        text-align: left;
+        z-index: 60;
+        pointer-events: none;
+    }
 
     /* ---------- Calendar ---------- */
     .cal-shell { border: 1px solid var(--border-soft); border-radius: 16px; overflow: hidden; background: var(--surface-card); box-shadow: var(--shadow-sm); }
@@ -532,52 +583,103 @@
     .overlap-banner.warn { background: rgba(217,119,6,0.08); border-color: rgba(217,119,6,0.35); color: var(--warning); }
 
     /* ---------- Links ---------- */
-    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
-    .link-card {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        background: var(--surface-card);
-        border: 1px solid var(--border-soft);
-        border-radius: 14px;
-        padding: 16px;
-        text-decoration: none;
-        color: var(--text-main);
-        transition: all 0.2s;
-        position: relative;
+    .cat-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px 34px; align-items: start; }
+    .filter-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        margin-left: 2px;
+        border-radius: 999px;
+        background: var(--dlsu-green);
+        color: #fff;
+        font-size: 0.62rem;
+        font-weight: 800;
+        line-height: 1;
     }
-    .link-card:hover { border-color: var(--dlsu-green); transform: translateY(-2px); box-shadow: var(--shadow-md); }    .link-card h4 { font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-    .link-card .desc { font-size: 0.78rem; color: var(--text-muted); flex: 1; }
-    .link-card .url { font-size: 0.72rem; color: var(--dlsu-green); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .link-card .link-actions { position: absolute; top: 10px; right: 10px; display: none; gap: 4px; }
-    .link-card:hover .link-actions { display: flex; }
+    @media (max-width: 900px) { .cat-columns { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .cat-columns { grid-template-columns: 1fr; } }
+    .cat-col { min-width: 0; }
+    .cat-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .cat-badge {
+        display: inline-block;
+        background: rgba(0, 99, 65, 0.09);
+        color: var(--dlsu-green);
+        font-weight: 800;
+        font-size: 0.76rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 8px;
+    }
+    .cat-badge.pinned { background: rgba(239, 68, 68, 0.12); color: var(--danger); box-shadow: inset 0 0 0 1.5px rgba(239, 68, 68, 0.45); }
+    [data-theme="dark"] .cat-badge.pinned { background: rgba(239, 68, 68, 0.18); }
+    [data-theme="dark"] .cat-badge { background: rgba(0, 177, 106, 0.16); }
+    .cat-pin {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: none;
+        border-radius: 6px;
+        background: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        flex-shrink: 0;
+    }
+    .cat-pin svg { width: 13px; height: 13px; }
+    .cat-pin:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
+    .cat-head:hover .cat-pin { display: inline-flex; }
+    .cat-badge.pinned + .cat-pin, .cat-head:hover .cat-pin { display: inline-flex; }
+    .cat-badge.pinned + .cat-pin { color: var(--danger); }
+    .cat-list { list-style: none; margin: 0; padding: 0; }
+    .cat-list li { position: relative; padding: 7px 0 7px 18px; }
+    .cat-list li::before {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 15px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--dlsu-green);
+        opacity: 0.55;
+    }
+    .lnk-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .lnk-row > a { color: var(--text-main); font-weight: 600; font-size: 0.85rem; text-decoration: none; min-width: 0; overflow-wrap: anywhere; }
+    .lnk-row > a:hover { color: var(--dlsu-green); text-decoration: underline; }
+    .lnk-info {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 0.62rem;
+        line-height: 1;
+        padding: 3px 5px;
+        border-radius: 5px;
+        flex-shrink: 0;
+        transition: transform 0.15s;
+    }
+    .lnk-info:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
+    .lnk-info.open { transform: rotate(180deg); color: var(--dlsu-green); }
+    .lnk-desc {
+        display: none;
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-top: 4px;
+        padding-left: 2px;
+    }
+    .lnk-desc.open { display: block; }
+    .lnk-actions { display: none; gap: 2px; flex-shrink: 0; }
+    .cat-list li:hover .lnk-actions { display: inline-flex; }
 
-    /* ---------- Avail editor ---------- */
+    /* ---------- Meet grids ---------- */
     .avail-scroll { overflow-x: auto; }
-    .avail-grid { display: grid; grid-template-columns: 62px repeat(7, minmax(74px, 1fr)); gap: 3px; min-width: 640px; user-select: none; -webkit-user-select: none; }
-    .avail-head { text-align: center; font-size: 0.72rem; font-weight: 800; padding: 4px 2px; }
-    .avail-head .mini { display: block; font-weight: 700; font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
-    .avail-head button { background: none; border: none; cursor: pointer; font-size: 0.6rem; font-weight: 700; color: var(--text-muted); padding: 1px 4px; border-radius: 4px; }
-    .avail-head button:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
-    .avail-time { font-size: 0.6rem; color: var(--text-muted); text-align: right; padding-right: 5px; align-self: center; }
-    .avail-cell { height: 17px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: all 0.1s; }
-    .avail-cell:hover { transform: scale(1.12); }
-    .avail-cell.c1 { background: #f59e0b; border-color: #f59e0b; }
-    .avail-cell.c2 { background: #f97316; border-color: #f97316; }
-    .avail-cell.c3 { background: #ec4899; border-color: #ec4899; }
-    .avail-cell.c4 { background: #3b82f6; border-color: #3b82f6; }
-
-    .avail-legend { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; align-items: center; }
-    .avail-legend .legend-item { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; padding: 3px 7px; border-radius: 6px; border: 1px solid transparent; }
-    .avail-legend .legend-item:hover { background: var(--bg-canvas); }
-    .avail-legend .legend-item.sel { border-color: var(--dlsu-green); background: var(--bg-canvas); font-weight: 700; color: var(--text-main); }
-    .avail-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--border-soft); }
-    .avail-legend .dot.c1 { background: #f59e0b; border-color: #f59e0b; }
-    .avail-legend .dot.c2 { background: #f97316; border-color: #f97316; }
-    .avail-legend .dot.c3 { background: #ec4899; border-color: #ec4899; }
-    .avail-legend .dot.c4 { background: #3b82f6; border-color: #3b82f6; }
-
-    .chip-block { display: inline-block; padding: 1px 5px; border-radius: 5px; font-weight: 700; margin: 1px 6px 1px 0; font-size: 0.66rem; white-space: nowrap; }
 
     .edit-note { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-canvas); border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
 
@@ -640,7 +742,6 @@
     .sched-toolbar input[type="time"]:focus { outline: none; border-color: var(--dlsu-green); }
     .sched-toolbar .sched-date { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
 
-    .member-select-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
 
     /* ---------- Toast ---------- */
     .toast {
@@ -833,6 +934,9 @@
         <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <path d="M12 5v14M5 12h14"/>
         </symbol>
+        <symbol id="icon-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/>
+        </symbol>
     </svg>
 
     <div class="minimal-loader-screen hidden" id="minimalLoader">
@@ -865,7 +969,7 @@
                     <div class="nav-user" id="navUserEmail">—</div>
                     <div class="nav-sep"></div>
                     <button data-click="showPanel('overview')">Overview</button>
-                    <button data-click="showPanel('plantilla')">Plantilla</button>
+                    <button data-click="showPanel('meets')">Meets</button>
                     <button data-click="showPanel('calendar')">Calendar</button>
                     <button data-click="showPanel('links')">Links Hub</button>
                     <button data-click="showPanel('members')">EB Members</button>
@@ -898,46 +1002,22 @@
 
             <div style="margin-top:22px;">
                 <div class="panel-heading"><span>Quick Links</span><span class="sub" data-click="showPanel('links')" style="cursor:pointer;">Open hub →</span></div>
-                <div id="quickLinks" class="link-grid"></div>
+                <div id="quickLinks" class="cat-columns"></div></div>
             </div>
         </section>
 
-        <!-- ===== PLANTILLA ===== -->
-        <section class="hidden" id="panelPlantilla">
+        <!-- ===== MEETS ===== -->
+        <section class="hidden" id="panelMeets">
             <div class="panel-heading">
-                <span>Plantilla</span>
+                <span>Meets</span>
             </div>
 
             <div class="toolbar">
-                <select id="gridTermSelect" data-change="renderPlantillaGrid()" style="max-width:280px;padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--surface-card);color:var(--text-main);"></select>
-                <button class="btn btn-primary" data-click="openAvailabilityEditor(userEmail)">Edit My Availability</button>
+                <button class="btn btn-primary" data-click="openMeetEditor(null)">+ New Meet</button>
                 <button class="btn" data-click="openCommitmentModal(null)">Add Commitment</button>
             </div>
 
-            <div class="card" style="padding:16px;margin-bottom:20px;">
-                <div class="panel-heading" style="font-size:0.95rem;margin-bottom:10px;">
-                    <span>Find a free time</span>
-                </div>
-                <div class="toolbar">
-                    <span class="sub" style="font-size:0.78rem;">Members:</span>
-                    <div id="findMemberChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-                </div>
-                <div class="toolbar">
-                    <span class="sub" style="font-size:0.78rem;">Days:</span>
-                    <div id="findDayChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-                    <span class="sub" style="font-size:0.78rem;margin-left:8px;">Min duration:</span>
-                    <select id="findMinDur" style="padding:7px 10px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.82rem;background:var(--surface-card);color:var(--text-main);">
-                        <option value="30">30 min</option><option value="60" selected>1 hr</option>
-                        <option value="90">1.5 hrs</option><option value="120">2 hrs</option><option value="180">3 hrs</option>
-                    </select>
-                    <button class="btn btn-primary" data-click="runFindFreeTime()">Find</button>
-                </div>
-                <div id="findResults" style="margin-top:10px;"></div>
-            </div>
-
-            <div class="pg-wrap">
-                <table class="pg-table" id="plantillaGrid"></table>
-            </div>
+            <div id="meetsList" class="item-list"><div class="empty-state">No meets yet.</div></div>
 
             <div style="margin-top:24px;">
                 <div class="panel-heading">
@@ -999,9 +1079,14 @@
             </div>
             <div class="toolbar">
                 <input type="text" id="linkSearch" placeholder="Search links..." data-input="renderLinksHub()" style="padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--surface-card);color:var(--text-main);min-width:220px;flex:1;max-width:340px;">
+                <button class="btn btn-sm" data-click="toggleLinkFilterRow()" id="filterBtn">
+                    <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    Filter
+                    <span class="filter-badge hidden" id="filterBadge"></span>
+                </button>
             </div>
-            <div class="legend" id="linkCatLegend"></div>
-            <div id="linkGrid" class="link-grid"></div>
+            <div class="legend hidden" id="linkFilterRow"></div>
+            <div id="linkGrid" class="cat-columns"></div>
         </section>
 
         <!-- ===== MEMBERS ===== -->
@@ -1053,13 +1138,12 @@
             <div class="modal-body" style="display:flex;flex-direction:column;gap:20px;">
                 <div style="background:linear-gradient(135deg,var(--dlsu-green),var(--accent));padding:18px 20px;border-radius:14px;color:#fff;">
                     <h4 style="color:#fff;margin:0 0 6px;font-size:1.1rem;">Welcome to the EB Database!</h4>
-                    <p style="font-size:0.88rem;opacity:0.92;margin:0;line-height:1.5;">This guide covers everything — Plantilla schedules, commitments, the calendar of activities, and the links hub. Use the quick-jump below or scroll through.</p>
+                    <p style="font-size:0.88rem;opacity:0.92;margin:0;line-height:1.5;">This guide covers everything — meets, commitments, the calendar of activities, and the links hub. Use the quick-jump below or scroll through.</p>
                 </div>
 
                 <div style="display:flex;flex-wrap:wrap;gap:8px;">
                     <button data-click="document.getElementById('guide-getting-started').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);cursor:pointer;" class="guide-nav-btn">Getting Started</button>
-                    <button data-click="document.getElementById('guide-plantilla').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(20,184,166,0.1);color:#0d9488;border:1px solid rgba(20,184,166,0.2);cursor:pointer;" class="guide-nav-btn">Plantilla</button>
-                    <button data-click="document.getElementById('guide-find').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.2);cursor:pointer;" class="guide-nav-btn">Find a Free Time</button>
+                    <button data-click="document.getElementById('guide-plantilla').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(20,184,166,0.1);color:#0d9488;border:1px solid rgba(20,184,166,0.2);cursor:pointer;" class="guide-nav-btn">Meets</button>
                     <button data-click="document.getElementById('guide-calendar').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(217,119,6,0.1);color:#d97706;border:1px solid rgba(217,119,6,0.2);cursor:pointer;" class="guide-nav-btn">Calendar</button>
                     <button data-click="document.getElementById('guide-links').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(79,70,229,0.1);color:#4f46e5;border:1px solid rgba(79,70,229,0.2);cursor:pointer;" class="guide-nav-btn">Links Hub</button>
                     <button data-click="document.getElementById('guide-roles').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(225,29,72,0.1);color:#e11d48;border:1px solid rgba(225,29,72,0.2);cursor:pointer;" class="guide-nav-btn">Members &amp; Roles</button>
@@ -1075,7 +1159,7 @@
                         <li style="margin-bottom:4px;">Sign in with your official <code>@dlsu.edu.ph</code> Google account. Access is restricted to members listed in the EB roster.</li>
                         <li style="margin-bottom:4px;">If you're new, ask a Top 3 member to add you to the <code>EB_Members</code> roster first.</li>
                         <li style="margin-bottom:4px;">Toggle <strong>Light</strong> and <strong>Dark</strong> mode with the sun/moon icon in the header.</li>
-                        <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Plantilla</strong>, <strong>Calendar</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
+                        <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Meets</strong>, <strong>Calendar</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
                         <li style="margin-bottom:4px;">Everything is saved to the EB Database sheet and refreshes automatically (about 30 seconds).</li>
                     </ul>
                 </div>
@@ -1083,28 +1167,15 @@
                 <div id="guide-plantilla" style="border-left:3px solid #14b8a6;padding-left:16px;">
                     <h4 style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        Plantilla — Availability
+                        Meets — Group Scheduling
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">Click <strong>Edit My Availability</strong> to set your schedule on the weekly grid.</li>
-                        <li style="margin-bottom:4px;">Each cell is a <strong>half-hour block from 6:00 AM to 10:00 PM</strong>. Pick a color from the legend, then click or drag to paint: <span style="color:#f59e0b;">yellow = online class</span>, <span style="color:#f97316;">orange = face-to-face class</span>, <span style="color:#ec4899;">pink = willing to go to campus</span>, <span style="color:#3b82f6;">blue = personal matters</span>. Pick the blank swatch to erase.</li>
-                        <li style="margin-bottom:4px;">Mark your campus-available time <strong>pink</strong> — that's what <strong>Find a Free Time</strong> counts as free. Use the per-day <strong>all</strong> / <strong>clear</strong> shortcuts to fill or erase whole days.</li>
-                        <li style="margin-bottom:4px;">Use the <strong>Conflicts</strong> field for repeating schedule notes (classes, org commitments).</li>
-                        <li style="margin-bottom:4px;">The grid is per <strong>term</strong> — switch terms with the dropdown above the grid.</li>
-                        <li style="margin-bottom:4px;"><strong>Add Commitment</strong> for one-off dates that don't repeat, e.g. exams or events. Types: OJT, Practicum, Thesis, Org, Personal, Other.</li>
-                        <li style="margin-bottom:4px;">You can edit your own availability and commitments. Top 3 can also edit them for you.</li>
-                    </ul>
-                </div>
-
-                <div id="guide-find" style="border-left:3px solid #7c3aed;padding-left:16px;">
-                    <h4 style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        Find a Free Time
-                    </h4>
-                    <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">Great for scheduling meetings or shoots — pick any combination of <strong>members</strong> and <strong>days</strong>, set a minimum duration, then hit <strong>Find</strong>.</li>
-                        <li style="margin-bottom:4px;">Results show the overlapping free blocks for the selected group, plus how many people are free in each block.</li>
-                        <li style="margin-bottom:4px;">Tap a member or day chip to include or exclude them from the search.</li>
+                        <li style="margin-bottom:4px;">Anyone can create a meet with <strong>+ New Meet</strong> — give it a title, pick the candidate days, and set the time window the grid should cover.</li>
+                        <li style="margin-bottom:4px;">Open a meet and paint your availability on the grid: <strong>click or drag</strong> across half-hour cells for each day you're free. Hit <strong>Save My Availability</strong> when done.</li>
+                        <li style="margin-bottom:4px;">The heatmap shows how many EBs are free per slot — darker means more people. Hover a cell to see exactly who.</li>
+                        <li style="margin-bottom:4px;">The <strong>Best overlaps</strong> strip lists time windows where everyone who responded is free.</li>
+                        <li style="margin-bottom:4px;">The creator (or Top 3) can edit, close, reopen, or delete a meet, and <strong>Finalize</strong> it once the group settles on a day and time.</li>
+                        <li style="margin-bottom:4px;"><strong>Add Commitment</strong> (bottom of the Meets tab) is still the place for one-off dates that don't repeat, e.g. exams or events. These also appear in the Calendar's day drawer.</li>
                     </ul>
                 </div>
 
@@ -1135,7 +1206,8 @@
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
                         <li style="margin-bottom:4px;">One place for all pertinent files — templates, email templates, policies &amp; TOR, sourcing &amp; speaker forms, ARW materials, and Google Drive files.</li>
-                        <li style="margin-bottom:4px;">Use the <strong>search box</strong> and category chips to filter. Categories are <strong>dynamic</strong> — any category used by existing links appears in the filter.</li>
+                        <li style="margin-bottom:4px;">Links are grouped into <strong>category columns</strong> (three per row). Use the <strong>search box</strong> to filter; empty categories are hidden automatically.</li>
+                        <li style="margin-bottom:4px;">Click the <strong>▼</strong> beside a link to reveal its description.</li>
                         <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category.</li>
                         <li style="margin-bottom:4px;">The <strong>Order</strong> field controls sorting; uncheck <strong>Active</strong> to hide a link from the hub without deleting it.</li>
                     </ul>
@@ -1150,7 +1222,7 @@
                         <li style="margin-bottom:4px;">The <strong>EB Members</strong> panel lists the roster with positions and sections.</li>
                         <li style="margin-bottom:4px;">Being on the roster with <strong>Active = TRUE</strong> is what grants access to the database.</li>
                         <li style="margin-bottom:4px;"><strong>Top 3 only:</strong> add or remove members, toggle <strong>Top 3</strong> / <strong>Active</strong> flags, and <strong>Set Term</strong>.</li>
-                        <li style="margin-bottom:4px;">Top 3 can also edit any EB member's availability and commitments; EB members can only edit their own.</li>
+                        <li style="margin-bottom:4px;">Top 3 can also manage any meet and edit any EB member's commitments; EB members can only edit their own.</li>
                         <li style="margin-bottom:4px;">The last active Top 3 cannot be removed, so the team never loses admin access.</li>
                     </ul>
                 </div>
@@ -1190,42 +1262,78 @@
         </div>
     </div>
 
-    <!-- Availability editor -->
-    <div class="modal-overlay hidden" id="availModal" data-click="closeModal('availModal')">
-        <div class="modal lg" data-click="event.stopPropagation()">
-            <div class="modal-head"><h3 id="availModalTitle">Edit Availability</h3><button class="modal-close" data-click="closeModal('availModal')">&times;</button></div>
-            <div class="modal-body">
-                <div class="member-select-row hidden" id="availMemberRow">
-                    <label style="font-size:0.8rem;font-weight:700;">Member:</label>
-                    <select id="availMemberSelect" data-change="onAvailMemberChange()" style="padding:8px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--bg-canvas);color:var(--text-main);"></select>
+    <!-- Meet editor (create / edit) — left slide-out -->
+    <div class="act-slide-overlay" id="meetEditorModal" data-click="closeMeetEditor()">
+        <div class="act-slide-panel" data-click="event.stopPropagation()">
+            <div class="act-slide-head">
+                <h3 id="meetEditorTitle">New Meet</h3>
+                <button class="act-slide-close" data-click="closeMeetEditor()">&times;</button>
+            </div>
+            <div class="act-slide-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input id="meetTitleInput" placeholder="e.g. Urgent Meeting">
                 </div>
-                <div class="edit-note">
-                    Pick a color from the legend, then <strong>click</strong> or <strong>drag</strong> across time blocks to paint them. The weekly schedule below is your base availability for <strong id="availTermLabel">this term</strong>. Use <em>Conflicts</em> to note recurring commitments (OJT, practicum, thesis, org-external matters).
+                <div class="form-group">
+                    <label>Notes (optional)</label>
+                    <textarea id="meetNotesInput" style="min-height:60px;" placeholder="Agenda, venue ideas, anything else"></textarea>
                 </div>
-                <div class="avail-legend" id="availLegend">
-                    <span class="legend-item" data-cat="1" data-click="selectAvailCat(1)"><span class="dot c1"></span>Online class</span>
-                    <span class="legend-item" data-cat="2" data-click="selectAvailCat(2)"><span class="dot c2"></span>Face-to-face class</span>
-                    <span class="legend-item" data-cat="3" data-click="selectAvailCat(3)"><span class="dot c3"></span>Willing to go to campus</span>
-                    <span class="legend-item" data-cat="4" data-click="selectAvailCat(4)"><span class="dot c4"></span>Personal matters</span>
-                    <span class="legend-item" data-cat="0" data-click="selectAvailCat(0)"><span class="dot"></span>Not going / unavailable</span>
-                </div>
-                <div class="avail-scroll">
-                    <div class="avail-grid" id="availGrid"></div>
-                </div>
-                <div style="margin-top:16px;">
-                    <div class="form-group">
-                        <label>Conflicts / Commitments</label>
-                        <textarea id="availConflicts" placeholder="e.g. OJT Mon-Wed | Lab Tue | Classes Fri"></textarea>
+                <div class="form-group">
+                    <label>Candidate days</label>
+                    <div class="mini-cal">
+                        <div class="mc-head">
+                            <button type="button" data-click="meetCalShift(-1)" title="Previous month">‹</button>
+                            <span id="meetCalLabel"></span>
+                            <button type="button" data-click="meetCalShift(1)" title="Next month">›</button>
+                        </div>
+                        <div class="mc-grid" id="meetCalGrid"></div>
                     </div>
-                    <div class="form-group">
-                        <label>Notes</label>
-                        <textarea id="availNotes" placeholder="Anything else the EB should know about your schedule"></textarea>
+                    <div id="meetDayChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+                </div>
+                <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:6px;">Time window (grid range)
+                        <span class="qmark" data-tip="The availability grid only covers slots inside this window. This is not YOUR availability — you can input your availability later.">?</span>
+                    </label>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input type="time" id="meetTimeStart" value="07:00" step="1800">
+                        <span style="font-size:0.85rem;color:var(--text-muted);">to</span>
+                        <input type="time" id="meetTimeEnd" value="22:00" step="1800">
                     </div>
                 </div>
             </div>
-            <div class="modal-foot">
-                <button class="btn" data-click="closeModal('availModal')">Cancel</button>
-                <button class="btn btn-primary" data-once data-click="saveAvailability()">Save Availability</button>
+            <div class="act-slide-foot">
+                <button class="btn" data-click="closeMeetEditor()">Cancel</button>
+                <button class="btn btn-primary" data-once data-click="saveMeet()">Save Meet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meet detail -->
+    <div class="modal-overlay hidden" id="meetModal" data-click="closeModal('meetModal')">
+        <div class="modal" data-click="event.stopPropagation()">
+            <div class="modal-head"><h3 id="meetDetailTitle">Meet</h3><button class="modal-close" data-click="closeModal('meetModal')">&times;</button></div>
+            <div class="modal-body">
+                <div id="meetMetaRow" style="margin-bottom:14px;"></div>
+                <div id="meetManageRow" class="toolbar hidden" style="margin-bottom:12px;"></div>
+                <div id="meetFinalizeRow" class="card hidden" style="padding:12px;margin-bottom:12px;"></div>
+                <div class="meet-actions-row">
+                    <button class="btn btn-sm" id="toggleHeatmapBtn" data-click="toggleMeetSection('heatmap')"></button>
+                    <button class="btn btn-sm btn-primary hidden" id="toggleEditorBtn" data-click="toggleMeetSection('editor')"></button>
+                </div>
+                <div id="meetHeatmapWrap" class="hidden" style="margin-top:12px;">
+                    <div id="meetOverlapStrip" style="margin-bottom:12px;"></div>
+                    <div class="avail-scroll"><div id="meetHeatmap"></div></div>
+                    <div class="hint" style="margin-top:6px;">Darker cells = more EBs available. Hover a cell to see who.</div>
+                    <div id="meetRespondents" style="margin-top:14px;"></div>
+                </div>
+                <div id="meetMyAvailWrap" class="hidden" style="margin-top:14px;">
+                    <div class="edit-note" style="margin-bottom:8px;">Click or drag across cells to paint when you're free, then save.</div>
+                    <div class="avail-scroll"><div id="meetEditGrid"></div></div>
+                    <div style="margin-top:10px;display:flex;gap:8px;">
+                        <button class="btn btn-primary btn-sm" data-once data-click="saveMeetResponse()">Save My Availability</button>
+                        <button class="btn btn-sm" data-click="clearMyMeetSlots()">Clear</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1389,7 +1497,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="hint">This is the term shown across the database and used to filter Plantilla.</div>
+                <div class="hint">This is the term shown across the database.</div>
             </div>
             <div class="modal-foot">
                 <button class="btn" data-click="closeModal('setTermModal')">Cancel</button>
@@ -1645,14 +1753,6 @@
     const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Top 3", "SMO/SMC"];
     const CLASSIFICATION_OPTIONS = ["Internal Event", "External Event"];
     const LINK_CATEGORIES = ["Templates", "Policies & TOR", "Sourcing & Speakers", "SMO", "ARW", "GDrive", "General", "Email Templates"];
-    const AV_START = 6 * 60;      // 6:00 AM
-    const AV_SLOTS = 32;          // half-hour slots -> 6:00 AM - 10:00 PM
-    // Slot categories: 0=blank, 1=online, 2=face-to-face, 3=willing/campus, 4=personal
-    const CAT_COLORS = { 1: "#f59e0b", 2: "#f97316", 3: "#ec4899", 4: "#3b82f6" };
-    const CAT_LABELS = { 1: "Online class", 2: "Face-to-face class", 3: "Willing to go to campus", 4: "Personal matters" };
-    const CAT_CODE = { 1: "o", 2: "f", 4: "p" };
-    const CAT_FROM_CODE = { o: 1, f: 2, w: 3, p: 4 };
-
     // ============================================================
     //  STATE
     // ============================================================
@@ -1666,15 +1766,21 @@
     }
 
     let calYear, calMonth;
-    let linkCatFilter = "All";
     let linkSearchText = "";
-    let findMemberSet = new Set();
-    let findDaySet = new Set();
+    let linkCatSelection = [];
+    let meetFinalPick = null;
 
     let gridTerm = "";
 
-    let editingAvailEmail = "";
-    let availToggles = {};                 // dayIdx -> array of bool
+    const MEET_SLOT_MIN = 30;
+    let currentMeetId = null;
+    let myMeetSlots = {};
+    let myMeetLoadedFor = null;
+    let meetDrag = null;
+    let editingMeetId = null;
+    let meetCalMonth = null;
+    let meetSelectedDays = [];
+
     let editingCommitmentId = null;
     let editingActivityId = null;
     let scheduleDraft = [];
@@ -1746,7 +1852,7 @@
     function todayISO() { return isoFromDate(new Date()); }
     function dayIdxFromISO(iso) {
         const d = new Date(dateOnly(iso) + "T00:00:00");
-        return (d.getDay() + 6) % 7;   // Mon = 0
+        return d.getDay();   // Sun = 0, matches DAYS
     }
     function weekdayShort(iso) { return DAYS[dayIdxFromISO(iso)]; }
     function fmtDateLong(iso) {
@@ -1865,52 +1971,7 @@
         toast("Applied to all days.");
     }
 
-    // ----- Availability block helpers -----
-    function parseDayBlocks(str) {
-        str = (str || "").trim();
-        if (!str) return null;
-        if (str.toUpperCase() === "ANYTIME") return [[0, 1440, 3]];
-        const out = [];
-        str.split(",").forEach(function (part) {
-            const m = part.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})(?::([ofwp]))?/);
-            if (m) {
-                const s = (+m[1]) * 60 + (+m[2]);
-                const e = (+m[3]) * 60 + (+m[4]);
-                const cat = m[5] ? (CAT_FROM_CODE[m[5]] || 3) : 3;
-                if (s < e) out.push([s, e, cat]);
-            }
-        });
-        out.sort((a, b) => a[0] - b[0]);
-        return mergeBlocks(out);
-    }
-    function mergeBlocks(blocks) {
-        const res = [];
-        blocks.forEach(function (b) {
-            const last = res[res.length - 1];
-            if (last && b[0] <= last[1] && (last[2] || 3) === (b[2] || 3)) last[1] = Math.max(last[1], b[1]);
-            else res.push([b[0], b[1], b[2] || 3]);
-        });
-        return res;
-    }
-    function blocksToStr(blocks) {
-        if (!blocks || !blocks.length) return "";
-        if (blocks.length === 1 && blocks[0][0] === 0 && blocks[0][1] === 1440 && (blocks[0][2] || 3) === 3) return "ANYTIME";
-        return blocks.map(b => minToHHMM(b[0]) + "-" + minToHHMM(b[1]) + (CAT_CODE[b[2]] ? ":" + CAT_CODE[b[2]] : "")).join(", ");
-    }
-    function blockChips(blocks) {
-        if (!blocks || !blocks.length) return "";
-        return blocks.map(b => {
-            const cat = b[2] || 3;
-            const c = CAT_COLORS[cat];
-            return `<span class="chip-block" style="background:${c}1f;color:${c};border:1px solid ${c}66;">${minToHHMM(b[0])}-${minToHHMM(b[1])}</span>`;
-        }).join("");
-    }
-    function blocksFreeHours(blocks) {
-        if (!blocks) return 0;
-        let h = 0;
-        blocks.forEach(b => { if ((b[2] || 3) === 3) h += (b[1] - b[0]) / 60; });
-        return h;
-    }
+    // ----- Interval helpers -----
     function intersectIntervals(A, B) {
         const res = [];
         let i = 0, j = 0;
@@ -1922,18 +1983,7 @@
         }
         return res;
     }
-    function timeOverlap(s1, e1, iv) {
-        const s = hhmmToMin(s1), e = hhmmToMin(e1);
-        return s < iv[1] && e > iv[0];
-    }
 
-    function availabilityFor(email, term) {
-        if (!fullData) return null;
-        for (const a of fullData.allAvailability) {
-            if (a.email === email && a.term === term) return a;
-        }
-        return null;
-    }
     function memberByEmail(email) {
         if (!fullData) return null;
         return fullData.members.find(m => m.email === email) || null;
@@ -1994,6 +2044,19 @@
     function closeModal(id) {
         const el = $(id);
         if (el) el.classList.add("hidden");
+    }
+    function openMeetEditorDrawer() {
+        const ov = $("meetEditorModal");
+        ov.classList.remove("hidden");
+        void ov.offsetWidth;
+        ov.classList.add("open");
+        ov.querySelector(".act-slide-panel").classList.add("open");
+    }
+    function closeMeetEditor() {
+        const ov = $("meetEditorModal");
+        if (ov.classList.contains("hidden")) return;
+        ov.classList.remove("open");
+        ov.querySelector(".act-slide-panel").classList.remove("open");
     }
 
     // ============================================================
@@ -2096,7 +2159,6 @@
         $("headerControls").style.display = "flex";
         $("mainDashboard").classList.remove("hidden");
         renderNavUser();
-        $("gridTermSelect").value = gridTerm;
         // Fresh sign-ins and first visits always land on Overview. Only an
         // actual page refresh restores the panel the user left off at.
         let savedPanel = null;
@@ -2144,15 +2206,15 @@
     document.addEventListener("click", function () { $("navMenu").classList.remove("show"); });
 
     let currentPanel = "overview";
-    const VALID_PANELS = ["overview", "plantilla", "calendar", "links", "members"];
+    const VALID_PANELS = ["overview", "meets", "calendar", "links", "members"];
     function showPanel(name) {
         currentPanel = name;
         try { localStorage.setItem("ebdb_last_panel", name); } catch (e) {}
-        ["panelOverview", "panelPlantilla", "panelCalendar", "panelLinks", "panelMembers"].forEach(id => $(id).classList.add("hidden"));
+        ["panelOverview", "panelMeets", "panelCalendar", "panelLinks", "panelMembers"].forEach(id => $(id).classList.add("hidden"));
         $("navMenu").classList.remove("show");
         const target = {
             "overview": "panelOverview",
-            "plantilla": "panelPlantilla",
+            "meets": "panelMeets",
             "calendar": "panelCalendar",
             "links": "panelLinks",
             "members": "panelMembers"
@@ -2160,7 +2222,7 @@
         if (target) {
             $(target).classList.remove("hidden");
             if (name === "overview") renderOverview();
-            if (name === "plantilla") renderPlantilla();
+            if (name === "meets") renderMeets();
             if (name === "calendar") renderCalendarView();
             if (name === "links") renderLinksHub();
             if (name === "members") renderMembersPanel();
@@ -2260,14 +2322,15 @@
 
     function renderAll() {
         renderNavUser();
-        populateTermSelect();
         // Only rebuild the visible panel — showPanel re-renders each panel
         // on tab switch, so the hidden ones don't need refreshing here.
         if (currentPanel === "overview") renderOverview();
-        else if (currentPanel === "plantilla") renderPlantilla();
+        else if (currentPanel === "meets") renderMeets();
         else if (currentPanel === "calendar") renderCalendarView();
         else if (currentPanel === "links") renderLinksHub();
         else if (currentPanel === "members") renderMembersPanel();
+        const mm = document.getElementById("meetModal");
+        if (mm && !mm.classList.contains("hidden") && currentMeetId) renderMeetDetail();
     }
 
     // ============================================================
@@ -2294,10 +2357,15 @@
             ? rows.join("")
             : '<div class="empty-state">Nothing scheduled yet.</div>';
 
-        const links = (fullData.links || []).filter(l => l.active).sort((a, b) => a.order - b.order);
-        $("quickLinks").innerHTML = links.slice(0, 6)
-            .map(l => linkCardHtml(l, false)).join("")
-            || '<div class="empty-state">No links yet.</div>';
+        renderOverviewQuickLinks();
+    }
+
+    function renderOverviewQuickLinks() {
+        const pins = fullData.pinnedLinkCats || [];
+        const links = (fullData.links || []).filter(l => l.active && pins.indexOf(l.category) >= 0)
+            .sort((a, b) => a.order - b.order);
+        $("quickLinks").innerHTML = buildLinkCatsHtml(links)
+            || '<div class="empty-state">No pinned categories yet — pin some in the Links Hub.</div>';
     }
 
     function activityRowHtml(a, iso, badge) {
@@ -2313,323 +2381,484 @@
     }
 
     // ============================================================
-    //  PLANTILLA
+    //  MEETS
     // ============================================================
-    function populateTermSelect() {
-        const sel = $("gridTermSelect");
-        sel.innerHTML = (fullData.termList || []).map(t => `<option${t === gridTerm ? " selected" : ""}>${escHtml(t)}</option>`).join("");
+    function meetsList() { return fullData ? (fullData.meets || []) : []; }
+    function meetById(id) { return meetsList().find(m => m.id === id) || null; }
+    function responsesFor(meetId) { return ((fullData && fullData.meetResponses) || []).filter(r => r.meetId === meetId); }
+    function responseFor(meetId, email) { return responsesFor(meetId).find(r => r.email === email) || null; }
+    function meetMinutes(t) {
+        const p = String(t || "").split(":");
+        const h = parseInt(p[0], 10), m = parseInt(p[1], 10);
+        if (isNaN(h) || isNaN(m)) return 0;
+        return h * 60 + m;
+    }
+    function meetSlotsOf(m) {
+        const out = [];
+        for (let t = meetMinutes(m.timeStart); t < meetMinutes(m.timeEnd); t += MEET_SLOT_MIN) out.push(t);
+        return out;
+    }
+    function meetStatusBadge(status) {
+        if (status === "Open") return '<span class="tbadge" style="background:rgba(16,185,129,0.14);color:#10b981;">Open</span>';
+        if (status === "Closed") return '<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">Closed</span>';
+        return '<span class="tbadge" style="color:#fff;background:var(--dlsu-green);">Finalized</span>';
+    }
+    function mtDayHead(iso) {
+        return `${escHtml(weekdayShort(iso))}<span class="mini">${escHtml(fmtDateMed(iso))}</span>`;
     }
 
-    function renderPlantilla() {
+    function renderMeets() {
         if (!fullData) return;
-        populateTermSelect();
-        renderPlantillaGrid();
-        renderFindChips();
+        renderMeetsList();
         renderCommitments();
     }
 
-    function renderPlantillaGrid() {
-        const members = (fullData.members || []).filter(m => m.isActive)
-            .sort((a, b) => (a.fullName || "").localeCompare(b.fullName || ""));
-        const rows = members.map(m => {
-            const av = availabilityFor(m.email, gridTerm);
-            const tds = DAYS.map(d => {
-                const blocks = av ? parseDayBlocks(av[d]) : null;
-                if (!blocks || !blocks.length) {
-                    return `<td class="pg-cell empty">—</td>`;
-                }
-                return `<td class="pg-cell">
-                    <span class="blk">${blockChips(blocks)}</span></td>`;
-            }).join("");
-            const conflict = av && av.conflicts ? `<small style="color:var(--warning);">⚠ ${escHtml(av.conflicts)}</small>` : "";
-            const role = m.isManager ? "Top 3" : "";
-            return `<tr>
-                <td class="pg-member">${escHtml(m.fullName || m.email)}
-                    <small>${escHtml(m.position || "EB")}${m.isManager ? " · Top 3" : ""}</small>
-                    ${conflict}
-                </td>
-                ${tds}
-            </tr>`;
-        }).join("");
-        $("plantillaGrid").innerHTML = `
-            <thead><tr><th>Member</th>${DAYS.map(d => `<th>${d}</th>`).join("")}</tr></thead>
-            <tbody>${rows || '<tr><td colspan="8" class="empty-state">No EB members yet.</td></tr>'}</tbody>`;
-    }
-
-    function renderFindChips() {
-        const members = (fullData.members || []).filter(m => m.isActive);
-        if (!findMemberSet.size) members.forEach(m => findMemberSet.add(m.email));
-        $("findMemberChips").innerHTML = members.map(m => {
-            const on = findMemberSet.has(m.email);
-            return `<button class="chip ${on ? "active" : ""}" data-click="toggleFindMember('${m.email}')">${escHtml(m.fullName || m.email)}</button>`;
-        }).join("");
-        if (!findDaySet.size) DAYS.forEach((d, i) => findDaySet.add(i));
-        $("findDayChips").innerHTML = DAYS.map((d, i) => {
-            const on = findDaySet.has(i);
-            return `<button class="chip ${on ? "active" : ""}" data-click="toggleFindDay(${i})">${d}</button>`;
-        }).join("");
-    }
-
-    function toggleFindMember(email) {
-        if (findMemberSet.has(email)) findMemberSet.delete(email); else findMemberSet.add(email);
-        renderFindChips();
-    }
-    function toggleFindDay(i) {
-        if (findDaySet.has(i)) findDaySet.delete(i); else findDaySet.add(i);
-        renderFindChips();
-    }
-
-    function runFindFreeTime() {
-        const members = (fullData.members || []).filter(m => m.isActive && findMemberSet.has(m.email));
-        if (!members.length) { $("findResults").innerHTML = '<div class="empty-state">Select at least one member.</div>'; return; }
-        const daysSel = [...findDaySet];
-        const minDur = parseInt($("findMinDur").value) || 60;
-
-        const perDay = {};
-        members.forEach(m => {
-            const av = availabilityFor(m.email, gridTerm);
-            daysSel.forEach(d => {
-                const blocks = av ? parseDayBlocks(av[DAYS[d]]) : null;
-                const willing = blocks ? blocks.filter(b => (b[2] || 3) === 3) : null;
-                if (!willing || !willing.length) return;
-                perDay[d].push(willing);
-            });
+    function renderMeetsList() {
+        const meets = meetsList().slice().sort((a, b) => {
+            const rank = s => s === "Open" ? 0 : s === "Closed" ? 1 : 2;
+            return rank(a.status) - rank(b.status) || String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
         });
-
-        const results = [];
-        daysSel.forEach(d => {
-            const lists = perDay[d];
-            if (!lists || lists.length < members.length) return;
-            let common = lists[0];
-            for (let i = 1; i < lists.length; i++) {
-                common = intersectIntervals(common, lists[i]);
-                if (!common.length) break;
-            }
-            common.forEach(iv => {
-                if (iv[1] - iv[0] >= minDur * 60) {
-                    results.push({ day: d, start: iv[0], end: iv[1], clashes: countClashes(d, iv) });
-                }
-            });
-        });
-
-        results.sort((a, b) => (a.day - b.day) || (a.start - b.start));
-        const names = members.map(m => m.fullName || m.email).join(", ");
-        $("findResults").innerHTML = results.length
-            ? `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Common free blocks for <strong>${escHtml(names)}</strong> (≥ ${minDur} min):</div>` +
-              results.map(r => `
-                <div class="item-row" style="margin-bottom:6px;">
-                    <div class="grow">
-                        <h4>${DAYS[r.day]} · ${fmtTime(minToHHMM(r.start))} – ${fmtTime(minToHHMM(r.end))}</h4>
-                        <div class="meta">${Math.round((r.end - r.start) / 60)} hr${(r.end - r.start) >= 120 ? "s" : ""} window</div>
-                    </div>
-                    ${r.clashes > 0 ? `<span class="tbadge" style="color:var(--warning);background:rgba(217,119,6,0.12);">${r.clashes} possible clash(es)</span>` : ""}
-                </div>`).join("")
-            : `<div class="empty-state">No common free time found across the selected members for the selected days. Try fewer members or shorter duration.</div>`;
+        const activeCount = (fullData.members || []).filter(m => m.isActive).length;
+        $("meetsList").innerHTML = meets.length ? meets.map(m => {
+            const respCount = responsesFor(m.id).length;
+            const finalLine = m.status === "Finalized" && m.finalDay
+                ? `<div class="meta" style="color:var(--dlsu-green);font-weight:700;">✓ ${escHtml(fmtDateMed(m.finalDay))} · ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`
+                : "";
+            return `
+            <div class="item-row meet-card" data-click="openMeetModal('${m.id}')">
+                <div class="grow">
+                    <h4>${escHtml(m.title)} ${meetStatusBadge(m.status)}</h4>
+                    <div class="meta">${escHtml((m.days || []).map(d => fmtDateMed(d)).join(" · "))}</div>
+                    <div class="meta">${respCount}/${activeCount} responded</div>
+                    ${finalLine}
+                </div>
+                <span style="color:var(--text-muted);">›</span>
+            </div>`;
+        }).join("") : '<div class="empty-state">No meets yet. Create one with + New Meet.</div>';
     }
 
-    function countClashes(dayIdx, iv) {
-        let n = 0;
-        const today = new Date();
-        for (let x = 1; x <= 60; x++) {
-            const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + x);
-            if (((d.getDay() + 6) % 7) !== dayIdx) continue;
-            const iso = isoFromDate(d);
-            (fullData.activities || []).forEach(a => {
-                if (covers(a, iso) && !isPastActivity(a) && a.start && timeOverlap(a.start, a.end, iv)) n++;
-            });
-            (fullData.commitments || []).forEach(c => {
-                if (c.date === iso && c.start && timeOverlap(c.start, c.end, iv)) n++;
-            });
+    function openMeetModal(id) {
+        const m = meetById(id);
+        if (!m) return;
+        currentMeetId = id;
+        myMeetLoadedFor = null;
+        $("meetHeatmapWrap").classList.add("hidden");
+        $("meetMyAvailWrap").classList.add("hidden");
+        $("meetDetailTitle").textContent = m.title;
+        renderMeetDetail();
+        openModal("meetModal");
+    }
+
+    function renderMeetDetail() {
+        const m = meetById(currentMeetId);
+        if (!m) { closeModal("meetModal"); return; }
+        const canManage = fullData.isManager || m.creatorEmail === userEmail;
+        const isOpen = m.status === "Open";
+        const resp = responsesFor(m.id);
+        const activeMembers = (fullData.members || []).filter(x => x.isActive);
+        const days = m.days || [];
+        const slots = meetSlotsOf(m);
+
+        const dFirst = days[0], dLast = days[days.length - 1];
+        let dateTxt;
+        if (!days.length) dateTxt = "—";
+        else if (days.length === 1) dateTxt = fmtDateMed(dFirst);
+        else {
+            const a = new Date(dFirst + "T00:00:00"), b = new Date(dLast + "T00:00:00");
+            const sameMonth = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+            dateTxt = sameMonth
+                ? `${a.toLocaleDateString("en-US", { month: "short", day: "numeric" })}–${b.getDate()}, ${b.getFullYear()}`
+                : `${a.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${fmtDateMed(dLast)}`;
+            if (days.length > 2) dateTxt += ` · ${days.length} days`;
         }
-        return n;
+        $("meetMetaRow").innerHTML =
+            `<div class="mm-top">` +
+                meetStatusBadge(m.status) +
+                `<span class="mm-by">by ${escHtml(m.creatorName || m.creatorEmail)}</span>` +
+            `</div>` +
+            `<div class="mm-facts">` +
+                `<div class="mm-fact"><span class="mm-k">Candidate dates</span><span class="mm-v">${escHtml(dateTxt)}</span></div>` +
+                `<div class="mm-fact"><span class="mm-k">Time window</span><span class="mm-v">${escHtml(fmtTime(m.timeStart))} – ${escHtml(fmtTime(m.timeEnd))}</span></div>` +
+            `</div>` +
+            (m.notes ? `<div class="mm-notes">${escHtml(m.notes)}</div>` : "");
+
+        const btns = [];
+        if (canManage && m.status !== "Finalized") btns.push(`<button class="btn btn-sm" data-click="openMeetEditor('${m.id}')">Edit</button>`);
+        if (canManage && m.status !== "Finalized") btns.push(`<button class="btn btn-sm" data-click="setMeetStatus('${m.id}','${isOpen ? "Closed" : "Open"}')">${isOpen ? "Close" : "Reopen"}</button>`);
+        if (canManage) btns.push(`<button class="btn btn-sm btn-danger" data-click="deleteMeet('${m.id}')">Delete</button>`);
+        const manageRow = $("meetManageRow");
+        manageRow.innerHTML = btns.join("");
+        manageRow.classList.toggle("hidden", !btns.length);
+
+        const finRow = $("meetFinalizeRow");
+        if (m.status === "Finalized") {
+            finRow.classList.remove("hidden");
+            finRow.innerHTML = `<div style="font-weight:800;color:var(--dlsu-green);">✓ Finalized: ${escHtml(fmtDateMed(m.finalDay))} · ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`;
+        } else if (canManage && isOpen && days.length) {
+            finRow.classList.remove("hidden");
+            if (!meetFinalPick || days.indexOf(meetFinalPick) < 0) meetFinalPick = days[0];
+            finRow.innerHTML = `
+                <div class="panel-heading" style="font-size:0.9rem;margin-bottom:8px;"><span>Finalize this meet</span></div>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+                    <span class="mm-k" style="display:inline;margin:0;">Winning day</span>
+                    ${days.map(d => `<button type="button" class="chip ${d === meetFinalPick ? "active" : ""}" data-click="pickFinalDay('${d}')">${escHtml(fmtDateMed(d))}</button>`).join("")}
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span class="mm-k" style="display:inline;margin:0 2px 0 0;">Time</span>
+                    <select id="meetFinalStart">${slots.map(t => `<option value="${minToHHMM(t)}"${t === slots[0] ? " selected" : ""}>${escHtml(fmtTime(minToHHMM(t)))}</option>`).join("")}</select>
+                    <span class="sub" style="font-size:0.78rem;">to</span>
+                    <select id="meetFinalEnd">${(() => { let o = ""; for (let t = slots[0] + MEET_SLOT_MIN; t <= meetMinutes(m.timeEnd); t += MEET_SLOT_MIN) o += `<option value="${minToHHMM(t)}"${t === meetMinutes(m.timeEnd) ? " selected" : ""}>${escHtml(fmtTime(minToHHMM(t)))}</option>`; return o; })()}</select>
+                    <button class="btn btn-primary btn-sm" data-once data-click="finalizeMeet('${m.id}')">Finalize</button>
+                </div>`;
+        } else {
+            finRow.classList.add("hidden");
+            finRow.innerHTML = "";
+        }
+
+        const counts = {}, who = {};
+        days.forEach(d => { counts[d] = new Array(slots.length).fill(0); who[d] = slots.map(() => []); });
+        resp.forEach(r => {
+            days.forEach(d => {
+                const ivs = (r.slots && r.slots[d]) || [];
+                for (let si = 0; si < slots.length; si++) {
+                    const mid = slots[si] + MEET_SLOT_MIN / 2;
+                    if (ivs.some(iv => mid >= iv[0] && mid < iv[1])) {
+                        counts[d][si]++;
+                        who[d][si].push(r.fullName || r.email);
+                    }
+                }
+            });
+        });
+        const total = Math.max(resp.length, 1);
+        let html = `<div class="mt-grid" style="grid-template-columns:56px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
+        html += `<div></div>` + days.map(d => `<div class="mt-head">${mtDayHead(d)}</div>`).join("");
+        slots.forEach((s, si) => {
+            html += `<div class="mt-time">${s % 60 === 0 ? escHtml(fmtTime(minToHHMM(s))) : ""}</div>`;
+            days.forEach(d => {
+                const c = counts[d][si];
+                const alpha = c ? (0.18 + 0.72 * (c / total)) : 0;
+                const title = c ? `${c} free — ${who[d][si].join(", ")}` : "Nobody available";
+                html += `<div class="mt-cell" title="${escHtml(title)}" style="${c ? `background:rgba(16,185,129,${alpha.toFixed(2)});border-color:rgba(16,185,129,${Math.min(1, alpha + 0.15).toFixed(2)});` : ""}"></div>`;
+            });
+        });
+        html += `</div>`;
+        $("meetHeatmap").innerHTML = html;
+
+        let overlapMsg;
+        if (!resp.length) {
+            overlapMsg = 'No responses yet — be the first to add your availability below.';
+        } else if (resp.length === 1) {
+            overlapMsg = `Waiting for more responses (${resp.length} so far).`;
+        } else {
+            const best = [];
+            days.forEach(d => {
+                let common = null;
+                resp.forEach(r => {
+                    const ivs = ((r.slots && r.slots[d]) || []).map(x => x.slice());
+                    common = common === null ? ivs : intersectIntervals(common, ivs);
+                });
+                (common || []).forEach(iv => { if (iv[1] - iv[0] >= MEET_SLOT_MIN) best.push({ d, s: iv[0], e: iv[1] }); });
+            });
+            best.sort((a, b) => (b.e - b.s) - (a.e - a.s));
+            overlapMsg = best.length
+                ? `<strong>Best overlaps</strong> (all ${resp.length} respondents): ${best.slice(0, 3).map(b => `${fmtDateMed(b.d)} ${fmtTime(minToHHMM(b.s))}–${fmtTime(minToHHMM(b.e))}`).join(" · ")}`
+                : `No common window across all ${resp.length} respondents yet.`;
+        }
+        $("meetOverlapStrip").innerHTML = `<div class="edit-note" style="margin-bottom:0;">${overlapMsg}</div>`;
+
+        const respEmails = new Set(resp.map(r => r.email));
+        $("meetRespondents").innerHTML = '<div class="mt-respondents"><span class="sub" style="font-size:0.75rem;font-weight:700;">Responded:</span>' +
+            activeMembers.map(mem => {
+                const did = respEmails.has(mem.email);
+                return `<span class="mt-respondent${did ? "" : " pending"}">${did ? "✓" : "…"} ${escHtml(mem.fullName || mem.email)}</span>`;
+            }).join("") + '</div>';
+
+        const mine = responseFor(m.id, userEmail);
+        if (!isOpen) {
+            $("meetMyAvailWrap").classList.add("hidden");
+        } else {
+            if (myMeetLoadedFor !== m.id) {
+                myMeetSlots = {};
+                days.forEach(d => { myMeetSlots[d] = []; });
+                if (mine) {
+                    Object.keys(mine.slots || {}).forEach(k => {
+                        if (myMeetSlots[k]) myMeetSlots[k] = (mine.slots[k] || []).map(x => x.slice());
+                    });
+                }
+                myMeetLoadedFor = m.id;
+            }
+            renderMeetEditGrid(m);
+        }
+
+        const heatOpen = !$("meetHeatmapWrap").classList.contains("hidden");
+        const editOpen = !$("meetMyAvailWrap").classList.contains("hidden");
+        $("toggleHeatmapBtn").innerHTML = heatOpen
+            ? "▾ Hide responses heatmap"
+            : `▸ View responses heatmap${resp.length ? ` (${resp.length})` : ""}`;
+        const editBtn = $("toggleEditorBtn");
+        if (isOpen) {
+            editBtn.classList.remove("hidden");
+            editBtn.innerHTML = editOpen
+                ? "▾ Hide my availability"
+                : (mine ? "✎ Update my availability ✓" : "✎ Add my availability");
+        } else {
+            editBtn.classList.add("hidden");
+        }
+    }
+
+    function toggleMeetSection(which) {
+        const heatWrap = $("meetHeatmapWrap"), editWrap = $("meetMyAvailWrap");
+        if (which === "heatmap") {
+            const opening = heatWrap.classList.contains("hidden");
+            heatWrap.classList.toggle("hidden", !opening);
+            if (opening) editWrap.classList.add("hidden");
+        } else {
+            const opening = editWrap.classList.contains("hidden");
+            editWrap.classList.toggle("hidden", !opening);
+            if (opening) heatWrap.classList.add("hidden");
+        }
+        renderMeetDetail();
     }
 
     // ----- Availability editor -----
-    function openAvailabilityEditor(email) {
-        editingAvailEmail = email;
-        const isMe = email === userEmail;
-        const canEditOthers = fullData.isManager;
-        $("availMemberRow").classList.toggle("hidden", !canEditOthers);
-        const sel = $("availMemberSelect");
-        if (canEditOthers) {
-            sel.innerHTML = (fullData.members || []).filter(m => m.isActive)
-                .map(m => `<option value="${m.email}" ${m.email === email ? "selected" : ""}>${escHtml(m.fullName || m.email)}</option>`).join("");
+    function meetSlotStartOf(si) {
+        const m = meetById(currentMeetId);
+        return m ? meetMinutes(m.timeStart) + si * MEET_SLOT_MIN : si * MEET_SLOT_MIN;
+    }
+
+    function renderMeetEditGrid(m) {
+        const slots = meetSlotsOf(m);
+        const days = m.days || [];
+        let html = `<div class="mt-grid" style="grid-template-columns:56px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
+        html += `<div></div>` + days.map(d => `<div class="mt-head">${mtDayHead(d)}</div>`).join("");
+        slots.forEach((s, si) => {
+            html += `<div class="mt-time">${s % 60 === 0 ? escHtml(fmtTime(minToHHMM(s))) : ""}</div>`;
+            days.forEach((d, di) => {
+                html += `<div class="mt-cell${slotOn(d, s) ? " mine" : ""}" data-med="${d}" data-medi="${di}" data-mei="${si}"></div>`;
+            });
+        });
+        html += `</div>`;
+        $("meetEditGrid").innerHTML = html;
+    }
+
+    function slotOn(dayIso, slotStart) {
+        const ivs = myMeetSlots[dayIso] || [];
+        const mid = slotStart + MEET_SLOT_MIN / 2;
+        return ivs.some(iv => mid >= iv[0] && mid < iv[1]);
+    }
+
+    function setMeetSlot(dayIso, si, on) {
+        if (!myMeetSlots[dayIso]) myMeetSlots[dayIso] = [];
+        const m = meetById(currentMeetId);
+        if (!m) return;
+        const a = meetMinutes(m.timeStart) + si * MEET_SLOT_MIN;
+        const b = a + MEET_SLOT_MIN;
+        const ivs = myMeetSlots[dayIso];
+        if (on) {
+            if (!ivs.some(iv => iv[0] <= a && iv[1] >= b)) ivs.push([a, b]);
+        } else {
+            const out = [];
+            ivs.forEach(iv => {
+                if (iv[1] <= a || iv[0] >= b) { out.push(iv); return; }
+                if (iv[0] < a) out.push([iv[0], a]);
+                if (iv[1] > b) out.push([b, iv[1]]);
+            });
+            myMeetSlots[dayIso] = out;
         }
-        $("availModalTitle").textContent = "Edit Availability" + (isMe ? "" : " — " + (memberByEmail(email)?.fullName || email));
-        $("availTermLabel").textContent = gridTerm;
-        const av = availabilityFor(email, gridTerm);
-        $("availConflicts").value = av ? av.conflicts : "";
-        $("availNotes").value = av ? av.notes : "";
-        availToggles = [];
-        selectAvailCat(3);
-        renderAvailGrid();
-        openModal("availModal");
     }
 
-    function onAvailMemberChange() {
-        const email = $("availMemberSelect").value;
-        editingAvailEmail = email;
-        const av = availabilityFor(email, gridTerm);
-        $("availModalTitle").textContent = "Edit Availability — " + (memberByEmail(email)?.fullName || email);
-        $("availConflicts").value = av ? av.conflicts : "";
-        $("availNotes").value = av ? av.notes : "";
-        availToggles = [];
-        renderAvailGrid();
+    function repaintMeetCell(el, dayIso, si) {
+        const m = meetById(currentMeetId);
+        if (!m || !el) return;
+        el.className = "mt-cell" + (slotOn(dayIso, meetMinutes(m.timeStart) + si * MEET_SLOT_MIN) ? " mine" : "");
     }
 
-    function buildTogglesFromBlocks(blocks) {
-        const arr = new Array(AV_SLOTS).fill(0);
-        if (!blocks) return arr;
-        blocks.forEach(b => {
-            const cat = b[2] || 3;
-            for (let i = 0; i < AV_SLOTS; i++) {
-                const s = AV_START + i * 30;
-                const e = s + 30;
-                const mid = (s + e) / 2;
-                if (mid >= b[0] && mid <= b[1]) arr[i] = cat;
-            }
-        });
-        return arr;
+    function clearMyMeetSlots() {
+        Object.keys(myMeetSlots).forEach(k => { myMeetSlots[k] = []; });
+        const m = meetById(currentMeetId);
+        if (m) renderMeetEditGrid(m);
     }
 
-    function renderAvailGrid() {
-        const av = availabilityFor(editingAvailEmail, gridTerm);
-        let head = `<div class="avail-head"></div>`;
-        DAYS.forEach((d, di) => {
-            if (availToggles[di] === undefined) {
-                const blocks = av ? parseDayBlocks(av[d]) : null;
-                availToggles[di] = buildTogglesFromBlocks(blocks);
-            }
-            head += `<div class="avail-head">${d}<span class="mini">
-                <button data-click="availDayQuick(${di},'all')">all</button> · <button data-click="availDayQuick(${di},'clear')">clear</button>
-            </span></div>`;
-        });
-
-        let body = "";
-        for (let i = 0; i < AV_SLOTS; i++) {
-            const m = AV_START + i * 30;
-            const label = fmtTime(minToHHMM(m));
-            let row = `<div class="avail-time">${label}</div>`;
-            for (let d = 0; d < 7; d++) {
-                const cat = availToggles[d] && availToggles[d][i];
-                row += `<div class="avail-cell${cat ? " c" + cat : ""}" data-d="${d}" data-i="${i}" data-click="toggleAvailCell(${d}, ${i})"></div>`;
-            }
-            body += row;
-        }
-        $("availGrid").innerHTML = head + body;
-    }
-
-    function paintAvailCell(d, i) {
-        const cells = $("availGrid").querySelectorAll(".avail-cell");
-        const idx = d + i * 7;
-        const el = cells[idx];
-        if (!el) return;
-        const cat = availToggles[d] && availToggles[d][i];
-        el.className = "avail-cell" + (cat ? " c" + cat : "");
-    }
-
-    let availActiveCat = 3;
-    function selectAvailCat(cat) {
-        availActiveCat = cat;
-        document.querySelectorAll("#availLegend .legend-item").forEach(function (it) {
-            it.classList.toggle("sel", (+it.getAttribute("data-cat")) === cat);
-        });
-    }
-
-    function toggleAvailCell(d, i) {
-        if (!availToggles[d]) availToggles[d] = new Array(AV_SLOTS).fill(0);
-        availToggles[d][i] = availActiveCat;
-        paintAvailCell(d, i);
-    }
-
-    // ----- Drag to select availability range -----
-    let availDrag = null;
-    let suppressCellClick = false;
-
-    function setAvailCell(d, i, cat) {
-        if (!availToggles[d]) availToggles[d] = new Array(AV_SLOTS).fill(0);
-        availToggles[d][i] = cat;
-        paintAvailCell(d, i);
-    }
-
-    document.addEventListener("mousedown", function (e) {
+    // ----- Drag to paint meet availability -----
+    document.addEventListener("pointerdown", function (e) {
         if (e.button !== 0) return;
-        const cell = e.target.closest(".avail-cell");
+        const cell = e.target.closest("#meetEditGrid .mt-cell");
         if (!cell) return;
-        const grid = $("availGrid");
-        if (!grid || !grid.contains(cell)) return;
-        const d = parseInt(cell.getAttribute("data-d"), 10);
-        const i = parseInt(cell.getAttribute("data-i"), 10);
-        if (isNaN(d) || isNaN(i)) return;
-        availDrag = {
+        const dayIso = cell.getAttribute("data-med");
+        const si = parseInt(cell.getAttribute("data-mei"), 10);
+        if (!dayIso || isNaN(si)) return;
+        meetDrag = {
             active: true,
-            cat: availActiveCat,
-            startD: d, startI: i, lastD: d, lastI: i,
-            dragged: false
+            on: !slotOn(dayIso, meetSlotStartOf(si)),
+            startDi: -1,
+            startI: si
         };
+        const m = meetById(currentMeetId);
+        meetDrag.startDi = m && m.days ? m.days.indexOf(dayIso) : -1;
+        setMeetSlot(dayIso, si, meetDrag.on);
+        repaintMeetCell(cell, dayIso, si);
         e.preventDefault();
     });
 
-    document.addEventListener("mousemove", function (e) {
-        if (!availDrag || !availDrag.active) return;
+    document.addEventListener("pointermove", function (e) {
+        if (!meetDrag || !meetDrag.active) return;
         const el = document.elementFromPoint(e.clientX, e.clientY);
-        const cell = el && el.closest ? el.closest(".avail-cell") : null;
+        const cell = el && el.closest ? el.closest("#meetEditGrid .mt-cell") : null;
         if (!cell) return;
-        const d = parseInt(cell.getAttribute("data-d"), 10);
-        const i = parseInt(cell.getAttribute("data-i"), 10);
-        if (isNaN(d) || isNaN(i)) return;
-        if (d === availDrag.lastD && i === availDrag.lastI) return;
-        availDrag.dragged = true;
-        const d0 = Math.min(availDrag.startD, d), d1 = Math.max(availDrag.startD, d);
-        const i0 = Math.min(availDrag.startI, i), i1 = Math.max(availDrag.startI, i);
+        const dayIso = cell.getAttribute("data-med");
+        const di = parseInt(cell.getAttribute("data-medi"), 10);
+        const si = parseInt(cell.getAttribute("data-mei"), 10);
+        if (!dayIso || isNaN(di) || isNaN(si)) return;
+        const m = meetById(currentMeetId);
+        if (!m || !m.days) return;
+        const d0 = Math.min(meetDrag.startDi, di), d1 = Math.max(meetDrag.startDi, di);
+        const i0 = Math.min(meetDrag.startI, si), i1 = Math.max(meetDrag.startI, si);
         for (let dd = d0; dd <= d1; dd++) {
-            for (let ii = i0; ii <= i1; ii++) setAvailCell(dd, ii, availDrag.cat);
+            const iso = m.days[dd];
+            if (!iso) continue;
+            for (let ii = i0; ii <= i1; ii++) setMeetSlot(iso, ii, meetDrag.on);
+            document.querySelectorAll(`#meetEditGrid .mt-cell[data-med="${iso}"]`).forEach(c => {
+                repaintMeetCell(c, iso, parseInt(c.getAttribute("data-mei"), 10));
+            });
         }
-        availDrag.lastD = d;
-        availDrag.lastI = i;
     });
 
-    document.addEventListener("mouseup", function (e) {
-        if (!availDrag) return;
-        const wasDrag = availDrag.dragged;
-        availDrag.active = false;
-        availDrag = null;
-        if (wasDrag) suppressCellClick = true;
-    });
+    function endMeetDrag() { meetDrag = null; }
 
-    window.addEventListener("blur", function () { availDrag = null; });
+    document.addEventListener("pointerup", endMeetDrag);
+    document.addEventListener("pointercancel", endMeetDrag);
 
-    function availDayQuick(d, action) {
-        const cat = action === "all" ? availActiveCat : 0;
-        availToggles[d] = new Array(AV_SLOTS).fill(cat);
-        renderAvailGrid();
+    window.addEventListener("blur", function () { meetDrag = null; });
+
+    function saveMeetResponse() {
+        const slots = {};
+        Object.keys(myMeetSlots).forEach(k => { if (myMeetSlots[k] && myMeetSlots[k].length) slots[k] = myMeetSlots[k]; });
+        sendPostRequest({ action: "Save Meet Response", meetId: currentMeetId, email: userEmail, slots: slots })
+            .then(() => { closeModal("meetModal"); toast("Availability saved."); refresh(); })
+            .catch(() => {});
     }
 
-    function blocksFromToggles(toggles) {
-        const blocks = [];
-        let start = -1, cat = 0;
-        for (let i = 0; i <= AV_SLOTS; i++) {
-            const c = i < AV_SLOTS ? (toggles[i] || 0) : 0;
-            if (c && start < 0) { start = i; cat = c; }
-            else if (start >= 0 && c !== cat) {
-                blocks.push([AV_START + start * 30, AV_START + i * 30, cat]);
-                start = c ? i : -1;
-                cat = c;
-            }
-        }
-        return mergeBlocks(blocks);
+    function openMeetEditor(id) {
+        editingMeetId = id || null;
+        const m = id ? meetById(id) : null;
+        $("meetEditorTitle").textContent = m ? "Edit Meet" : "New Meet";
+        $("meetTitleInput").value = m ? m.title : "";
+        $("meetNotesInput").value = m ? m.notes : "";
+        $("meetTimeStart").value = m ? minToHHMM(meetMinutes(m.timeStart)) : "07:00";
+        $("meetTimeEnd").value = m ? minToHHMM(meetMinutes(m.timeEnd)) : "22:00";
+        meetSelectedDays = m && m.days && m.days.length ? m.days.slice() : [];
+        const now = new Date();
+        const anchor = meetSelectedDays.length ? meetSelectedDays[0]
+            : now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+        meetCalMonth = { y: parseInt(anchor.slice(0, 4), 10), m: parseInt(anchor.slice(5, 7), 10) - 1 };
+        renderMeetCalendar();
+        renderMeetDayChips();
+        openMeetEditorDrawer();
     }
 
-    function saveAvailability() {
-        const body = { action: "Update Availability", email: editingAvailEmail, term: gridTerm };
-        DAYS.forEach((d, di) => {
-            body[d.toLowerCase()] = blocksToStr(blocksFromToggles(availToggles[di]));
+    function meetCalShift(dir) {
+        meetCalMonth.m += dir;
+        if (meetCalMonth.m < 0) { meetCalMonth.m = 11; meetCalMonth.y--; }
+        if (meetCalMonth.m > 11) { meetCalMonth.m = 0; meetCalMonth.y++; }
+        renderMeetCalendar();
+    }
+
+    function renderMeetCalendar() {
+        const y = meetCalMonth.y, mo = meetCalMonth.m;
+        $("meetCalLabel").textContent = new Date(y, mo, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+        const grid = $("meetCalGrid");
+        grid.innerHTML = "";
+        ["S", "M", "T", "W", "T", "F", "S"].forEach(d => {
+            const h = document.createElement("div");
+            h.className = "mc-dow";
+            h.textContent = d;
+            grid.appendChild(h);
         });
-        body.conflicts = $("availConflicts").value.trim();
-        body.notes = $("availNotes").value.trim();
-        const btn = event && event.target || null;
+        const lead = new Date(y, mo, 1).getDay();
+        const daysIn = new Date(y, mo + 1, 0).getDate();
+        for (let i = 0; i < lead; i++) grid.appendChild(document.createElement("div"));
+        for (let d = 1; d <= daysIn; d++) {
+            const iso = y + "-" + pad(mo + 1) + "-" + pad(d);
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "mc-day" + (meetSelectedDays.indexOf(iso) >= 0 ? " sel" : "");
+            btn.setAttribute("data-click", "toggleMeetDay('" + iso + "')");
+            btn.textContent = d;
+            grid.appendChild(btn);
+        }
+    }
+
+    function toggleMeetDay(iso) {
+        const i = meetSelectedDays.indexOf(iso);
+        if (i >= 0) meetSelectedDays.splice(i, 1);
+        else meetSelectedDays.push(iso);
+        meetSelectedDays.sort();
+        renderMeetCalendar();
+        renderMeetDayChips();
+    }
+
+    function renderMeetDayChips() {
+        const wrap = $("meetDayChips");
+        if (!meetSelectedDays.length) {
+            wrap.innerHTML = '<span style="font-size:0.72rem;color:var(--text-muted);">No days picked yet — click dates above.</span>';
+            return;
+        }
+        wrap.innerHTML = "";
+        meetSelectedDays.forEach(iso => {
+            const chip = document.createElement("span");
+            chip.className = "mchip";
+            chip.innerHTML = escHtml(weekdayShort(iso) + ", " + fmtDateMed(iso)) +
+                ' <button type="button" data-click="toggleMeetDay(\'' + iso + '\')" title="Remove">✕</button>';
+            wrap.appendChild(chip);
+        });
+    }
+
+    function collectMeetDays() {
+        return meetSelectedDays.slice().sort();
+    }
+
+    function saveMeet() {
+        const title = $("meetTitleInput").value.trim();
+        if (!title) { showAlert("Missing title", "Give the meet a title."); return; }
+        const days = collectMeetDays();
+        if (!days.length) { showAlert("Missing days", "Add at least one candidate day."); return; }
+        const tS = $("meetTimeStart").value, tE = $("meetTimeEnd").value;
+        if (!tS || !tE || tS >= tE) { showAlert("Invalid time window", "End time must be after start time."); return; }
+        const body = editingMeetId
+            ? { action: "Update Meet", id: editingMeetId, title: title, notes: $("meetNotesInput").value.trim(), days: days, timeStart: tS, timeEnd: tE }
+            : { action: "Create Meet", title: title, notes: $("meetNotesInput").value.trim(), days: days, timeStart: tS, timeEnd: tE };
         sendPostRequest(body)
-            .then(() => { closeModal("availModal"); toast("Availability saved."); refresh(); })
+            .then(() => { closeMeetEditor(); toast(editingMeetId ? "Meet updated." : "Meet created."); refresh(); })
+            .catch(() => {});
+    }
+
+    function setMeetStatus(id, status) {
+        sendPostRequest({ action: "Set Meet Status", id: id, status: status })
+            .then(() => { toast(status === "Open" ? "Meet reopened." : "Meet closed."); refresh(); })
+            .catch(() => {});
+    }
+
+    function deleteMeet(id) {
+        showConfirm("Delete this meet? All responses will be removed too.").then(function (yes) {
+            if (!yes) return;
+            sendPostRequest({ action: "Delete Meet", id: id })
+                .then(() => { closeModal("meetModal"); toast("Meet deleted."); refresh(); })
+                .catch(() => {});
+        });
+    }
+
+    function pickFinalDay(d) {
+        meetFinalPick = d;
+        renderMeetDetail();
+    }
+
+    function finalizeMeet(id) {
+        const day = meetFinalPick;
+        const start = $("meetFinalStart") ? $("meetFinalStart").value : "";
+        const end = $("meetFinalEnd") ? $("meetFinalEnd").value : "";
+        if (!day || !start || !end || start >= end) { showAlert("Missing details", "Pick the final day and a valid time range."); return; }
+        sendPostRequest({ action: "Finalize Meet", id: id, day: day, start: start, end: end })
+            .then(() => { closeModal("meetModal"); toast("Meet finalized."); refresh(); })
             .catch(() => {});
     }
 
@@ -2659,7 +2888,7 @@
                         </button>
                     </div>
                 </div>`).join("")
-            : '<div class="empty-state">No commitments recorded. Add one-off dates that may conflict with org activities.</div>';
+            : '<div class="empty-state">No commitments recorded. Add one-off dates that may conflict with activities.</div>';
     }
 
     function openCommitmentModal(id) {
@@ -3439,47 +3668,128 @@
     // ============================================================
     //  LINKS HUB
     // ============================================================
+    function linkCategoryOrder() {
+        const seen = new Set();
+        const allCats = [];
+        const pushCat = c => { if (c && !seen.has(c)) { seen.add(c); allCats.push(c); } };
+        LINK_CATEGORIES.forEach(pushCat);
+        (fullData.links || []).forEach(l => pushCat(l.category));
+        const pinned = (fullData.pinnedLinkCats || []).filter(c => allCats.indexOf(c) >= 0);
+        return pinned.concat(allCats.filter(c => pinned.indexOf(c) < 0));
+    }
+
+    let pinSaveTimer = null;
+    function togglePinCat(cat) {
+        if (!fullData || !fullData.isManager) return;
+        const pins = (fullData.pinnedLinkCats || []).slice();
+        const i = pins.indexOf(cat);
+        if (i >= 0) pins.splice(i, 1);
+        else pins.unshift(cat);
+        fullData.pinnedLinkCats = pins;
+        renderLinksHub();
+        renderOverviewQuickLinks();
+        if (pinSaveTimer) clearTimeout(pinSaveTimer);
+        pinSaveTimer = setTimeout(() => {
+            pinSaveTimer = null;
+            sendPostRequest({ action: "Set Pinned Cats", cats: (fullData.pinnedLinkCats || []).slice() })
+                .catch(() => {});
+        }, 400);
+    }
+
+    function buildLinkCatsHtml(links) {
+        let html = "";
+        let totalShown = 0;
+        const canPin = !!(fullData && fullData.isManager);
+        const pins = (fullData && fullData.pinnedLinkCats) || [];
+        linkCategoryOrder().forEach(cat => {
+            const items = links.filter(l => l.category === cat);
+            if (!items.length) return;
+            totalShown += items.length;
+            const isPinned = pins.indexOf(cat) >= 0;
+            const catArg = cat.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+            const pinBtn = canPin
+                ? `<button type="button" class="cat-pin" data-click="togglePinCat('${catArg}')" title="${isPinned ? "Unpin category" : "Pin to top"}"><svg><use href="#icon-pin"/></svg></button>`
+                : "";
+            html += `<div class="cat-col"><div class="cat-head"><span class="cat-badge ${isPinned ? "pinned" : ""}">${escHtml(cat)}</span>${pinBtn}</div><ul class="cat-list">`;
+            items.forEach(l => { html += linkItemHtml(l); });
+            html += `</ul></div>`;
+        });
+        return totalShown ? html : "";
+    }
+
     function renderLinksHub() {
         if (!fullData) return;
         const q = ($("linkSearch").value || "").toLowerCase().trim();
-        // Build dynamic category list from LINK_CATEGORIES + any unique categories in existing links
-        const allCats = new Set(LINK_CATEGORIES);
-        (fullData.links || []).forEach(l => { if (l.category) allCats.add(l.category); });
-        const dynamicCategories = [...allCats];
-
-        let legend = `<button class="chip ${linkCatFilter === "All" ? "active" : ""}" data-click="toggleLinkCat('All')">All</button>`;
-        dynamicCategories.forEach(c => {
-            legend += `<button class="chip ${linkCatFilter === c ? "active" : ""}" data-click="toggleLinkCat('${c.replace(/'/g, "\\'")}')">${escHtml(c)}</button>`;
-        });
-        $("linkCatLegend").innerHTML = legend;
 
         const links = (fullData.links || []).filter(l => l.active)
             .filter(l => !q || (l.name || "").toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q))
-            .filter(l => linkCatFilter === "All" || l.category === linkCatFilter)
+            .filter(l => !linkCatSelection.length || linkCatSelection.indexOf(l.category) >= 0)
             .sort((a, b) => (a.order - b.order));
 
-        $("linkGrid").innerHTML = links.length
-            ? links.map(l => linkCardHtml(l, true)).join("")
-            : '<div class="empty-state">No links here yet.</div>';
+        renderLinkFilterPills(linkCategoryOrder());
+
+        $("linkGrid").innerHTML = buildLinkCatsHtml(links)
+            || '<div class="empty-state" style="grid-column:1/-1;">No links here yet.</div>';
     }
 
-    function linkCardHtml(l, withActions) {
-        const actions = withActions ? `
-            <div class="link-actions">
-                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); openLinkModal('${l.id}')" title="Edit link"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
-                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); deleteLink('${l.id}')" title="Delete link"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
-            </div>` : "";
-        return `
-        <a class="link-card" href="${escHtml(l.url)}" target="_blank" rel="noopener">
-            ${actions}
-            <h4>${escHtml(l.name)}</h4>
-            ${l.description ? `<div class="desc">${escHtml(l.description)}</div>` : ""}
-            <div class="url" title="${escHtml(l.url)}">${escHtml(l.url)}</div>
-            <span class="tbadge" style="background:var(--bg-canvas);color:var(--text-muted);align-self:flex-start;">${escHtml(l.category)}</span>
-        </a>`;
+    function toggleLinkFilterRow() {
+        $("linkFilterRow").classList.toggle("hidden");
     }
 
-    function toggleLinkCat(c) { linkCatFilter = c; renderLinksHub(); }
+    function renderLinkFilterPills(cats) {
+        const esc = c => c.replace(/'/g, "\\'");
+        let html = `<button class="chip ${linkCatSelection.length ? "" : "active"}" data-click="clearLinkCatSel()">All</button>`;
+        cats.forEach(c => {
+            const sel = linkCatSelection.indexOf(c) >= 0;
+            html += `<button class="chip ${sel ? "active" : ""}" data-click="toggleLinkCatSel('${esc(c)}')">${escHtml(c)}</button>`;
+        });
+        $("linkFilterRow").innerHTML = html;
+        updateLinkFilterBadge();
+    }
+
+    function toggleLinkCatSel(c) {
+        const i = linkCatSelection.indexOf(c);
+        if (i >= 0) linkCatSelection.splice(i, 1);
+        else linkCatSelection.push(c);
+        renderLinksHub();
+    }
+
+    function clearLinkCatSel() {
+        if (!linkCatSelection.length) return;
+        linkCatSelection = [];
+        renderLinksHub();
+    }
+
+    function updateLinkFilterBadge() {
+        const badge = $("filterBadge");
+        if (!badge) return;
+        if (linkCatSelection.length) {
+            badge.textContent = linkCatSelection.length;
+            badge.classList.remove("hidden");
+        } else {
+            badge.classList.add("hidden");
+        }
+    }
+
+    function toggleLinkDesc(btn, id) {
+        btn.classList.toggle("open");
+        const desc = document.getElementById("lnkdesc-" + id);
+        if (desc) desc.classList.toggle("open");
+    }
+
+    function linkItemHtml(l) {
+        const actions = `
+            <span class="lnk-actions">
+                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); openLinkModal('${l.id}')" title="Edit link"><svg style="width:12px;height:12px;"><use href="#icon-pencil"/></svg></button>
+                <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); deleteLink('${l.id}')" title="Delete link"><svg style="width:12px;height:12px;"><use href="#icon-trash"/></svg></button>
+            </span>`;
+        const info = l.description
+            ? `<button type="button" class="lnk-info" data-click="toggleLinkDesc(this, '${l.id}')" title="Show description">▼</button>`
+            : "";
+        return `<li><div class="lnk-row"><a href="${escHtml(l.url)}" target="_blank" rel="noopener">${escHtml(l.name)}</a>${info}${actions}</div>` +
+            (l.description ? `<div class="lnk-desc" id="lnkdesc-${l.id}">${escHtml(l.description)}</div>` : "") +
+            `</li>`;
+    }
 
     function openLinkModal(id) {
         editingLinkId = id || null;
@@ -3713,10 +4023,6 @@
     //  EVENT DELEGATION + BOOT
     // ============================================================
     document.addEventListener("click", function (e) {
-        if (suppressCellClick) {
-            suppressCellClick = false;
-            if (e.target.closest(".avail-cell")) return;
-        }
         const el = e.target.closest("[data-click]");
         if (el) {
             if (el.closest("a")) e.preventDefault();
@@ -3743,7 +4049,7 @@
     });
     document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
-            ["alertModal", "confirmModal", "feedbackModal", "availModal", "commitmentModal", "activityModal", "linkModal", "memberModal", "setTermModal", "dayDrawerModal", "guideModal"].forEach(id => closeModal(id));
+            ["alertModal", "confirmModal", "feedbackModal", "meetModal", "meetEditorModal", "commitmentModal", "activityModal", "linkModal", "memberModal", "setTermModal", "dayDrawerModal", "guideModal"].forEach(id => closeModal(id));
         }
     });
 
