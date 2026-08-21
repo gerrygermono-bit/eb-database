@@ -281,6 +281,35 @@
     }
     .type-badge-OJT, .type-badge-Practicum, .type-badge-Thesis, .type-badge-Org, .type-badge-Personal, .type-badge-Other { color: #7c3aed; background: rgba(124,58,237,0.12); }
 
+    /* ---------- Multi-select chip picker ---------- */
+    .chip-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .chip-picker .chip-opt {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 5px 11px; border-radius: 100px; border: 1px solid var(--border-soft);
+        background: var(--surface-card); color: var(--text-main); font-size: 0.78rem;
+        font-weight: 600; cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .chip-picker .chip-opt:hover { border-color: var(--text-muted); }
+    .chip-picker .chip-opt.selected { background: var(--dlsu-green); border-color: var(--dlsu-green); color: #fff; }
+    .chip-picker .chip-opt .chip-x { display: none; font-size: 0.7rem; margin-left: 2px; font-weight: 800; }
+    .chip-picker .chip-opt.custom.selected .chip-x { display: inline; }
+    .chip-picker .chip-add-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+    .chip-picker .chip-add-input {
+        padding: 5px 10px; border: 1px solid var(--border-soft); border-radius: 8px;
+        font-family: inherit; font-size: 0.78rem; background: var(--bg-canvas);
+        color: var(--text-main); width: 140px;
+    }
+    .chip-picker .chip-add-input:focus { outline: none; border-color: var(--dlsu-green); }
+    .chip-picker .chip-add-btn {
+        padding: 5px 10px; border: 1px solid var(--dlsu-green); border-radius: 8px;
+        font-family: inherit; font-size: 0.72rem; font-weight: 700; background: transparent;
+        color: var(--dlsu-green); cursor: pointer; white-space: nowrap;
+    }
+    .chip-picker .chip-add-btn:hover { background: var(--dlsu-green); color: #fff; }
+
+    /* ---------- Color-coded tracker rows ---------- */
+    .tbl tbody tr { border-left: 4px solid transparent; transition: background 0.15s; }
+
     /* ---------- Stats ---------- */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
     .stat-card { background: var(--surface-card); border: 1px solid var(--border-soft); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow-sm); }
@@ -381,10 +410,10 @@
     .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
     .cal-weekday { padding: 9px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); background: rgba(226,232,240,0.25); text-transform: uppercase; }
     .cal-day {
-        min-height: 98px;
+        min-height: 72px;
         min-width: 0;
         overflow: hidden;
-        padding: 7px;
+        padding: 5px 6px;
         border-top: 1px solid var(--border-soft);
         border-left: 1px solid var(--border-soft);
         position: relative;
@@ -393,26 +422,92 @@
     }
     .cal-day:hover { background: rgba(16,185,129,0.05); }
     .cal-day:nth-child(7n+1) { border-left: none; }
-    .cal-day .day-num { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+    .cal-day .day-num { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); }
     .cal-day.today .day-num { color: var(--dlsu-green); position: relative; }
-    .cal-day.today .day-num::after { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--dlsu-green); margin-left: 3px; vertical-align: 1px; }
+    .cal-day.today .day-num::after { content: ''; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--dlsu-green); margin-left: 3px; vertical-align: 1px; }
     .cal-day.out { opacity: 0.35; pointer-events: none; }
-    .cal-ov { position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
+    .cal-ov { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
     .cal-pill {
         display: block;
-        font-size: 0.66rem;
+        font-size: 0.6rem;
         font-weight: 700;
         color: #fff;
-        border-radius: 6px;
-        padding: 2px 6px;
-        margin-top: 3px;
+        border-radius: 4px;
+        height: 18px; line-height: 18px; padding: 0 5px;
+        margin-top: 2px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     .cal-pill.dim { opacity: 0.4; }
-    .cal-pill.cont { border-radius: 3px; box-shadow: inset 3px 0 0 rgba(0,0,0,0.18); }
-    .cal-more { font-size: 0.66rem; color: var(--text-muted); font-weight: 700; padding: 2px 6px; }
+    .cal-pill.cont { border-radius: 2px; box-shadow: inset 2px 0 0 rgba(0,0,0,0.18); }
+    .cal-more { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; padding: 1px 5px; }
+
+    /* ---------- Side-by-side calendar + tracker ---------- */
+    .cal-view-toggle {
+        display: none;
+        gap: 4px;
+        margin-bottom: 14px;
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-soft);
+        border-radius: 10px;
+        padding: 4px;
+        width: fit-content;
+    }
+    .cal-view-btn {
+        padding: 7px 16px;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .cal-view-btn.active {
+        background: var(--dlsu-green);
+        color: #fff;
+        box-shadow: var(--shadow-sm);
+    }
+    .cal-view-btn:hover:not(.active) { background: var(--surface-card); color: var(--text-main); }
+    .cal-side-by-side {
+        display: grid;
+        grid-template-columns: 1fr 1.6fr;
+        gap: 20px;
+        align-items: start;
+    }
+    .cal-left, .cal-right { min-width: 0; }
+    .cal-right .tbl-wrap { max-height: calc(100vh - 260px); overflow-y: auto; overflow-x: hidden; }
+
+    /* Compact tracker table inside side-by-side */
+    .tracker-list { display: flex; flex-direction: column; gap: 6px; max-height: calc(100vh - 260px); overflow-y: auto; padding-right: 4px; }
+    .tracker-card {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4px 10px;
+        padding: 8px 10px;
+        border: 1px solid var(--border-soft);
+        border-radius: 10px;
+        background: var(--surface-card);
+        transition: background 0.15s;
+        cursor: pointer;
+    }
+    .tracker-card:hover { background: rgba(16,185,129,0.04); }
+    .tracker-card .tc-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tracker-card .tc-title { font-size: 0.8rem; font-weight: 800; line-height: 1.2; }
+    .tracker-card .tc-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tracker-card.dim { opacity: 0.5; }
+    .tracker-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem; }
+
+    @media (max-width: 1024px) {
+        .cal-side-by-side { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .cal-view-toggle { display: flex; }
+        .cal-left.hidden-mobile, .cal-right.hidden-mobile { display: none; }
+    }
 
     .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .overlap-banner {
@@ -584,8 +679,127 @@
 
     @media (max-width: 640px) {
         .stat-grid { grid-template-columns: repeat(2, 1fr); }
-        .cal-day { min-height: 70px; }
+        .cal-day { min-height: 54px; }
     }
+
+    /* ---------- Multi-select dropdown ---------- */
+    .multi-select-wrap { position: relative; }
+    .multi-select-trigger {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        width: 100%; padding: 10px 12px; border: 1px solid var(--border-soft); border-radius: 9px;
+        font-family: inherit; font-size: 0.88rem; background: var(--bg-canvas); color: var(--text-main);
+        cursor: pointer; text-align: left; min-height: 42px;
+    }
+    .multi-select-trigger:hover { border-color: var(--dlsu-green); }
+    .multi-select-trigger span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .multi-select-panel {
+        position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+        background: var(--surface-solid); border: 1px solid var(--border-soft); border-radius: 10px;
+        box-shadow: var(--shadow-lg); max-height: 220px; overflow-y: auto; padding: 6px;
+        margin-top: 4px;
+    }
+    .multi-select-panel .ms-opt {
+        display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+        cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: background 0.1s;
+    }
+    .multi-select-panel .ms-opt:hover { background: var(--bg-canvas); }
+    .multi-select-panel .ms-opt.selected { background: rgba(10,92,54,0.1); color: var(--dlsu-green); }
+    .multi-select-panel .ms-opt .ms-check {
+        width: 16px; height: 16px; border: 2px solid var(--border-soft); border-radius: 4px;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.1s;
+    }
+    .multi-select-panel .ms-opt.selected .ms-check {
+        background: var(--dlsu-green); border-color: var(--dlsu-green);
+    }
+    .multi-select-panel .ms-opt.selected .ms-check::after {
+        content: ''; display: block; width: 8px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+    .multi-select-panel .ms-divider { border-top: 1px solid var(--border-soft); margin: 4px 6px; }
+    .multi-select-panel .ms-other {
+        padding: 6px 10px; font-size: 0.78rem; font-weight: 700; color: var(--dlsu-green);
+    }
+    .filter-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 18px; height: 18px; border-radius: 100px; background: var(--danger);
+        color: #fff; font-size: 0.65rem; font-weight: 800; padding: 0 5px;
+    }
+
+    /* ---------- Filter sidebar ---------- */
+    .filter-sidebar-overlay {
+        position: fixed; inset: 0; background: rgba(15,23,42,0.35); z-index: 250;
+        opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .filter-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+    .filter-sidebar {
+        position: fixed; top: 0; right: 0; bottom: 0; width: 320px; max-width: 90vw;
+        background: var(--surface-solid); border-left: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-lg); z-index: 251; transform: translateX(100%);
+        transition: transform 0.25s ease; display: flex; flex-direction: column;
+    }
+    .filter-sidebar.open { transform: translateX(0); }
+    .filter-sidebar-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px; border-bottom: 1px solid var(--border-soft); font-weight: 800; font-size: 1rem;
+    }
+    .filter-sidebar-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .filter-sidebar-foot { padding: 12px 20px; border-top: 1px solid var(--border-soft); display: flex; gap: 8px; }
+    .filter-section { margin-bottom: 18px; }
+    .filter-section label { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filter-section select { width: 100%; padding: 8px 10px; border: 1px solid var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.82rem; background: var(--bg-canvas); color: var(--text-main); }
+    .filter-checks { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-check {
+        display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 100px;
+        border: 1px solid var(--border-soft); background: var(--surface-card); cursor: pointer;
+        font-size: 0.75rem; font-weight: 600; transition: all 0.12s; user-select: none;
+    }
+    .filter-check:hover { border-color: var(--text-muted); }
+    .filter-check.active { background: var(--dlsu-green); border-color: var(--dlsu-green); color: #fff; }
+
+    /* ---------- Activity detail / edit slide-out (left side) ---------- */
+    .act-slide-overlay {
+        position: fixed; inset: 0; background: rgba(15,23,42,0.35); z-index: 260;
+        opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .act-slide-overlay.open { opacity: 1; pointer-events: auto; }
+    .act-slide-panel {
+        position: fixed; top: 0; left: 0; bottom: 0; width: 480px; max-width: 92vw;
+        background: var(--surface-solid); border-right: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-lg); z-index: 261; transform: translateX(-100%);
+        transition: transform 0.25s ease; display: flex; flex-direction: column;
+    }
+    .act-slide-panel.open { transform: translateX(0); }
+    .act-slide-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px; border-bottom: 1px solid var(--border-soft);
+        position: relative;
+    }
+    .act-slide-head h3 { font-size: 1rem; font-weight: 800; margin: 0; }
+    .act-slide-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .act-slide-foot { padding: 12px 20px; border-top: 1px solid var(--border-soft); display: flex; gap: 8px; justify-content: flex-end; }
+    .act-slide-close {
+        background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);
+        width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+        border-radius: 8px; transition: background 0.12s; line-height: 1;
+    }
+    .act-slide-close:hover { background: rgba(0,0,0,0.06); }
+
+    .act-detail-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .act-detail-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; min-width: 100px; flex-shrink: 0; }
+    .act-detail-value { font-size: 0.88rem; color: var(--text-main); line-height: 1.4; }
+    .act-detail-section { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-soft); }
+    .act-detail-section:last-child { border-bottom: none; }
+    .act-detail-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; }
+    .act-detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    /* ---------- Calendar multi-day bar ---------- */
+    .cal-bar {
+        display: block; height: 18px; margin-top: 2px; border-radius: 3px;
+        font-size: 0.6rem; font-weight: 700; color: #fff; line-height: 18px;
+        padding: 0 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .cal-bar.start { border-radius: 3px 0 0 3px; margin-right: -6px; z-index: 1; position: relative; }
+    .cal-bar.mid { border-radius: 0; margin-left: -6px; margin-right: -6px; z-index: 1; position: relative; }
+    .cal-bar.end { border-radius: 0 3px 3px 0; margin-left: -6px; z-index: 1; position: relative; }
+    .cal-bar.single { border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -636,7 +850,7 @@
                     <div class="nav-sep"></div>
                     <button data-click="showPanel('overview')">Overview</button>
                     <button data-click="showPanel('plantilla')">Plantilla</button>
-                    <button data-click="showPanel('calendar')">Calendar &amp; Workshops</button>
+                    <button data-click="showPanel('calendar')">Calendar</button>
                     <button data-click="showPanel('links')">Links Hub</button>
                     <button data-click="showPanel('members')">EB Members</button>
                     <div class="nav-sep"></div>
@@ -741,43 +955,46 @@
             </div>
         </section>
 
-        <!-- ===== CALENDAR & WORKSHOPS ===== -->
+        <!-- ===== CALENDAR ===== -->
         <section class="hidden" id="panelCalendar">
             <div class="panel-heading">
-                <span>Calendar &amp; Workshops</span>
+                <span>Calendar</span>
             </div>
 
-            <div class="toolbar">
-                <button class="btn btn-sm" data-click="calNav(-1)">← Prev</button>
-                <button class="btn btn-sm" data-click="calNav(1)">Next →</button>
-                <button class="btn btn-sm btn-ghost" data-click="calGoToday()">Today</button>
-                <span id="calMonthLabel" style="font-weight:800;font-size:0.95rem;min-width:130px;"></span>
+            <div class="cal-view-toggle" id="calViewToggle">
+                <button class="cal-view-btn active" data-click="switchCalView('both')">Both</button>
+                <button class="cal-view-btn" data-click="switchCalView('calendar')">Calendar</button>
+                <button class="cal-view-btn" data-click="switchCalView('tracker')">Tracker</button>
             </div>
 
-            <div class="legend" id="catLegend"></div>
-            <div class="toolbar" style="margin-bottom:8px;">
-                <span class="sub" style="font-size:0.78rem;">Status:</span>
-                <select id="calStatusFilter" data-change="renderCalendarView()" style="padding:7px 10px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.82rem;background:var(--surface-card);color:var(--text-main);">
-                    <option value="">All statuses</option>
-                    <option>Planned</option><option>Confirmed</option><option>Ongoing</option><option>Completed</option><option>Cancelled</option>
-                </select>
-            </div>
-            <div id="calOverlapBanner"></div>
-            <div class="cal-shell"><div class="cal-grid" id="calGrid"></div></div>
+            <div class="cal-side-by-side" id="calSideBySide">
+                <div class="cal-right" id="calRightPane">
+                    <div class="panel-heading">
 
-            <div style="margin-top:24px;">
-                <div class="panel-heading">
-                    <span>Workshop &amp; Activity Tracker</span>
-                    <button class="btn btn-primary btn-sm" data-click="openActivityModal(null)">+ New Activity</button>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button class="btn btn-sm" data-click="openFilterSidebar()" id="filterBtn">
+                                <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                                Filter
+                                <span class="filter-badge hidden" id="filterBadge"></span>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-click="openActivityModal(null)">+ New Activity</button>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <input type="text" id="trackerSearch" placeholder="Search activities..." data-input="renderWorkshopList()" style="padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--surface-card);color:var(--text-main);min-width:220px;flex:1;max-width:320px;">
+                    </div>
+                    <div class="tracker-list" id="workshopRows"></div>
                 </div>
-                <div class="toolbar">
-                    <input type="text" id="trackerSearch" placeholder="Search activities..." data-input="renderWorkshopList()" style="padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--surface-card);color:var(--text-main);min-width:220px;flex:1;max-width:320px;">
-                </div>
-                <div class="tbl-wrap">
-                    <table class="tbl">
-                        <thead><tr><th>Date</th><th>Time</th><th>Activity</th><th>Section</th><th>Owner</th><th>Venue</th><th>Status</th><th></th></tr></thead>
-                        <tbody id="workshopRows"></tbody>
-                    </table>
+
+                <div class="cal-left" id="calLeftPane">
+                    <div class="toolbar">
+                        <span id="calMonthLabel" style="font-weight:800;font-size:0.95rem;min-width:130px;"></span>
+                        <button class="btn btn-sm btn-ghost" data-click="calGoToday()">Today</button>
+                        <button class="btn btn-sm" data-click="calNav(-1)">← Prev</button>
+                        <button class="btn btn-sm" data-click="calNav(1)">Next →</button>
+                    </div>
+                    <div id="calOverlapBanner"></div>
+                    <div class="cal-shell"><div class="cal-grid" id="calGrid"></div></div>
                 </div>
             </div>
         </section>
@@ -852,7 +1069,7 @@
                     <button data-click="document.getElementById('guide-getting-started').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);cursor:pointer;" class="guide-nav-btn">Getting Started</button>
                     <button data-click="document.getElementById('guide-plantilla').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(20,184,166,0.1);color:#0d9488;border:1px solid rgba(20,184,166,0.2);cursor:pointer;" class="guide-nav-btn">Plantilla</button>
                     <button data-click="document.getElementById('guide-find').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.2);cursor:pointer;" class="guide-nav-btn">Find a Free Time</button>
-                    <button data-click="document.getElementById('guide-calendar').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(217,119,6,0.1);color:#d97706;border:1px solid rgba(217,119,6,0.2);cursor:pointer;" class="guide-nav-btn">Calendar &amp; Workshops</button>
+                    <button data-click="document.getElementById('guide-calendar').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(217,119,6,0.1);color:#d97706;border:1px solid rgba(217,119,6,0.2);cursor:pointer;" class="guide-nav-btn">Calendar</button>
                     <button data-click="document.getElementById('guide-links').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(79,70,229,0.1);color:#4f46e5;border:1px solid rgba(79,70,229,0.2);cursor:pointer;" class="guide-nav-btn">Links Hub</button>
                     <button data-click="document.getElementById('guide-roles').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(225,29,72,0.1);color:#e11d48;border:1px solid rgba(225,29,72,0.2);cursor:pointer;" class="guide-nav-btn">Members &amp; Roles</button>
                     <button data-click="document.getElementById('guide-feedback').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2);cursor:pointer;" class="guide-nav-btn">Feedback</button>
@@ -867,7 +1084,7 @@
                         <li style="margin-bottom:4px;">Sign in with your official <code>@dlsu.edu.ph</code> Google account. Access is restricted to members listed in the EB roster.</li>
                         <li style="margin-bottom:4px;">If you're new, ask a Top 3 member to add you to the <code>EB_Members</code> roster first.</li>
                         <li style="margin-bottom:4px;">Toggle <strong>Light</strong> and <strong>Dark</strong> mode with the sun/moon icon in the header.</li>
-                        <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Plantilla</strong>, <strong>Calendar &amp; Workshops</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
+                        <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Plantilla</strong>, <strong>Calendar</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
                         <li style="margin-bottom:4px;">Everything is saved to the EB Database sheet and refreshes automatically (about 30 seconds).</li>
                     </ul>
                 </div>
@@ -903,12 +1120,17 @@
                 <div id="guide-calendar" style="border-left:3px solid #d97706;padding-left:16px;">
                     <h4 style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15" r="2"/></svg>
-                        Calendar &amp; Workshops
+                        Calendar
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">The month view shows all activities — workshops, ARW, SMOOGA, LMW, Lakan, General Assembly, orgwide events, and meetings.</li>
-                        <li style="margin-bottom:4px;">Each category has its own color; use the legend chips to focus on specific categories.</li>
+                        <li style="margin-bottom:4px;">The tracker and calendar are shown <strong>side-by-side</strong> on desktop (tracker on the left, calendar on the right). On mobile, use the <strong>toggle bar</strong> (Both / Calendar / Tracker) to switch views.</li>
+                        <li style="margin-bottom:4px;">Use the <strong>Filter</strong> button to narrow activities by category, status, section, classification, involved group, and mode. Active filters show a badge count.</li>
+                        <li style="margin-bottom:4px;">Multi-day events show as <strong>connected colored bars</strong> across calendar days, similar to Google Calendar.</li>
                         <li style="margin-bottom:4px;">Set the activity <strong>status</strong>: Planned, Confirmed, Ongoing, Completed, or Cancelled.</li>
+                        <li style="margin-bottom:4px;"><strong>Involved</strong> lets you tag who's involved using a multi-select dropdown (Orgwide, Editorial Board, Section Editors, Managers, Top 3, SMO/SMC). You can select multiple and add custom values.</li>
+                        <li style="margin-bottom:4px;"><strong>Section</strong> is a multi-select dropdown — tag multiple sections or add custom values.</li>
+                        <li style="margin-bottom:4px;"><strong>Classification</strong> marks whether an activity is an Internal Event or External Event.</li>
+                        <li style="margin-bottom:4px;">You can add multiple <strong>Relevant Links</strong> per activity using the "+ Add Link" button.</li>
                         <li style="margin-bottom:4px;">A banner warns you when activities on the same day <strong>overlap</strong> in time.</li>
                         <li style="margin-bottom:4px;">Click any day to open the <strong>day drawer</strong> with that day's full schedule.</li>
                         <li style="margin-bottom:4px;">Any EB member can add, edit, or delete activities with <strong>+ New Activity</strong>.</li>
@@ -921,9 +1143,10 @@
                         Links Hub
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">One place for all pertinent files — templates, policies &amp; TOR, sourcing &amp; speaker forms, ARW materials, and Google Drive files.</li>
+                        <li style="margin-bottom:4px;">One place for all pertinent files — templates, email templates, policies &amp; TOR, sourcing &amp; speaker forms, ARW materials, and Google Drive files.</li>
                         <li style="margin-bottom:4px;">Essential links (<strong>PPF Template, TOR, SPCA</strong>) are pinned to the top with an "essential" tag.</li>
-                        <li style="margin-bottom:4px;">Use the <strong>search box</strong> and category chips to filter, and <strong>+ Add Link</strong> to contribute.</li>
+                        <li style="margin-bottom:4px;">Use the <strong>search box</strong> and category chips to filter. Categories are <strong>dynamic</strong> — any category used by existing links appears in the filter.</li>
+                        <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category.</li>
                         <li style="margin-bottom:4px;">The <strong>Order</strong> field controls sorting; uncheck <strong>Active</strong> to hide a link from the hub without deleting it.</li>
                     </ul>
                 </div>
@@ -1061,103 +1284,6 @@
     </div>
 
     <!-- Activity modal -->
-    <div class="modal-overlay hidden" id="activityModal" data-click="closeModal('activityModal')">
-        <div class="modal lg" data-click="event.stopPropagation()">
-            <div class="modal-head"><h3 id="activityModalTitle">Activity</h3><button class="modal-close" data-click="closeModal('activityModal')">&times;</button></div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="actTitle" placeholder="e.g. Layout Workshop: Typography 101">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="actCategory">
-                            <option>Workshop</option><option>ARW</option><option>SMOOGA</option><option>LMW</option><option>Lakan</option><option>General Assembly</option><option>Orgwide Event</option><option>Meeting</option><option>Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="actStatus">
-                            <option>Planned</option><option>Confirmed</option><option>Ongoing</option><option>Completed</option><option>Cancelled</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Start Date</label>
-                        <input type="date" id="actStartDate" data-change="renderScheduleEditor()">
-                    </div>
-                    <div class="form-group">
-                        <label>End Date</label>
-                        <input type="date" id="actEndDate" data-change="renderScheduleEditor()">
-                        <div class="hint">Leave blank for a single-day activity.</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Mode</label>
-                        <select id="actMode"><option>Onsite</option><option>Online</option><option>Hybrid</option></select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group" id="actStartGroup">
-                        <label>Start</label>
-                        <input type="time" id="actStart">
-                    </div>
-                    <div class="form-group" id="actEndGroup">
-                        <label>End</label>
-                        <input type="time" id="actEnd">
-                    </div>
-                    <div class="form-group">
-                        <label>Venue</label>
-                        <input type="text" id="actVenue" placeholder="Room / link">
-                    </div>
-                </div>
-                <div class="form-group" id="actScheduleWrap" style="display:none;">
-                    <label>Daily schedule <span class="sub">optional — per-day times; set a common time first with Apply to all, then tweak individual days</span></label>
-                    <div class="sched-toolbar">
-                        <span class="sched-date">All days</span>
-                        <input type="time" id="schedDefaultStart">
-                        <input type="time" id="schedDefaultEnd">
-                        <button type="button" class="btn btn-sm btn-primary" data-click="applyAllTimes()">Apply to all</button>
-                    </div>
-                    <div id="actScheduleRows" style="margin-top:4px;"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Section</label>
-                        <select id="actSection">
-                            <option value="">Select section</option>
-                            <option>Art</option>
-                            <option>Poetry</option>
-                            <option>Photo</option>
-                            <option>Prose</option>
-                            <option>Screen/Play</option>
-                            <option>Marketing and Events</option>
-                            <option>Layout</option>
-                            <option>PropMan</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Owner</label>
-                        <select id="actOwner"></select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Link</label>
-                    <input type="text" id="actLink" placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label>Description / Agenda</label>
-                    <textarea id="actDesc" placeholder="What's this about?"></textarea>
-                </div>
-            </div>
-            <div class="modal-foot">
-                <button class="btn" data-click="closeModal('activityModal')">Cancel</button>
-                <button class="btn btn-primary" data-once data-click="saveActivity()">Save Activity</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Link modal -->
     <div class="modal-overlay hidden" id="linkModal" data-click="closeModal('linkModal')">
         <div class="modal" data-click="event.stopPropagation()">
@@ -1174,9 +1300,9 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Category</label>
-                        <select id="linkCategory">
-                            <option>Templates</option><option>Policies &amp; TOR</option><option>Sourcing &amp; Speakers</option><option>SMO</option><option>ARW</option><option>GDrive</option><option>General</option>
+                        <select id="linkCategory" data-change="onLinkCategoryChange()">
                         </select>
+                        <input type="text" id="linkCategoryCustom" class="hidden" placeholder="Enter category name..." style="margin-top:6px;">
                     </div>
                     <div class="form-group">
                         <label>Order</label>
@@ -1259,11 +1385,21 @@
         <div class="modal" style="max-width:420px;" data-click="event.stopPropagation()">
             <div class="modal-head"><h3>Set Current Term</h3><button class="modal-close" data-click="closeModal('setTermModal')">&times;</button></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Term</label>
-                    <input type="text" id="termInput" placeholder="e.g. 2nd Term AY 2026-2027">
-                    <div class="hint">This is the term shown across the database and used to filter Plantilla.</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Term</label>
+                        <select id="termPeriod">
+                            <option>1st Term</option><option>2nd Term</option><option>3rd Term</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Academic Year</label>
+                        <select id="termYear">
+                            <option>AY 2026-2027</option><option>AY 2027-2028</option><option>AY 2028-2029</option><option>AY 2029-2030</option><option>AY 2030-2031</option><option>AY 2031-2032</option><option>AY 2032-2033</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="hint">This is the term shown across the database and used to filter Plantilla.</div>
             </div>
             <div class="modal-foot">
                 <button class="btn" data-click="closeModal('setTermModal')">Cancel</button>
@@ -1283,6 +1419,195 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- Filter sidebar -->
+    <div class="filter-sidebar-overlay" id="filterSidebarOverlay" data-click="closeFilterSidebar()"></div>
+    <div class="filter-sidebar" id="filterSidebar">
+        <div class="filter-sidebar-head">
+            <span>Filter Activities</span>
+            <button class="modal-close" data-click="closeFilterSidebar()">&times;</button>
+        </div>
+        <div class="filter-sidebar-body">
+            <div class="filter-section">
+                <label>Category</label>
+                <div class="filter-checks" id="filterCatChecks"></div>
+            </div>
+            <div class="filter-section">
+                <label>Status</label>
+                <select id="filterStatus" style="width:100%;padding:8px 10px;border:1px solid var(--border-soft);border-radius:8px;font-family:inherit;font-size:0.82rem;background:var(--bg-canvas);color:var(--text-main);">
+                    <option value="">All statuses</option>
+                    <option>Planned</option><option>Confirmed</option><option>Ongoing</option><option>Completed</option><option>Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-section">
+                <label>Section</label>
+                <div class="filter-checks" id="filterSectionChecks"></div>
+            </div>
+            <div class="filter-section">
+                <label>Classification</label>
+                <select id="filterClassification" style="width:100%;padding:8px 10px;border:1px solid var(--border-soft);border-radius:8px;font-family:inherit;font-size:0.82rem;background:var(--bg-canvas);color:var(--text-main);">
+                    <option value="">All classifications</option>
+                    <option>Internal Event</option><option>External Event</option>
+                </select>
+            </div>
+            <div class="filter-section">
+                <label>Involved</label>
+                <div class="filter-checks" id="filterInvolvedChecks"></div>
+            </div>
+            <div class="filter-section">
+                <label>Mode</label>
+                <select id="filterMode" style="width:100%;padding:8px 10px;border:1px solid var(--border-soft);border-radius:8px;font-family:inherit;font-size:0.82rem;background:var(--bg-canvas);color:var(--text-main);">
+                    <option value="">All modes</option>
+                    <option>Onsite</option><option>Online</option><option>Hybrid</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-sidebar-foot">
+            <button class="btn" data-click="resetFilters()">Reset All</button>
+            <button class="btn btn-primary" style="flex:1;" data-click="applyFilters()">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- Activity detail slide-out (read-only, slides from left) -->
+    <div class="act-slide-overlay" id="actDetailOverlay" data-click="closeActivityDetail()">
+        <div class="act-slide-panel" data-click="event.stopPropagation()">
+            <div class="act-slide-head">
+                <h3 id="actDetailTitle">Activity Details</h3>
+                <button class="act-slide-close" data-click="closeActivityDetail()">&times;</button>
+            </div>
+            <div class="act-slide-body" id="actDetailBody"></div>
+            <div class="act-slide-foot">
+                <button class="btn btn-ghost" id="actDetailDeleteBtn">
+                    <svg style="width:14px;height:14px;margin-right:4px;"><use href="#icon-trash"/></svg>
+                    Delete
+                </button>
+                <button class="btn btn-primary" id="actDetailEditBtn">
+                    <svg style="width:14px;height:14px;margin-right:4px;"><use href="#icon-pencil"/></svg>
+                    Edit Activity
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity edit slide-out (slides from left) -->
+    <div class="act-slide-overlay" id="activityModal" data-click="closeActivityEdit()">
+        <div class="act-slide-panel" data-click="event.stopPropagation()">
+            <div class="act-slide-head">
+                <h3 id="activityModalTitle">Activity</h3>
+                <button class="act-slide-close" data-click="closeActivityEdit()">&times;</button>
+            </div>
+            <div class="act-slide-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="actTitle">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="actCategory" data-change="onActCategoryChange()">
+                            <option>Workshop</option><option>ARW</option><option>SMOOGA</option><option>LMW</option><option>Lakan</option><option>General Assembly</option><option>Orgwide Event</option><option>Meeting</option><option value="__other__">Other (specify)...</option>
+                        </select>
+                        <input type="text" id="actCategoryCustom" class="hidden" placeholder="Enter category name..." style="margin-top:6px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="actStatus">
+                            <option>Planned</option><option>Confirmed</option><option>Ongoing</option><option>Completed</option><option>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Classification</label>
+                        <select id="actClassification">
+                            <option value="">Select classification</option>
+                            <option>Internal Event</option><option>External Event</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Involved</label>
+                    <div class="multi-select-wrap">
+                        <button type="button" class="multi-select-trigger" id="involvedTrigger" data-click="toggleMultiSelect('involved')">
+                            <span id="involvedLabel">Select involved...</span>
+                            <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="multi-select-panel hidden" id="involvedPanel"></div>
+                    </div>
+                    <input type="hidden" id="actInvolved">
+                    <input type="text" id="actInvolvedCustom" class="hidden" placeholder="Enter custom involved group..." style="margin-top:6px;">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="actStartDate" data-change="renderScheduleEditor()">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="actEndDate" data-change="renderScheduleEditor()">
+                        <div class="hint">Leave blank for a single-day activity.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mode</label>
+                        <select id="actMode"><option>Onsite</option><option>Online</option><option>Hybrid</option></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" id="actStartGroup">
+                        <label>Start</label>
+                        <input type="time" id="actStart">
+                    </div>
+                    <div class="form-group" id="actEndGroup">
+                        <label>End</label>
+                        <input type="time" id="actEnd">
+                    </div>
+                    <div class="form-group">
+                        <label>Venue</label>
+                        <input type="text" id="actVenue" placeholder="Room / link">
+                    </div>
+                </div>
+                <div class="form-group" id="actScheduleWrap" style="display:none;">
+                    <label>Daily schedule <span class="sub">optional — per-day times; set a common time first with Apply to all, then tweak individual days</span></label>
+                    <div class="sched-toolbar">
+                        <span class="sched-date">All days</span>
+                        <input type="time" id="schedDefaultStart">
+                        <input type="time" id="schedDefaultEnd">
+                        <button type="button" class="btn btn-sm btn-primary" data-click="applyAllTimes()">Apply to all</button>
+                    </div>
+                    <div id="actScheduleRows" style="margin-top:4px;"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Section</label>
+                        <div class="multi-select-wrap">
+                            <button type="button" class="multi-select-trigger" id="sectionTrigger" data-click="toggleMultiSelect('section')">
+                                <span id="sectionLabel">Select sections...</span>
+                                <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <div class="multi-select-panel hidden" id="sectionPanel"></div>
+                        </div>
+                        <input type="hidden" id="actSection">
+                        <input type="text" id="actSectionCustom" class="hidden" placeholder="Enter custom section..." style="margin-top:6px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Owner</label>
+                        <select id="actOwner"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Relevant Links</label>
+                    <div id="actLinksContainer"></div>
+                    <button type="button" class="btn btn-sm btn-ghost" data-click="addLinkInput()" style="margin-top:6px;color:var(--dlsu-green);font-weight:700;">+ Add Link</button>
+                </div>
+                <div class="form-group">
+                    <label>Description / Agenda</label>
+                    <textarea id="actDesc" placeholder="What's this about?"></textarea>
+                </div>
+            </div>
+            <div class="act-slide-foot">
+                <button class="btn" data-click="closeActivityEdit()">Cancel</button>
+                <button class="btn btn-primary" data-once data-click="saveActivity()">Save Activity</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     // ============================================================
     //  SETUP CONSTANTS — EDIT THESE AFTER DEPLOYING THE BACKEND
@@ -1296,7 +1621,7 @@
     // ============================================================
     //  CONSTANTS
     // ============================================================
-    const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const CATEGORY_COLORS = {
         "Workshop": "#0a5c36",
         "ARW": "#4f46e5",
@@ -1316,8 +1641,10 @@
         "Cancelled": "#ef4444"
     };
     const CATEGORY_ORDER = ["Workshop", "ARW", "SMOOGA", "LMW", "Lakan", "General Assembly", "Orgwide Event", "Meeting", "Other"];
-    const ACT_SECTIONS = ["Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan"];
-    const LINK_CATEGORIES = ["Templates", "Policies & TOR", "Sourcing & Speakers", "SMO", "ARW", "GDrive", "General"];
+    const ACT_SECTIONS = ["Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan", "Orgwide"];
+    const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Top 3", "SMO/SMC"];
+    const CLASSIFICATION_OPTIONS = ["Internal Event", "External Event"];
+    const LINK_CATEGORIES = ["Templates", "Policies & TOR", "Sourcing & Speakers", "SMO", "ARW", "GDrive", "General", "Email Templates"];
     const AV_START = 6 * 60;      // 6:00 AM
     const AV_SLOTS = 32;          // half-hour slots -> 6:00 AM - 10:00 PM
     // Slot categories: 0=blank, 1=online, 2=face-to-face, 3=willing/campus, 4=personal
@@ -1339,7 +1666,6 @@
     }
 
     let calYear, calMonth;
-    let catSet = new Set();               // empty = all categories
     let linkCatFilter = "All";
     let linkSearchText = "";
     let findMemberSet = new Set();
@@ -1356,6 +1682,16 @@
     let editingMemberEmail = null;
     let dayDrawerDate = "";
     let confirmResolve = null;
+    let calViewMode = "both";
+
+    let involvedSelections = [];
+    let sectionSelections = [];
+    let filterCatSet = new Set();
+    let filterSectionSet = new Set();
+    let filterInvolvedSet = new Set();
+    let filterStatus = "";
+    let filterClassification = "";
+    let filterMode = "";
 
     // ============================================================
     //  SMALL HELPERS
@@ -1844,7 +2180,7 @@
     function renderOverview() {
         if (!fullData) return;
         $("termBannerTitle").textContent = fullData.currentTerm ? fullData.currentTerm + " — EB Database" : "EB Database";
-        $("termBannerSub").textContent = "Editorial Board term directory · Plantilla · Workshops · Links";
+        $("termBannerSub").textContent = "Editorial Board term directory · Plantilla · Calendar · Links";
         $("managerTermBtnWrap").classList.toggle("hidden", !fullData.isManager);
 
         const active = fullData.activities || [];
@@ -1900,8 +2236,8 @@
         return `
         <div class="item-row">
             <div class="grow" style="cursor:pointer;" data-click="openDayDrawer('${a.startDate}')">
-                <h4>${escHtml(a.title)} <span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span></h4>
-                <div class="meta">${escHtml(activityDateRange(a))} · ${escHtml(fmtTime(dt.start))} – ${escHtml(fmtTime(dt.end))}${a.venue ? " · " + escHtml(a.venue) : ""}</div>
+                <h4>${escHtml(a.title)} <span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span>${a.classification ? ` <span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}</h4>
+                <div class="meta">${escHtml(activityDateRange(a))}</div>
             </div>
         </div>`;
     }
@@ -2314,6 +2650,204 @@
     }
 
     // ============================================================
+    //  MULTI-SELECT DROPDOWN (replaces chip picker)
+    // ============================================================
+    function toggleMultiSelect(type) {
+        const panel = $(type + "Panel");
+        if (!panel) return;
+        const isOpen = !panel.classList.contains("hidden");
+        document.querySelectorAll(".multi-select-panel").forEach(p => p.classList.add("hidden"));
+        if (!isOpen) {
+            renderMultiSelectPanel(type);
+            panel.classList.remove("hidden");
+        }
+    }
+    function renderMultiSelectPanel(type) {
+        const panel = $(type + "Panel");
+        if (!panel) return;
+        const selections = type === "involved" ? involvedSelections : sectionSelections;
+        const options = type === "involved" ? INVOLVED_OPTIONS : ACT_SECTIONS;
+        let html = "";
+        options.forEach(opt => {
+            const sel = selections.includes(opt) ? " selected" : "";
+            html += `<div class="ms-opt${sel}" data-click="toggleMsOption('${type}','${opt.replace(/'/g, "\\'")}')">
+                <span class="ms-check"></span>${escHtml(opt)}</div>`;
+        });
+        selections.forEach(s => {
+            if (!options.includes(s)) {
+                html += `<div class="ms-opt selected" data-click="toggleMsOption('${type}','${s.replace(/'/g, "\\'")}')">
+                    <span class="ms-check"></span>${escHtml(s)} <span style="margin-left:auto;font-size:0.7rem;opacity:0.6;">&times;</span></div>`;
+            }
+        });
+        html += `<div class="ms-divider"></div>`;
+        html += `<div class="ms-opt ms-other" data-click="addMsCustom('${type}')">+ Other (specify)</div>`;
+        panel.innerHTML = html;
+    }
+    function toggleMsOption(type, value) {
+        let sel = type === "involved" ? involvedSelections : sectionSelections;
+        const idx = sel.indexOf(value);
+        if (idx >= 0) sel.splice(idx, 1); else sel.push(value);
+        if (type === "involved") involvedSelections = sel; else sectionSelections = sel;
+        updateMsLabel(type);
+        renderMultiSelectPanel(type);
+    }
+    function addMsCustom(type) {
+        document.querySelectorAll(".multi-select-panel").forEach(p => p.classList.add("hidden"));
+        const input = $(type === "involved" ? "actInvolvedCustom" : "actSectionCustom");
+        if (input) { input.classList.remove("hidden"); input.focus(); }
+    }
+    function confirmMsCustom(type) {
+        const input = $(type === "involved" ? "actInvolvedCustom" : "actSectionCustom");
+        if (!input) return;
+        const val = input.value.trim();
+        if (!val) { input.classList.add("hidden"); return; }
+        let sel = type === "involved" ? involvedSelections : sectionSelections;
+        if (!sel.includes(val)) sel.push(val);
+        if (type === "involved") involvedSelections = sel; else sectionSelections = sel;
+        input.value = "";
+        input.classList.add("hidden");
+        updateMsLabel(type);
+    }
+    function updateMsLabel(type) {
+        const sel = type === "involved" ? involvedSelections : sectionSelections;
+        const lbl = $(type === "involved" ? "involvedLabel" : "sectionLabel");
+        if (lbl) lbl.textContent = sel.length ? sel.join(", ") : (type === "involved" ? "Select involved..." : "Select sections...");
+    }
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest(".multi-select-wrap")) {
+            document.querySelectorAll(".multi-select-panel").forEach(p => p.classList.add("hidden"));
+        }
+    });
+
+    // ============================================================
+    //  CATEGORY CUSTOM
+    // ============================================================
+    function onActCategoryChange() {
+        const v = $("actCategory").value;
+        if (v === "__other__") {
+            $("actCategoryCustom").classList.remove("hidden");
+            $("actCategoryCustom").focus();
+        } else {
+            $("actCategoryCustom").classList.add("hidden");
+        }
+    }
+
+    // ============================================================
+    //  LINK INPUTS (multi-add)
+    // ============================================================
+    function renderLinkInputs(links) {
+        const arr = Array.isArray(links) ? links : [];
+        const container = $("actLinksContainer");
+        if (!container) return;
+        if (!arr.length) arr.push("");
+        container.innerHTML = arr.map((url, i) => `
+            <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+                <input type="url" class="act-link-input" value="${escHtml(url || "")}" placeholder="https://..." style="flex:1;padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--bg-canvas);color:var(--text-main);">
+                ${arr.length > 1 ? `<button type="button" class="btn btn-sm btn-ghost" data-click="removeLinkInput(${i})" style="color:var(--danger);flex-shrink:0;">&times;</button>` : ""}
+            </div>`).join("");
+    }
+    function addLinkInput() {
+        const container = $("actLinksContainer");
+        if (!container) return;
+        const div = document.createElement("div");
+        div.style.cssText = "display:flex;gap:6px;margin-bottom:6px;align-items:center;";
+        div.innerHTML = `<input type="url" class="act-link-input" value="" placeholder="https://..." style="flex:1;padding:9px 12px;border:1px solid var(--border-soft);border-radius:9px;font-family:inherit;font-size:0.85rem;background:var(--bg-canvas);color:var(--text-main);">
+            <button type="button" class="btn btn-sm btn-ghost" style="color:var(--danger);flex-shrink:0;" onclick="this.closest('div[style]').remove()">&times;</button>`;
+        container.appendChild(div);
+    }
+    function removeLinkInput(idx) {
+        const inputs = document.querySelectorAll("#actLinksContainer > div");
+        if (inputs[idx]) inputs[idx].remove();
+    }
+    function collectLinkInputs() {
+        return [...document.querySelectorAll(".act-link-input")].map(i => i.value.trim()).filter(Boolean);
+    }
+
+    // ============================================================
+    //  FILTER SIDEBAR
+    // ============================================================
+    function openFilterSidebar() {
+        renderFilterChecks();
+        $("filterStatus").value = filterStatus;
+        $("filterClassification").value = filterClassification;
+        $("filterMode").value = filterMode;
+        $("filterSidebarOverlay").classList.add("open");
+        $("filterSidebar").classList.add("open");
+    }
+    function closeFilterSidebar() {
+        $("filterSidebarOverlay").classList.remove("open");
+        $("filterSidebar").classList.remove("open");
+    }
+    function renderFilterChecks() {
+        let catHtml = "";
+        CATEGORY_ORDER.forEach(c => {
+            catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${c}')">${escHtml(c)}</span>`;
+        });
+        $("filterCatChecks").innerHTML = catHtml;
+        let secHtml = "";
+        ACT_SECTIONS.forEach(s => {
+            secHtml += `<span class="filter-check${filterSectionSet.has(s) ? " active" : ""}" data-click="toggleFilterSection('${s}')">${escHtml(s)}</span>`;
+        });
+        $("filterSectionChecks").innerHTML = secHtml;
+        let invHtml = "";
+        INVOLVED_OPTIONS.forEach(v => {
+            invHtml += `<span class="filter-check${filterInvolvedSet.has(v) ? " active" : ""}" data-click="toggleFilterInvolved('${v}')">${escHtml(v)}</span>`;
+        });
+        $("filterInvolvedChecks").innerHTML = invHtml;
+    }
+    function toggleFilterCat(c) {
+        if (filterCatSet.has(c)) filterCatSet.delete(c); else filterCatSet.add(c);
+        renderFilterChecks();
+    }
+    function toggleFilterSection(s) {
+        if (filterSectionSet.has(s)) filterSectionSet.delete(s); else filterSectionSet.add(s);
+        renderFilterChecks();
+    }
+    function toggleFilterInvolved(v) {
+        if (filterInvolvedSet.has(v)) filterInvolvedSet.delete(v); else filterInvolvedSet.add(v);
+        renderFilterChecks();
+    }
+    function applyFilters() {
+        filterStatus = $("filterStatus").value;
+        filterClassification = $("filterClassification").value;
+        filterMode = $("filterMode").value;
+        closeFilterSidebar();
+        renderCalendarView();
+        updateFilterBadge();
+    }
+    function resetFilters() {
+        filterCatSet.clear(); filterSectionSet.clear(); filterInvolvedSet.clear();
+        filterStatus = ""; filterClassification = ""; filterMode = "";
+        closeFilterSidebar();
+        renderCalendarView();
+        updateFilterBadge();
+    }
+    function updateFilterBadge() {
+        let count = filterCatSet.size + filterSectionSet.size + filterInvolvedSet.size;
+        if (filterStatus) count++;
+        if (filterClassification) count++;
+        if (filterMode) count++;
+        const badge = $("filterBadge");
+        if (count > 0) { badge.textContent = count; badge.classList.remove("hidden"); }
+        else { badge.classList.add("hidden"); }
+    }
+
+    // ============================================================
+    //  MOBILE CAL VIEW TOGGLE
+    // ============================================================
+    function switchCalView(mode) {
+        calViewMode = mode;
+        document.querySelectorAll(".cal-view-btn").forEach(b => b.classList.remove("active"));
+        event.target.classList.add("active");
+        const left = $("calLeftPane");
+        const right = $("calRightPane");
+        left.classList.remove("hidden-mobile");
+        right.classList.remove("hidden-mobile");
+        if (mode === "calendar") right.classList.add("hidden-mobile");
+        if (mode === "tracker") left.classList.add("hidden-mobile");
+    }
+
+    // ============================================================
     //  CALENDAR & WORKSHOPS
     // ============================================================
     function calInit() {
@@ -2342,36 +2876,25 @@
     function renderCalendarView() {
         if (!fullData) return;
         $("calMonthLabel").textContent = monthLabel();
-        renderLegend();
         renderCalGrid();
         renderOverlapBanner();
         renderWorkshopList();
     }
 
-    function renderLegend() {
-        const activeCount = catSet.size;
-        const allOn = activeCount === 0;
-        let html = `<button class="chip ${allOn ? "active" : ""}" data-click="toggleCat('__all__')">All</button>`;
-        CATEGORY_ORDER.forEach(cat => {
-            html += `<button class="chip ${!allOn && catSet.has(cat) ? "active" : ""}" data-click="toggleCat('${cat}')">
-                <span class="cat-dot" style="background:${CATEGORY_COLORS[cat]}"></span>${cat}</button>`;
-        });
-        $("catLegend").innerHTML = html;
-    }
-
-    function toggleCat(cat) {
-        if (cat === "__all__") { catSet.clear(); }
-        else if (catSet.has(cat)) { catSet.delete(cat); }
-        else { catSet.add(cat); }
-        renderCalendarView();
-    }
-
     function filteredActivities() {
-        const sel = document.getElementById("calStatusFilter");
-        const statusFilter = sel ? sel.value : "";
         return (fullData.activities || []).filter(a => {
-            if (catSet.size && !catSet.has(a.category)) return false;
-            if (statusFilter && a.status !== statusFilter) return false;
+            if (filterCatSet.size && !filterCatSet.has(a.category)) return false;
+            if (filterStatus && a.status !== filterStatus) return false;
+            if (filterClassification && a.classification !== filterClassification) return false;
+            if (filterMode && a.mode !== filterMode) return false;
+            if (filterSectionSet.size) {
+                const aSections = (a.section || "").split(",").map(s => s.trim()).filter(Boolean);
+                if (!aSections.some(s => filterSectionSet.has(s))) return false;
+            }
+            if (filterInvolvedSet.size) {
+                const aInvolved = (a.involved || "").split(",").map(s => s.trim()).filter(Boolean);
+                if (!aInvolved.some(v => filterInvolvedSet.has(v))) return false;
+            }
             return true;
         });
     }
@@ -2393,14 +2916,14 @@
 
     function renderCalGrid() {
         const first = new Date(calYear, calMonth, 1);
-        const startIdx = (first.getDay() + 6) % 7;
+        const startIdx = first.getDay();
         const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
         const prevDays = new Date(calYear, calMonth, 0).getDate();
         const total = Math.ceil((startIdx + daysInMonth) / 7) * 7;
         const today = todayISO();
         const acts = filteredActivities();
 
-        let html = `<div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div><div class="cal-weekday">Sun</div>`;
+        let html = `<div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div>`;
 
         for (let i = 0; i < total; i++) {
             const dayNum = i - startIdx + 1;
@@ -2421,11 +2944,20 @@
             dayActs.slice(0, 3).forEach(a => {
                 const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
                 const dim = isPastActivity(a) ? " dim" : "";
-                const cont = covers(a, iso) && (a.startDate < iso || (a.endDate || a.startDate) > iso) ? " cont" : "";
+                const multi = isMultiDay(a);
+                const isStart = a.startDate === iso;
+                const isEnd = (a.endDate || a.startDate) === iso;
+                const isMid = multi && !isStart && !isEnd;
                 const ov = overlaps.has(a.id) ? "⚠ " : "";
                 const dt = dayTimeFor(a, iso);
-                const label = (a.startDate < iso ? "▸ " : "") + (dt.start ? fmtTime(dt.start) + " " : "");
-                pills += `<div class="cal-pill${cont}${dim}" style="background:${color};">${ov}${escHtml(label)}${escHtml(a.title)}</div>`;
+                const label = (dt.start ? fmtTime(dt.start) + " " : "") + escHtml(a.title);
+                if (multi) {
+                    const barCls = isStart ? "start" : isEnd ? "end" : "mid";
+                    const barText = isStart ? `${ov}${label}` : "";
+                    pills += `<div class="cal-bar ${barCls}${dim}" style="background:${color};" title="${escHtml(a.title)}">${barText}</div>`;
+                } else {
+                    pills += `<div class="cal-pill single${dim}" style="background:${color};">${ov}${escHtml(label)}</div>`;
+                }
             });
             if (dayActs.length > 3) pills += `<div class="cal-more">+${dayActs.length - 3} more</div>`;
             const ovBadge = overlaps.size ? `<div class="cal-ov"></div>` : "";
@@ -2443,7 +2975,7 @@
     function renderOverlapBanner() {
         const acts = filteredActivities();
         const first = new Date(calYear, calMonth, 1);
-        const startIdx = (first.getDay() + 6) % 7;
+        const startIdx = first.getDay();
         const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
         const prevDays = new Date(calYear, calMonth, 0).getDate();
         const total = Math.ceil((startIdx + daysInMonth) / 7) * 7;
@@ -2477,24 +3009,21 @@
                 const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
                 const sColor = STATUS_META[a.status] || "#64748b";
                 const dt = dayTimeFor(a, iso);
-                const spanInfo = isMultiDay(a)
-                    ? ` · ${escHtml(fmtDateMed(a.startDate))} → ${escHtml(fmtDateMed(a.endDate))} (day ${dayDiff(a.startDate, iso) + 1} of ${dayDiff(a.startDate, a.endDate) + 1})`
-                    : "";
                 return `<div class="day-drawer-item">
-                    <h4>${escHtml(a.title)}
-                        <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
-                        <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
-                    </h4>
-                    <div class="meta" style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">
-                        ${escHtml(fmtTime(dt.start))} – ${escHtml(fmtTime(dt.end))}
-                        ${spanInfo}
-                        ${a.venue ? " · " + escHtml(a.venue) : ""}
-                        ${a.mode ? " · " + escHtml(a.mode) : ""}
-                        ${a.section ? " · " + escHtml(a.section) : ""}
-                        ${a.ownerName ? " · " + escHtml(a.ownerName) : ""}
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                        <span class="tbadge" style="background:${color};color:#fff;font-size:0.7rem;">${escHtml(a.category)}</span>
+                        <span class="sbadge" style="background:${sColor}22;color:${sColor};font-size:0.7rem;">${escHtml(a.status)}</span>
+                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);font-size:0.7rem;">${escHtml(a.classification)}</span>` : ""}
                     </div>
-                    ${a.description ? `<div style="font-size:0.8rem;margin-top:6px;">${escHtml(a.description)}</div>` : ""}
-                    ${a.link ? `<div style="margin-top:6px;"><a href="${escHtml(a.link)}" target="_blank" rel="noopener" style="font-size:0.8rem;font-weight:700;color:var(--dlsu-green);">Open link →</a></div>` : ""}
+                    <h4 style="margin:0 0 6px;">${escHtml(a.title)}</h4>
+                    <div style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-muted);">
+                        ${dt.start || dt.end ? `<div><strong>Time:</strong> ${escHtml(fmtTime(dt.start))} – ${escHtml(fmtTime(dt.end))}</div>` : ""}
+                        <div><strong>Dates:</strong> ${isMultiDay(a) ? escHtml(fmtDateMed(a.startDate)) + " → " + escHtml(fmtDateMed(a.endDate)) + " (day " + (dayDiff(a.startDate, iso) + 1) + " of " + (dayDiff(a.startDate, a.endDate) + 1) + ")" : escHtml(fmtDateMed(a.startDate))}</div>
+                        ${a.mode ? `<div><strong>Mode:</strong> ${escHtml(a.mode)}</div>` : ""}
+                        ${a.involved ? `<div><strong>Involved:</strong> ${escHtml(a.involved)}</div>` : ""}
+                    </div>
+                    ${a.description ? `<div style="font-size:0.8rem;margin-top:6px;color:var(--text-main);">${escHtml(a.description)}</div>` : ""}
+                    ${a.link ? renderDayDrawerLinks(a.link) : ""}
                 </div>`;
             }).join("");
         }
@@ -2515,6 +3044,22 @@
     }
 
     // ----- Workshop tracker -----
+    function renderTrackerLinks(linkStr) {
+        let urls = [];
+        if (linkStr) {
+            try { const p = JSON.parse(linkStr); if (Array.isArray(p)) urls = p; else urls = [linkStr]; } catch(e) { urls = [linkStr]; }
+        }
+        if (!urls.length) return "";
+        return urls.map(u => ' · <a href="' + escHtml(u) + '" target="_blank" rel="noopener" style="color:var(--dlsu-green);font-weight:700;">link</a>').join("");
+    }
+    function renderDayDrawerLinks(linkStr) {
+        let urls = [];
+        if (linkStr) {
+            try { const p = JSON.parse(linkStr); if (Array.isArray(p)) urls = p; else urls = [linkStr]; } catch(e) { urls = [linkStr]; }
+        }
+        if (!urls.length) return "";
+        return '<div style="margin-top:6px;">' + urls.map(u => '<a href="' + escHtml(u) + '" target="_blank" rel="noopener" style="font-size:0.8rem;font-weight:700;color:var(--dlsu-green);display:block;">Open link →</a>').join("") + '</div>';
+    }
     function renderWorkshopList() {
         const q = ($("trackerSearch").value || "").toLowerCase().trim();
         const list = filteredActivities()
@@ -2523,79 +3068,143 @@
         $("workshopRows").innerHTML = list.map(a => {
             const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
             const sColor = STATUS_META[a.status] || "#64748b";
-            const dim = isPastActivity(a) ? "opacity:.5" : "";
-            return `<tr style="${dim}">
-                <td style="white-space:nowrap;font-weight:700;">${escHtml(activityDateRange(a))}</td>
-                <td style="white-space:nowrap;">${actTimeSummary(a)}</td>
-                <td>
-                    <div style="font-weight:700;">${escHtml(a.title)}</div>
-                    <div style="font-size:0.72rem;color:var(--text-muted);">
-                        <span class="tbadge" style="background:${color};color:#fff;margin-right:4px;">${escHtml(a.category)}</span>
-                        ${a.link ? `<a href="${escHtml(a.link)}" target="_blank" rel="noopener" style="color:var(--dlsu-green);">link</a>` : ""}
+            const dim = isPastActivity(a) ? " dim" : "";
+            return `<div class="tracker-card${dim}" data-click="openActivityDetail('${a.id}')">
+                <div class="tc-top">
+                    <span class="tc-title">${escHtml(a.title)}</span>
+                    <div class="tc-badges">
+                        <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
+                        <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
+                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}
                     </div>
-                </td>
-                <td>${escHtml(a.section || "—")}</td>
-                <td>${escHtml(a.ownerName || a.ownerEmail || "—")}</td>
-                <td style="white-space:nowrap;">${escHtml(a.venue || "—")}</td>
-                <td><span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span></td>
-                <td>
-                    <div class="row-actions">
-                        <button class="btn btn-sm btn-ghost" data-click="openActivityModal('${a.id}')"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
-                        <button class="btn btn-sm btn-ghost" data-click="deleteActivity('${a.id}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
-                    </div>
-                </td>
-            </tr>`;
-        }).join("") || '<tr><td colspan="8"><div class="empty-state">No activities match.</div></td></tr>';
+                </div>
+            </div>`;
+        }).join("") || '<div class="tracker-empty">No activities match.</div>';
+    }
+
+    function openActivityDetail(id) {
+        const a = (fullData.activities || []).find(x => x.id === id);
+        if (!a) return;
+        const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+        const sColor = STATUS_META[a.status] || "#64748b";
+        const when = activityDateRange(a) + (a.start ? " · " + fmtTime(a.start) + (a.end && a.end !== a.start ? " – " + fmtTime(a.end) : "") : "");
+        let links = [];
+        if (a.link) {
+            try { const p = JSON.parse(a.link); if (Array.isArray(p)) links = p; else links = [a.link]; } catch(e) { links = [a.link]; }
+        }
+        const linksHtml = links.length ? links.map(u => '<a href="' + escHtml(u) + '" target="_blank" rel="noopener" style="color:var(--dlsu-green);font-weight:700;word-break:break-all;">' + escHtml(u) + '</a>').join("<br>") : "—";
+        const schedule = a.schedule || [];
+        let schedHtml = "";
+        if (schedule.length) {
+            schedHtml = '<div class="act-detail-section"><div class="act-detail-label">Daily Schedule</div><div class="act-detail-value">' +
+                schedule.map(s => fmtDateMed(s.d) + " " + (s.s || "—") + " – " + (s.e || "—")).join("<br>") + '</div></div>';
+        }
+        $("actDetailTitle").textContent = a.title;
+        $("actDetailBody").innerHTML = `
+            <div class="act-detail-section">
+                <div class="act-detail-badges">
+                    <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
+                    <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
+                    ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}
+                    ${a.mode ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.mode)}</span>` : ""}
+                </div>
+            </div>
+            <div class="act-detail-section">
+                <div class="act-detail-row"><div class="act-detail-label">Date</div><div class="act-detail-value">${escHtml(when)}</div></div>
+                ${a.venue ? `<div class="act-detail-row"><div class="act-detail-label">Venue</div><div class="act-detail-value">${escHtml(a.venue)}</div></div>` : ""}
+                ${a.section ? `<div class="act-detail-row"><div class="act-detail-label">Section</div><div class="act-detail-value">${escHtml(a.section)}</div></div>` : ""}
+                ${a.involved ? `<div class="act-detail-row"><div class="act-detail-label">Involved</div><div class="act-detail-value">${escHtml(a.involved)}</div></div>` : ""}
+                ${a.ownerName ? `<div class="act-detail-row"><div class="act-detail-label">Owner</div><div class="act-detail-value">${escHtml(a.ownerName)}</div></div>` : ""}
+            </div>
+            ${a.description ? `<div class="act-detail-section"><div class="act-detail-label">Description</div><div class="act-detail-value">${escHtml(a.description)}</div></div>` : ""}
+            <div class="act-detail-section">
+                <div class="act-detail-label">Relevant Links</div>
+                <div class="act-detail-value">${linksHtml}</div>
+            </div>
+            ${schedHtml}
+        `;
+        $("actDetailEditBtn").onclick = function() { closeActivityDetail(); openActivityModal(id); };
+        $("actDetailDeleteBtn").onclick = function() { deleteActivity(id); };
+        $("actDetailOverlay").classList.add("open");
+        $("actDetailOverlay").querySelector(".act-slide-panel").classList.add("open");
+    }
+    function closeActivityDetail() {
+        $("actDetailOverlay").classList.remove("open");
+        $("actDetailOverlay").querySelector(".act-slide-panel").classList.remove("open");
+    }
+    function closeActivityEdit() {
+        $("activityModal").classList.remove("open");
+        $("activityModal").querySelector(".act-slide-panel").classList.remove("open");
     }
 
     function openActivityModal(id) {
+        closeActivityDetail();
         editingActivityId = id || null;
         $("activityModalTitle").textContent = id ? "Edit Activity" : "New Activity";
         const sel = $("actOwner");
         sel.innerHTML = (fullData.members || []).filter(m => m.isActive)
             .map(m => `<option value="${m.email}" ${m.email === userEmail ? "selected" : ""}>${escHtml(m.fullName || m.email)}</option>`).join("");
+        $("actCategoryCustom").classList.add("hidden");
+        $("actCategoryCustom").value = "";
+        $("actInvolvedCustom").classList.add("hidden");
+        $("actInvolvedCustom").value = "";
+        $("actSectionCustom").classList.add("hidden");
+        $("actSectionCustom").value = "";
 
         if (id) {
             const a = (fullData.activities || []).find(x => x.id === id);
             if (a) {
                 $("actTitle").value = a.title;
-                $("actCategory").value = a.category || "Workshop";
+                const cat = a.category || "Workshop";
+                const stdCats = CATEGORY_ORDER.slice(0, -1);
+                if (stdCats.includes(cat)) {
+                    $("actCategory").value = cat;
+                } else {
+                    $("actCategory").value = "__other__";
+                    $("actCategoryCustom").value = cat;
+                    $("actCategoryCustom").classList.remove("hidden");
+                }
                 $("actStatus").value = a.status || "Planned";
+                $("actClassification").value = a.classification || "";
                 $("actStartDate").value = a.startDate;
                 $("actEndDate").value = a.endDate && a.endDate !== a.startDate ? a.endDate : "";
                 $("actMode").value = a.mode || "Onsite";
                 $("actStart").value = a.start;
                 $("actEnd").value = a.end;
                 $("actVenue").value = a.venue;
-                if (a.section && !ACT_SECTIONS.includes(a.section)) {
-                    const opt = document.createElement("option");
-                    opt.value = a.section;
-                    opt.textContent = a.section;
-                    $("actSection").appendChild(opt);
-                }
-                $("actSection").value = a.section;
                 $("actOwner").value = a.ownerEmail || userEmail;
-                $("actLink").value = a.link;
                 $("actDesc").value = a.description;
                 scheduleDraft = (a.schedule || []).slice();
+                involvedSelections = (a.involved || "").split(",").map(s => s.trim()).filter(Boolean);
+                sectionSelections = (a.section || "").split(",").map(s => s.trim()).filter(Boolean);
+                let links = [];
+                if (a.link) {
+                    try { const parsed = JSON.parse(a.link); if (Array.isArray(parsed)) links = parsed; else links = [a.link]; } catch(e) { links = [a.link]; }
+                }
+                renderLinkInputs(links);
             }
         } else {
             $("actTitle").value = "";
             $("actCategory").value = "Workshop";
             $("actStatus").value = "Planned";
+            $("actClassification").value = "";
             $("actStartDate").value = todayISO();
             $("actEndDate").value = "";
             $("actMode").value = "Onsite";
             $("actStart").value = "";
             $("actEnd").value = "";
             $("actVenue").value = "";
-            $("actSection").value = "";
-            $("actLink").value = "";
             $("actDesc").value = "";
             scheduleDraft = [];
+            involvedSelections = [];
+            sectionSelections = [];
+            renderLinkInputs([]);
         }
+        updateMsLabel("involved");
+        updateMsLabel("section");
         renderScheduleEditor();
-        openModal("activityModal");
+        $("activityModal").classList.add("open");
+        $("activityModal").querySelector(".act-slide-panel").classList.add("open");
     }
 
     function saveActivity() {
@@ -2604,20 +3213,31 @@
         const startDate = $("actStartDate").value;
         const endDate = $("actEndDate").value || startDate;
         if (endDate < startDate) { showAlert("Invalid date range", "End date cannot be before the start date."); return; }
+        let category = $("actCategory").value;
+        let categoryCustom = "";
+        if (category === "__other__") {
+            categoryCustom = $("actCategoryCustom").value.trim();
+            if (!categoryCustom) { showAlert("Missing category", "Please enter a category name."); return; }
+            category = "Other";
+        }
+        const links = collectLinkInputs();
         const common = {
             title: $("actTitle").value.trim(),
-            category: $("actCategory").value,
+            category: category,
+            categoryCustom: categoryCustom,
             status: $("actStatus").value,
+            classification: $("actClassification").value,
             startDate: startDate,
             endDate: endDate,
             mode: $("actMode").value,
             start: $("actStart").value,
             end: $("actEnd").value,
             venue: $("actVenue").value.trim(),
-            section: $("actSection").value.trim(),
+            section: sectionSelections.join(", "),
             ownerEmail: $("actOwner").value,
-            link: $("actLink").value.trim(),
-            description: $("actDesc").value.trim()
+            link: links.length ? JSON.stringify(links) : "",
+            description: $("actDesc").value.trim(),
+            involved: involvedSelections.join(", ")
         };
         const defStart = common.start, defEnd = common.end;
         const schedule = collectScheduleRows()
@@ -2637,7 +3257,7 @@
             ? Object.assign({ action: "Update Activity", id: editingActivityId }, common)
             : Object.assign({ action: "Add Activity" }, common);
         sendPostRequest(body)
-            .then(() => { closeModal("activityModal"); toast("Activity saved."); refresh(); })
+            .then(() => { closeActivityEdit(); toast("Activity saved."); refresh(); })
             .catch(() => {});
     }
 
@@ -2656,9 +3276,14 @@
     function renderLinksHub() {
         if (!fullData) return;
         const q = ($("linkSearch").value || "").toLowerCase().trim();
+        // Build dynamic category list from LINK_CATEGORIES + any unique categories in existing links
+        const allCats = new Set(LINK_CATEGORIES);
+        (fullData.links || []).forEach(l => { if (l.category) allCats.add(l.category); });
+        const dynamicCategories = [...allCats];
+
         let legend = `<button class="chip ${linkCatFilter === "All" ? "active" : ""}" data-click="toggleLinkCat('All')">All</button>`;
-        LINK_CATEGORIES.forEach(c => {
-            legend += `<button class="chip ${linkCatFilter === c ? "active" : ""}" data-click="toggleLinkCat('${c}')">${c}</button>`;
+        dynamicCategories.forEach(c => {
+            legend += `<button class="chip ${linkCatFilter === c ? "active" : ""}" data-click="toggleLinkCat('${c.replace(/'/g, "\\'")}')">${escHtml(c)}</button>`;
         });
         $("linkCatLegend").innerHTML = legend;
 
@@ -2698,12 +3323,28 @@
     function openLinkModal(id) {
         editingLinkId = id || null;
         $("linkModalTitle").textContent = id ? "Edit Link" : "Add Link";
+        // Build dynamic category list
+        const allCats = new Set(LINK_CATEGORIES);
+        (fullData.links || []).forEach(l => { if (l.category) allCats.add(l.category); });
+        const dynamicCategories = [...allCats];
+        const catSel = $("linkCategory");
+        catSel.innerHTML = dynamicCategories.map(c => `<option>${escHtml(c)}</option>`).join("") + '<option value="__other__">Other (specify)...</option>';
+        $("linkCategoryCustom").classList.add("hidden");
+        $("linkCategoryCustom").value = "";
+
         if (id) {
             const l = (fullData.links || []).find(x => x.id === id);
             if (l) {
                 $("linkName").value = l.name;
                 $("linkUrl").value = l.url;
-                $("linkCategory").value = l.category || "General";
+                // Check if category is in the dynamic list; if not, select "Other" and fill custom
+                if (dynamicCategories.includes(l.category)) {
+                    catSel.value = l.category;
+                } else {
+                    catSel.value = "__other__";
+                    $("linkCategoryCustom").value = l.category || "";
+                    $("linkCategoryCustom").classList.remove("hidden");
+                }
                 $("linkOrder").value = l.order || "";
                 $("linkDesc").value = l.description || "";
                 $("linkActive").checked = l.active !== false;
@@ -2711,7 +3352,7 @@
         } else {
             $("linkName").value = "";
             $("linkUrl").value = "";
-            $("linkCategory").value = "General";
+            catSel.value = "General";
             $("linkOrder").value = "";
             $("linkDesc").value = "";
             $("linkActive").checked = true;
@@ -2719,13 +3360,28 @@
         openModal("linkModal");
     }
 
+    function onLinkCategoryChange() {
+        const customInput = $("linkCategoryCustom");
+        if ($("linkCategory").value === "__other__") {
+            customInput.classList.remove("hidden");
+            customInput.focus();
+        } else {
+            customInput.classList.add("hidden");
+        }
+    }
+
     function saveLink() {
         if (!$("linkName").value.trim()) { showAlert("Missing name", "Please enter a name."); return; }
         if (!$("linkUrl").value.trim()) { showAlert("Missing URL", "Please enter a URL."); return; }
+        let category = $("linkCategory").value;
+        if (category === "__other__") {
+            category = $("linkCategoryCustom").value.trim();
+            if (!category) { showAlert("Missing category", "Please enter a category name."); return; }
+        }
         const common = {
             name: $("linkName").value.trim(),
             url: $("linkUrl").value.trim(),
-            category: $("linkCategory").value,
+            category: category,
             order: $("linkOrder").value ? parseInt($("linkOrder").value) : 0,
             description: $("linkDesc").value.trim(),
             active: $("linkActive").checked
@@ -2845,12 +3501,20 @@
     }
 
     function openSetTermModal() {
-        $("termInput").value = fullData.currentTerm || "";
+        const current = fullData.currentTerm || "";
+        const parts = current.split(" Term ");
+        let period = "1st Term", year = "AY 2026-2027";
+        if (parts.length === 2) {
+            period = parts[0] + " Term";
+            year = "AY " + parts[1].replace("AY ", "");
+        }
+        $("termPeriod").value = period;
+        $("termYear").value = year;
         openModal("setTermModal");
     }
     function saveTerm() {
-        const term = $("termInput").value.trim();
-        if (!term) { showAlert("Missing term", "Please enter a term label."); return; }
+        const term = $("termPeriod").value + " " + $("termYear").value;
+        if (!term) { showAlert("Missing term", "Please select a term."); return; }
         sendPostRequest({ action: "Set Term", term: term })
             .then(res => {
                 closeModal("setTermModal");
