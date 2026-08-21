@@ -730,9 +730,9 @@
     }
     .filter-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
     .filter-sidebar {
-        position: fixed; top: 0; right: 0; bottom: 0; width: 320px; max-width: 90vw;
-        background: var(--surface-solid); border-left: 1px solid var(--border-soft);
-        box-shadow: var(--shadow-lg); z-index: 251; transform: translateX(100%);
+        position: fixed; top: 0; left: 0; bottom: 0; width: 320px; max-width: 90vw;
+        background: var(--surface-solid); border-right: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-lg); z-index: 251; transform: translateX(-100%);
         transition: transform 0.25s ease; display: flex; flex-direction: column;
     }
     .filter-sidebar.open { transform: translateX(0); }
@@ -753,6 +753,7 @@
     }
     .filter-check:hover { border-color: var(--text-muted); }
     .filter-check.active { background: var(--dlsu-green); border-color: var(--dlsu-green); color: #fff; }
+    .filter-check .filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
     /* ---------- Activity detail / edit slide-out (left side) ---------- */
     .act-slide-overlay {
@@ -800,6 +801,9 @@
     .cal-bar.mid { border-radius: 0; margin-left: -6px; margin-right: -6px; z-index: 1; position: relative; }
     .cal-bar.end { border-radius: 0 3px 3px 0; margin-left: -6px; z-index: 1; position: relative; }
     .cal-bar.single { border-radius: 3px; }
+    /* Invisible placeholder that reserves an event's row on days where that
+       lane has no activity, keeping multi-day bars vertically aligned. */
+    .cal-spacer { height: 20px; }
     </style>
 </head>
 <body>
@@ -2781,7 +2785,8 @@
     function renderFilterChecks() {
         let catHtml = "";
         CATEGORY_ORDER.forEach(c => {
-            catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${c}')">${escHtml(c)}</span>`;
+            const color = CATEGORY_COLORS[c] || CATEGORY_COLORS.Other;
+            catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${c}')"><span class="filter-dot" style="background:${color};"></span>${escHtml(c)}</span>`;
         });
         $("filterCatChecks").innerHTML = catHtml;
         let secHtml = "";
@@ -2914,6 +2919,26 @@
         return set;
     }
 
+    // Assign each activity a stable visual row ("lane") across the rendered
+    // month so multi-day bars stay horizontally aligned even when other
+    // events stack above them on some days. Greedy interval packing: sort by
+    // start date/time/title, then place each activity in the first lane whose
+    // previous activity ends before it starts. Returns array of lanes, each
+    // an array of non-overlapping activities.
+    function assignCalLanes(acts, gridStartIso, gridEndIso) {
+        const monthActs = acts
+            .filter(a => a.startDate && a.startDate <= gridEndIso && (a.endDate || a.startDate) >= gridStartIso)
+            .sort((a, b) => (a.startDate + (a.start || "99:99") + (a.title || "")).localeCompare(b.startDate + (b.start || "99:99") + (b.title || "")));
+        const lanes = [];
+        monthActs.forEach(a => {
+            let lane = lanes.find(l => l.end < a.startDate);
+            if (!lane) { lane = { end: "", acts: [] }; lanes.push(lane); }
+            lane.end = a.endDate || a.startDate;
+            lane.acts.push(a);
+        });
+        return lanes.map(l => l.acts);
+    }
+
     function renderCalGrid() {
         const first = new Date(calYear, calMonth, 1);
         const startIdx = first.getDay();
@@ -2922,6 +2947,18 @@
         const total = Math.ceil((startIdx + daysInMonth) / 7) * 7;
         const today = todayISO();
         const acts = filteredActivities();
+        const MAX_LANES = 3;
+
+        // Stable lanes across the whole grid so multi-day bands never jump rows.
+        const firstIso = (() => {
+            const dayNum = 0 - startIdx + 1;
+            return dayNum < 1 ? isoFor(calYear, calMonth - 1, prevDays + dayNum) : isoFor(calYear, calMonth, dayNum);
+        })();
+        const lastIso = (() => {
+            const dayNum = total - 1 - startIdx + 1;
+            return dayNum > daysInMonth ? isoFor(calYear, calMonth + 1, dayNum - daysInMonth) : isoFor(calYear, calMonth, dayNum);
+        })();
+        const lanes = assignCalLanes(acts, firstIso, lastIso);
 
         let html = `<div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div>`;
 
@@ -2937,17 +2974,19 @@
                 continue;
             }
 
-            const dayActs = acts.filter(a => covers(a, iso)).sort((a, b) => (dayTimeFor(a, iso).start || "99:99").localeCompare(dayTimeFor(b, iso).start || "99:99"));
+            const dayActs = acts.filter(a => covers(a, iso));
             const overlaps = findOverlapIds(dayActs, iso);
             const cls = "cal-day" + (inMonth ? "" : " out") + (iso === today ? " today" : "");
             let pills = "";
-            dayActs.slice(0, 3).forEach(a => {
+            const visibleLanes = Math.min(lanes.length, MAX_LANES);
+            for (let li = 0; li < visibleLanes; li++) {
+                const a = lanes[li].find(x => covers(x, iso));
+                if (!a) { pills += `<div class="cal-spacer"></div>`; continue; }
                 const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
                 const dim = isPastActivity(a) ? " dim" : "";
                 const multi = isMultiDay(a);
                 const isStart = a.startDate === iso;
                 const isEnd = (a.endDate || a.startDate) === iso;
-                const isMid = multi && !isStart && !isEnd;
                 const ov = overlaps.has(a.id) ? "⚠ " : "";
                 const dt = dayTimeFor(a, iso);
                 const label = (dt.start ? fmtTime(dt.start) + " " : "") + escHtml(a.title);
@@ -2958,8 +2997,12 @@
                 } else {
                     pills += `<div class="cal-pill single${dim}" style="background:${color};">${ov}${escHtml(label)}</div>`;
                 }
-            });
-            if (dayActs.length > 3) pills += `<div class="cal-more">+${dayActs.length - 3} more</div>`;
+            }
+            let moreCount = 0;
+            for (let li = MAX_LANES; li < lanes.length; li++) {
+                if (lanes[li].some(x => covers(x, iso))) moreCount++;
+            }
+            if (moreCount) pills += `<div class="cal-more">+${moreCount} more</div>`;
             const ovBadge = overlaps.size ? `<div class="cal-ov"></div>` : "";
             const commitCount = (fullData.commitments || []).filter(c => c.date === iso).length;
             const dot = commitCount ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#7c3aed;margin-left:3px;" title="${commitCount} commitment(s)"></span>` : "";
