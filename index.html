@@ -7,7 +7,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 
     <style>
     :root {
@@ -272,6 +273,16 @@
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
+    /* Tinted pills (status badges, role badges, availability chips, guide
+       nav) use brand-colored text that vanishes against dark surfaces.
+       Brightening the whole element in dark mode keeps the translucent
+       background subtle while lifting the text into readable territory.
+       Pure CSS, so it reacts instantly to live theme switches. */
+    [data-theme="dark"] .sbadge,
+    [data-theme="dark"] .chip-block,
+    [data-theme="dark"] .guide-nav-btn {
+        filter: brightness(1.7) saturate(0.85);
+    }
     .tbadge {
         display: inline-block;
         font-size: 0.68rem;
@@ -310,18 +321,13 @@
     /* ---------- Color-coded tracker rows ---------- */
     .tbl tbody tr { border-left: 4px solid transparent; transition: background 0.15s; }
 
-    /* ---------- Stats ---------- */
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
-    .stat-card { background: var(--surface-card); border: 1px solid var(--border-soft); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow-sm); }
-    .stat-value { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
-    .stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
-
-    .term-banner {
+    /* ---------- Overview header ---------- */
+    .ov-header {
         background: linear-gradient(120deg, var(--dlsu-green), var(--accent));
         color: #fff;
         border-radius: 16px;
-        padding: 18px 22px;
-        margin-bottom: 22px;
+        padding: 20px 24px;
+        margin-bottom: 26px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -329,13 +335,9 @@
         flex-wrap: wrap;
         box-shadow: var(--shadow-md);
     }
-    .term-banner h2 { font-size: 1.2rem; font-weight: 800; }
-    .term-banner p { font-size: 0.82rem; opacity: 0.92; }
-    .term-banner .btn { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.4); color: #fff; }
-    .term-banner .btn:hover { background: rgba(255,255,255,0.28); }
-
-    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+    .ov-eyebrow { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
+    .ov-header .btn { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.4); color: #fff; }
+    .ov-header .btn:hover { background: rgba(255,255,255,0.28); }
 
     /* ---------- Lists ---------- */
     .item-list { display: flex; flex-direction: column; gap: 8px; }
@@ -387,28 +389,35 @@
 
     /* ---------- Plantilla grid ---------- */
     .pg-wrap { overflow-x: auto; }
-    .pg-table { width: 100%; border-collapse: separate; border-spacing: 5px; font-size: 0.75rem; min-width: 860px; }
+    .pg-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 5px; font-size: 0.75rem; min-width: 860px; }
     .pg-table th { padding: 6px 8px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-    .pg-member { min-width: 170px; padding: 8px; font-weight: 700; white-space: nowrap; }
+    .pg-table th:first-child { width: 23%; }
+    .pg-member { padding: 8px; font-weight: 700; }
     .pg-member small { display: block; font-weight: 600; color: var(--text-muted); font-size: 0.68rem; }
     .pg-cell {
-        min-width: 96px;
         padding: 8px;
         border-radius: 10px;
         border: 1px solid var(--border-soft);
         background: var(--surface-card);
-        vertical-align: top;
+        vertical-align: middle;
+        text-align: center;
         font-size: 0.7rem;
         line-height: 1.35;
         color: var(--text-main);
     }
-    .pg-cell .blk { display: block; font-weight: 600; }
-    .pg-cell.empty { color: var(--text-muted); opacity: 0.55; text-align: center; }
+    .pg-cell .blk { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; font-weight: 600; }
+    .pg-cell .blk .chip-block { margin: 0; white-space: normal; }
+    .pg-cell.empty { color: var(--text-muted); opacity: 0.55; }
 
     /* ---------- Calendar ---------- */
     .cal-shell { border: 1px solid var(--border-soft); border-radius: 16px; overflow: hidden; background: var(--surface-card); box-shadow: var(--shadow-sm); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
     .cal-weekday { padding: 9px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); background: rgba(226,232,240,0.25); text-transform: uppercase; }
+    /* The hardcoded light tint above turns into a muddy gray strip over dark
+       surfaces and washes out the light-gray label. Use a faint cool tint in
+       dark mode so the weekday names pop against a near-card backdrop.
+       Covers all seven Sun-Sat headers since they share this class. */
+    [data-theme="dark"] .cal-weekday { background: rgba(148,163,184,0.09); }
     .cal-day {
         min-height: 72px;
         min-width: 0;
@@ -537,11 +546,9 @@
         transition: all 0.2s;
         position: relative;
     }
-    .link-card:hover { border-color: var(--dlsu-green); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .link-card h4 { font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .link-card:hover { border-color: var(--dlsu-green); transform: translateY(-2px); box-shadow: var(--shadow-md); }    .link-card h4 { font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
     .link-card .desc { font-size: 0.78rem; color: var(--text-muted); flex: 1; }
     .link-card .url { font-size: 0.72rem; color: var(--dlsu-green); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .link-card.pinned { border-color: var(--dlsu-green); box-shadow: var(--shadow-sm); }
     .link-card .link-actions { position: absolute; top: 10px; right: 10px; display: none; gap: 4px; }
     .link-card:hover .link-actions { display: flex; }
 
@@ -678,7 +685,6 @@
     .alert-modal-body { text-align: center; padding: 8px 4px; font-size: 0.9rem; }
 
     @media (max-width: 640px) {
-        .stat-grid { grid-template-columns: repeat(2, 1fr); }
         .cal-day { min-height: 54px; }
     }
 
@@ -754,6 +760,12 @@
     .filter-check:hover { border-color: var(--text-muted); }
     .filter-check.active { background: var(--dlsu-green); border-color: var(--dlsu-green); color: #fff; }
     .filter-check .filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    /* Category color customizer (Top 3) in the filter sidebar */
+    .cat-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .cat-color-head { font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 14px 0 4px; }
+    .cat-color-row { display: flex; align-items: center; gap: 7px; padding: 3px 2px; }
+    .cat-color-name { font-size: 0.75rem; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cat-color-row input[type="color"] { width: 34px; height: 22px; border: 1px solid var(--border-soft); border-radius: 6px; background: none; padding: 0; cursor: pointer; }
 
     /* ---------- Activity detail / edit slide-out (left side) ---------- */
     .act-slide-overlay {
@@ -876,40 +888,17 @@
 
         <!-- ===== OVERVIEW ===== -->
         <section class="hidden" id="panelOverview">
-            <div class="term-banner" id="termBanner">
-                <div>
-                    <h2 id="termBannerTitle">EB Database</h2>
-                    <p id="termBannerSub">Editorial Board term directory</p>
-                </div>
+            <div class="ov-header">
+                <div class="ov-eyebrow" id="ovEyebrow">EB Database</div>
                 <div class="hidden" id="managerTermBtnWrap"><button class="btn" data-click="openSetTermModal()">Set Term</button></div>
             </div>
 
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-value" id="statWorkshops">—</div><div class="stat-label">Workshops in flight</div></div>
-                <div class="stat-card"><div class="stat-value" id="statUpcoming">—</div><div class="stat-label">Upcoming activities</div></div>
-                <div class="stat-card"><div class="stat-value" id="statMembers">—</div><div class="stat-label">EB members</div></div>
-                <div class="stat-card"><div class="stat-value" id="statLinks">—</div><div class="stat-label">Saved links</div></div>
-            </div>
-
-            <div class="split">
-                <div>
-                    <div class="panel-heading"><span>Today</span></div>
-                    <div id="todayList" class="item-list"><div class="empty-state">Nothing scheduled today.</div></div>
-                </div>
-                <div>
-                    <div class="panel-heading"><span>Upcoming</span></div>
-                    <div id="upcomingList" class="item-list"><div class="empty-state">No upcoming activities.</div></div>
-                </div>
-            </div>
+            <div class="panel-heading"><span>Coming up</span></div>
+            <div id="comingList" class="item-list"><div class="empty-state">Nothing scheduled yet.</div></div>
 
             <div style="margin-top:22px;">
                 <div class="panel-heading"><span>Quick Links</span><span class="sub" data-click="showPanel('links')" style="cursor:pointer;">Open hub →</span></div>
                 <div id="quickLinks" class="link-grid"></div>
-            </div>
-
-            <div style="margin-top:22px;">
-                <div class="panel-heading"><span>Free Today</span></div>
-                <div id="freeTodayList" class="item-list"><div class="empty-state">No availability set for today.</div></div>
             </div>
         </section>
 
@@ -917,7 +906,6 @@
         <section class="hidden" id="panelPlantilla">
             <div class="panel-heading">
                 <span>Plantilla</span>
-                <span class="sub">Weekly availability</span>
             </div>
 
             <div class="toolbar">
@@ -1147,7 +1135,6 @@
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
                         <li style="margin-bottom:4px;">One place for all pertinent files — templates, email templates, policies &amp; TOR, sourcing &amp; speaker forms, ARW materials, and Google Drive files.</li>
-                        <li style="margin-bottom:4px;">Essential links (<strong>PPF Template, TOR, SPCA</strong>) are pinned to the top with an "essential" tag.</li>
                         <li style="margin-bottom:4px;">Use the <strong>search box</strong> and category chips to filter. Categories are <strong>dynamic</strong> — any category used by existing links appears in the filter.</li>
                         <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category.</li>
                         <li style="margin-bottom:4px;">The <strong>Order</strong> field controls sorting; uncheck <strong>Active</strong> to hide a link from the hub without deleting it.</li>
@@ -1431,8 +1418,12 @@
         </div>
         <div class="filter-sidebar-body">
             <div class="filter-section">
-                <label>Category</label>
+                <div class="cat-label-row">
+                    <label>Category</label>
+                    <button type="button" class="btn btn-sm btn-ghost" id="catColorEditBtn" data-click="toggleCatColorEditor()" style="display:none;">Edit</button>
+                </div>
                 <div class="filter-checks" id="filterCatChecks"></div>
+                <div id="catColorEditor" class="hidden"></div>
             </div>
             <div class="filter-section">
                 <label>Status</label>
@@ -1643,6 +1634,12 @@
         "Completed": "#64748b",
         "Cancelled": "#ef4444"
     };
+    // Resolves a category's display color: Top 3-customized color first,
+    // then the built-in default. Used everywhere colors are shown.
+    function catColor(c) {
+        const custom = fullData && fullData.categoryColors;
+        return (custom && custom[c]) || CATEGORY_COLORS[c] || CATEGORY_COLORS.Other;
+    }
     const CATEGORY_ORDER = ["Workshop", "ARW", "SMOOGA", "LMW", "Lakan", "General Assembly", "Orgwide Event", "Meeting", "Other"];
     const ACT_SECTIONS = ["Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan", "Orgwide"];
     const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Top 3", "SMO/SMC"];
@@ -2030,12 +2027,28 @@
         }
         userEmail = email;
         localStorage.setItem("userEmail", email);
+        const cached = readCachedPayload();
+        if (cached) {
+            // Returning user: skip "Checking access..." and paint instantly.
+            applyPayload(cached.data);
+            bootstrapApplication();
+            fetchUserData(function () {
+                if (!appBootstrapped) {
+                    hideLoader();
+                    showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Top 3 member to add you to the <code>EB_Members</code> tab if you should have access.");
+                    localStorage.removeItem("userEmail");
+                    userEmail = "";
+                }
+            }, { silent: true });
+            return;
+        }
         showLoader("Checking access...");
         fetchUserData(function () {
             if (!appBootstrapped) {
                 hideLoader();
                 showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Top 3 member to add you to the <code>EB_Members</code> tab if you should have access.");
                 localStorage.removeItem("userEmail");
+                clearCachedPayload();
                 userEmail = "";
             }
         });
@@ -2045,6 +2058,8 @@
         userEmail = "";
         appBootstrapped = false;
         localStorage.removeItem("userEmail");
+        localStorage.removeItem("ebdb_last_panel");
+        clearCachedPayload();
         document.getElementById("loginView").classList.remove("hidden");
         document.getElementById("mainDashboard").classList.add("hidden");
         document.getElementById("headerControls").style.display = "none";
@@ -2064,17 +2079,29 @@
         clearTimeout(loaderHideTimer);
         const el = $("minimalLoader");
         el.classList.add("fade-out");
-        loaderHideTimer = setTimeout(function () { el.classList.add("hidden"); }, 520);
+        loaderHideTimer = setTimeout(function () { el.classList.add("hidden"); }, 200);
     }
 
-    function bootstrapApplication() {
+    function renderNavUser() {
+        const me = ((fullData && fullData.members) || []).find(m => (m.email || "").toLowerCase() === userEmail.toLowerCase());
+        const name = me && me.fullName ? me.fullName.trim() : "";
+        const el = $("navUserEmail");
+        el.textContent = name ? `Hi, ${name}!` : userEmail;
+        el.title = userEmail;
+    }
+
+    function bootstrapApplication(restoreLast) {
         appBootstrapped = true;
         $("loginView").classList.add("hidden");
         $("headerControls").style.display = "flex";
         $("mainDashboard").classList.remove("hidden");
-        $("navUserEmail").textContent = userEmail;
+        renderNavUser();
         $("gridTermSelect").value = gridTerm;
-        showPanel("overview");
+        // Fresh sign-ins and first visits always land on Overview. Only an
+        // actual page refresh restores the panel the user left off at.
+        let savedPanel = null;
+        try { savedPanel = localStorage.getItem("ebdb_last_panel"); } catch (e) {}
+        showPanel(restoreLast && VALID_PANELS.includes(savedPanel) ? savedPanel : "overview");
         hideLoader();
     }
 
@@ -2082,13 +2109,28 @@
         const saved = localStorage.getItem("userEmail");
         if (!saved) { hideLoader(); return; }
         userEmail = saved;
+        const cached = readCachedPayload();
+        if (cached) {
+            // Returning user: paint instantly from last-known data, then
+            // silently revalidate against the backend in the background.
+            applyPayload(cached.data);
+            bootstrapApplication(true);
+            fetchUserData(function () {
+                if (!appBootstrapped) {
+                    hideLoader();
+                    localStorage.removeItem("userEmail");
+                    userEmail = "";
+                }
+            }, { silent: true });
+            return;
+        }
         showLoader("Checking access...");
         fetchUserData(function () {
-            if (!appBootstrapped) {
-                hideLoader();
-                localStorage.removeItem("userEmail");
-                userEmail = "";
-            }
+            if (appBootstrapped) return;
+            hideLoader();
+            localStorage.removeItem("userEmail");
+            clearCachedPayload();
+            userEmail = "";
         });
     }
 
@@ -2101,7 +2143,11 @@
     }
     document.addEventListener("click", function () { $("navMenu").classList.remove("show"); });
 
+    let currentPanel = "overview";
+    const VALID_PANELS = ["overview", "plantilla", "calendar", "links", "members"];
     function showPanel(name) {
+        currentPanel = name;
+        try { localStorage.setItem("ebdb_last_panel", name); } catch (e) {}
         ["panelOverview", "panelPlantilla", "panelCalendar", "panelLinks", "panelMembers"].forEach(id => $(id).classList.add("hidden"));
         $("navMenu").classList.remove("show");
         const target = {
@@ -2124,23 +2170,67 @@
     // ============================================================
     //  DATA
     // ============================================================
-    function fetchUserData(cb) {
-        fetch(`${APPS_SCRIPT_URL}?id=${encodeURIComponent(userEmail)}&token=${encodeURIComponent(CLIENT_API_TOKEN)}`)
+    // Stale-while-revalidate payload cache: the last good response is stored
+    // per-account so repeat visits paint the dashboard instantly, then a
+    // silent background fetch refreshes it. Never stores credentials — only
+    // the same JSON the site already receives on every load.
+    const PAYLOAD_CACHE_KEY = "ebdb_payload_v1";
+    const PAYLOAD_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // ignore cache older than 7 days
+
+    function cachePayload(data) {
+        try { localStorage.setItem(PAYLOAD_CACHE_KEY, JSON.stringify({ email: userEmail, ts: Date.now(), data: data })); } catch (e) {}
+    }
+    function readCachedPayload() {
+        try {
+            const raw = localStorage.getItem(PAYLOAD_CACHE_KEY);
+            if (!raw) return null;
+            const wrap = JSON.parse(raw);
+            if (!wrap || !wrap.data || !Array.isArray(wrap.data.members)) return null;
+            if (wrap.email !== userEmail) return null;                 // different account
+            if (!wrap.ts || Date.now() - wrap.ts > PAYLOAD_MAX_AGE_MS) { clearCachedPayload(); return null; }
+            return wrap;
+        } catch (e) { return null; }
+    }
+    function clearCachedPayload() {
+        try { localStorage.removeItem(PAYLOAD_CACHE_KEY); } catch (e) {}
+    }
+
+    function applyPayload(data) {
+        fullData = data;
+        gridTerm = fullData.currentTerm || (fullData.termList && fullData.termList[0]) || "";
+    }
+
+    function fetchUserData(cb, opts) {
+        opts = opts || {};
+        return fetch(`${APPS_SCRIPT_URL}?id=${encodeURIComponent(userEmail)}&token=${encodeURIComponent(CLIENT_API_TOKEN)}`)
             .then(res => res.json())
             .then(data => {
                 if (data.status === "error") {
+                    // Access revoked / invalid session: drop cached data so a
+                    // stale dashboard never survives an authorization failure.
+                    clearCachedPayload();
+                    if (appBootstrapped) {
+                        doSignout();
+                        showAlert("Access revoked", "Your account no longer has access to the EB Database.");
+                    }
+                    if (!opts.silent) hideLoader();
                     if (cb) cb();
                     return;
                 }
-                fullData = data;
-                gridTerm = fullData.currentTerm || (fullData.termList && fullData.termList[0]) || "";
+                applyPayload(data);
+                cachePayload(data);
                 if (!appBootstrapped) bootstrapApplication();
                 else renderAll();
+                if (!opts.silent) hideLoader();
                 if (cb) cb();
             })
             .catch(() => {
-                showAlert("Connectivity error", "Could not reach the database backend. Check your connection and the deployment URL.");
-                hideLoader();
+                if (appBootstrapped) {
+                    toast("Offline — showing your last loaded data.");
+                } else {
+                    showAlert("Connectivity error", "Could not reach the database backend. Check your connection and the deployment URL.");
+                    hideLoader();
+                }
                 if (cb) cb();
             });
     }
@@ -2169,12 +2259,15 @@
     }
 
     function renderAll() {
+        renderNavUser();
         populateTermSelect();
-        renderOverview();
-        renderPlantilla();
-        renderCalendarView();
-        renderLinksHub();
-        renderMembersPanel();
+        // Only rebuild the visible panel — showPanel re-renders each panel
+        // on tab switch, so the hidden ones don't need refreshing here.
+        if (currentPanel === "overview") renderOverview();
+        else if (currentPanel === "plantilla") renderPlantilla();
+        else if (currentPanel === "calendar") renderCalendarView();
+        else if (currentPanel === "links") renderLinksHub();
+        else if (currentPanel === "members") renderMembersPanel();
     }
 
     // ============================================================
@@ -2182,64 +2275,38 @@
     // ============================================================
     function renderOverview() {
         if (!fullData) return;
-        $("termBannerTitle").textContent = fullData.currentTerm ? fullData.currentTerm + " — EB Database" : "EB Database";
-        $("termBannerSub").textContent = "Editorial Board term directory · Plantilla · Calendar · Links";
+        $("ovEyebrow").textContent = fullData.currentTerm || "EB Database";
         $("managerTermBtnWrap").classList.toggle("hidden", !fullData.isManager);
 
         const active = fullData.activities || [];
         const today = todayISO();
-        const todays = active.filter(a => covers(a, today));
+        const todays = active.filter(a => covers(a, today))
+            .sort((a, b) => (dayTimeFor(a, today).start || "99:99").localeCompare(dayTimeFor(b, today).start || "99:99"));
         const upcoming = active
             .filter(a => (a.endDate || a.startDate) > today && inFlightActivity(a))
             .sort((a, b) => (a.startDate + a.start).localeCompare(b.startDate + b.start));
 
-        $("statWorkshops").textContent = active.filter(a => a.category === "Workshop" && inFlightActivity(a)).length;
-        $("statUpcoming").textContent = upcoming.length;
-        $("statMembers").textContent = (fullData.members || []).filter(m => m.isActive).length;
-        $("statLinks").textContent = (fullData.links || []).filter(l => l.active).length;
+        const rows = [
+            ...todays.map(a => activityRowHtml(a, today, true)),
+            ...upcoming.slice(0, 5).map(a => activityRowHtml(a))
+        ];
+        $("comingList").innerHTML = rows.length
+            ? rows.join("")
+            : '<div class="empty-state">Nothing scheduled yet.</div>';
 
-        $("todayList").innerHTML = todays.length
-            ? todays.sort((a, b) => (dayTimeFor(a, today).start || "99:99").localeCompare(dayTimeFor(b, today).start || "99:99")).map(a => activityRowHtml(a, today)).join("")
-            : '<div class="empty-state">Nothing scheduled today.</div>';
-
-        $("upcomingList").innerHTML = upcoming.length
-            ? upcoming.slice(0, 6).map(activityRowHtml).join("")
-            : '<div class="empty-state">No upcoming activities.</div>';
-
-        const essentials = (fullData.essentialLinks || []).map(x => String(x));
         const links = (fullData.links || []).filter(l => l.active).sort((a, b) => a.order - b.order);
-        const pinned = links.filter(l => essentials.includes(l.name));
-        const rest = links.filter(l => !essentials.includes(l.name));
-        $("quickLinks").innerHTML = pinned.concat(rest).slice(0, 6)
+        $("quickLinks").innerHTML = links.slice(0, 6)
             .map(l => linkCardHtml(l, false)).join("")
             || '<div class="empty-state">No links yet.</div>';
-
-        // Free today
-        const dayIdx = dayIdxFromISO(today);
-        const dayName = DAYS[dayIdx];
-        const free = (fullData.members || []).filter(m => m.isActive).map(m => {
-            const av = availabilityFor(m.email, gridTerm);
-            const blocks = av ? parseDayBlocks(av[dayName]) : null;
-            return { m, blocks };
-        }).filter(x => x.blocks && x.blocks.length);
-        $("freeTodayList").innerHTML = free.length
-            ? free.map(x => `
-                <div class="item-row">
-                    <div class="grow">
-                        <h4>${escHtml(x.m.fullName || x.m.email)}</h4>
-                        <div class="meta">Free: ${blockChips(x.blocks)}</div>
-                    </div>
-                </div>`).join("")
-            : '<div class="empty-state">No availability set for today.</div>';
     }
 
-    function activityRowHtml(a, iso) {
-        const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+    function activityRowHtml(a, iso, badge) {
+        const color = catColor(a.category);
         const dt = iso ? dayTimeFor(a, iso) : { start: a.start, end: a.end };
         return `
         <div class="item-row">
             <div class="grow" style="cursor:pointer;" data-click="openDayDrawer('${a.startDate}')">
-                <h4>${escHtml(a.title)} <span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span>${a.classification ? ` <span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}</h4>
+                <h4>${escHtml(a.title)} ${badge ? `<span class="tbadge" style="background:#10b981;color:#fff;">Today</span> ` : ""}<span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span>${a.classification ? ` <span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}</h4>
                 <div class="meta">${escHtml(activityDateRange(a))}</div>
             </div>
         </div>`;
@@ -2271,9 +2338,7 @@
                 if (!blocks || !blocks.length) {
                     return `<td class="pg-cell empty">—</td>`;
                 }
-                const hrs = blocksFreeHours(blocks);
-                const alpha = Math.min(1, hrs / 12) * 0.45;
-                return `<td class="pg-cell" style="background:rgba(16,185,129,${alpha.toFixed(2)});">
+                return `<td class="pg-cell">
                     <span class="blk">${blockChips(blocks)}</span></td>`;
             }).join("");
             const conflict = av && av.conflicts ? `<small style="color:var(--warning);">⚠ ${escHtml(av.conflicts)}</small>` : "";
@@ -2784,10 +2849,11 @@
     function renderFilterChecks() {
         let catHtml = "";
         CATEGORY_ORDER.forEach(c => {
-            const color = CATEGORY_COLORS[c] || CATEGORY_COLORS.Other;
+            const color = catColor(c);
             catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${c}')"><span class="filter-dot" style="background:${color};"></span>${escHtml(c)}</span>`;
         });
         $("filterCatChecks").innerHTML = catHtml;
+        renderCatColorEditor();
         let secHtml = "";
         ACT_SECTIONS.forEach(s => {
             secHtml += `<span class="filter-check${filterSectionSet.has(s) ? " active" : ""}" data-click="toggleFilterSection('${s}')">${escHtml(s)}</span>`;
@@ -2798,6 +2864,64 @@
             invHtml += `<span class="filter-check${filterInvolvedSet.has(v) ? " active" : ""}" data-click="toggleFilterInvolved('${v}')">${escHtml(v)}</span>`;
         });
         $("filterInvolvedChecks").innerHTML = invHtml;
+    }
+    // Top 3-only inline editor: revealed via the "Edit" button beside the
+    // Category label. One color picker per category, auto-saved on change.
+    // Custom colors are stored server-side (Settings) and apply for everyone
+    // — calendar bars, filter dots, badges, and lists.
+    let catEditorOpen = false;
+    function toggleCatColorEditor() {
+        catEditorOpen = !catEditorOpen;
+        renderFilterChecks();
+    }
+    function renderCatColorEditor() {
+        const ed = $("catColorEditor");
+        const btn = $("catColorEditBtn");
+        if (!ed) return;
+        if (!fullData || !fullData.isManager) {
+            ed.classList.add("hidden"); ed.innerHTML = "";
+            if (btn) btn.style.display = "none";
+            return;
+        }
+        if (btn) btn.style.display = "";
+        if (!catEditorOpen) { ed.classList.add("hidden"); ed.innerHTML = ""; return; }
+        ed.classList.remove("hidden");
+        let rows = `<div class="cat-color-head">Category colors</div>`;
+        CATEGORY_ORDER.forEach(c => {
+            rows += `<div class="cat-color-row">
+                <span class="filter-dot" style="background:${catColor(c)};flex-shrink:0;"></span>
+                <span class="cat-color-name">${escHtml(c)}</span>
+                <input type="color" value="${catColor(c)}" data-change="setCatColor('${c}', this.value)" title="Pick a color for ${escHtml(c)}">
+            </div>`;
+        });
+        rows += `<button type="button" class="btn btn-sm" style="width:100%;margin-top:6px;" data-click="resetCatColors()">Reset to defaults</button>`;
+        ed.innerHTML = rows;
+    }
+    function setCatColor(cat, hex) {
+        if (!/^#[0-9a-fA-F]{6}$/.test(hex || "")) return;
+        const colors = Object.assign({}, (fullData && fullData.categoryColors) || {});
+        colors[cat] = hex.toUpperCase();
+        sendPostRequest({ action: "Set Category Colors", colors: colors })
+            .then(() => {
+                fullData.categoryColors = colors;
+                renderFilterChecks();
+                renderAll();
+                toast("Color updated for " + cat + ".");
+            })
+            .catch(() => {});
+    }
+    function resetCatColors() {
+        showConfirm("Reset all category colors to the defaults?").then(yes => {
+            if (!yes) return;
+            sendPostRequest({ action: "Set Category Colors", colors: {} })
+                .then(() => {
+                    fullData.categoryColors = {};
+                    renderFilterChecks();
+                    renderAll();
+                    toast("Category colors reset.");
+                })
+                .catch(() => {});
+        });
     }
     function toggleFilterCat(c) {
         if (filterCatSet.has(c)) filterCatSet.delete(c); else filterCatSet.add(c);
@@ -2981,7 +3105,7 @@
             for (let li = 0; li < visibleLanes; li++) {
                 const a = lanes[li].find(x => covers(x, iso));
                 if (!a) { pills += `<div class="cal-spacer"></div>`; continue; }
-                const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+                const color = catColor(a.category);
                 const dim = isPastActivity(a) ? " dim" : "";
                 const multi = isMultiDay(a);
                 const isStart = a.startDate === iso;
@@ -3048,7 +3172,7 @@
         if (acts.length) {
             html += `<h4 style="font-size:0.8rem;margin-bottom:10px;">Activities</h4>`;
             html += acts.map(a => {
-                const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+                const color = catColor(a.category);
                 const sColor = STATUS_META[a.status] || "#64748b";
                 const dt = dayTimeFor(a, iso);
                 return `<div class="day-drawer-item">
@@ -3108,7 +3232,7 @@
             .filter(a => !q || (a.title || "").toLowerCase().includes(q) || (a.section || "").toLowerCase().includes(q))
             .sort((a, b) => (a.startDate + a.start).localeCompare(b.startDate + b.start));
         $("workshopRows").innerHTML = list.map(a => {
-            const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+            const color = catColor(a.category);
             const sColor = STATUS_META[a.status] || "#64748b";
             const dim = isPastActivity(a) ? " dim" : "";
             return `<div class="tracker-card${dim}" data-click="openActivityDetail('${a.id}')">
@@ -3127,7 +3251,7 @@
     function openActivityDetail(id) {
         const a = (fullData.activities || []).find(x => x.id === id);
         if (!a) return;
-        const color = CATEGORY_COLORS[a.category] || CATEGORY_COLORS.Other;
+        const color = catColor(a.category);
         const sColor = STATUS_META[a.status] || "#64748b";
         const when = activityDateRange(a) + (a.start ? " · " + fmtTime(a.start) + (a.end && a.end !== a.start ? " – " + fmtTime(a.end) : "") : "");
         let links = [];
@@ -3329,12 +3453,10 @@
         });
         $("linkCatLegend").innerHTML = legend;
 
-        const essentials = (fullData.essentialLinks || []).map(x => String(x));
         const links = (fullData.links || []).filter(l => l.active)
             .filter(l => !q || (l.name || "").toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q))
             .filter(l => linkCatFilter === "All" || l.category === linkCatFilter)
-            .sort((a, b) => (b.pinned - a.pinned) || (a.order - b.order))
-            .map(l => Object.assign(l, { pinned: essentials.includes(l.name) }));
+            .sort((a, b) => (a.order - b.order));
 
         $("linkGrid").innerHTML = links.length
             ? links.map(l => linkCardHtml(l, true)).join("")
@@ -3342,14 +3464,13 @@
     }
 
     function linkCardHtml(l, withActions) {
-        const pinned = l.pinned;
         const actions = withActions ? `
             <div class="link-actions">
                 <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); openLinkModal('${l.id}')" title="Edit link"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
                 <button class="btn btn-sm btn-ghost" data-click="event.preventDefault(); event.stopPropagation(); deleteLink('${l.id}')" title="Delete link"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>
             </div>` : "";
         return `
-        <a class="link-card ${pinned ? "pinned" : ""}" href="${escHtml(l.url)}" target="_blank" rel="noopener">
+        <a class="link-card" href="${escHtml(l.url)}" target="_blank" rel="noopener">
             ${actions}
             <h4>${escHtml(l.name)}</h4>
             ${l.description ? `<div class="desc">${escHtml(l.description)}</div>` : ""}
@@ -3626,8 +3747,14 @@
         }
     });
 
+    // Boot immediately at end-of-body instead of waiting for window.onload
+    // (which also waits for fonts/images) so the access check / cached
+    // restore starts as early as possible.
+    initTheme();
+    calInit();
+    restoreSession();
+
     window.onload = function () {
-        initTheme();
         try {
             renderGoogleSignInButton(document.documentElement.getAttribute("data-theme") || "light");
         } catch (e) {
@@ -3635,8 +3762,6 @@
                 try { renderGoogleSignInButton(document.documentElement.getAttribute("data-theme") || "light"); } catch (e2) {}
             }, 1200);
         }
-        calInit();
-        restoreSession();
     };
     </script>
 </body>
