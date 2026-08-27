@@ -904,6 +904,17 @@
     }
     .act-slide-close:hover { background: rgba(0,0,0,0.06); }
 
+    .pending-notif-card { border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--bg-canvas); transition: border-color 0.15s; }
+    .pending-notif-card:hover { border-color: var(--dlsu-green); }
+    .pending-notif-card h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 4px; }
+    .pending-notif-card .meta { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 8px; }
+    .pending-notif-card .resp-rate { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
+    .pending-notif-card .resp-rate .bar-wrap { height: 3px; background: var(--border-soft); border-radius: 99px; overflow: hidden; margin-top: 3px; }
+    .pending-notif-card .resp-rate .bar-fill { height: 100%; background: var(--dlsu-green); border-radius: 99px; }
+    .pending-notif-respond { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 700; color: var(--dlsu-green); cursor: pointer; border: none; background: none; padding: 0; }
+    .pending-notif-respond:hover { text-decoration: underline; }
+    .pending-notif-empty { text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 0.82rem; }
+
     .act-detail-row { display: flex; gap: 10px; margin-bottom: 14px; }
     .act-detail-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; min-width: 100px; flex-shrink: 0; }
     .act-detail-value { font-size: 0.88rem; color: var(--text-main); line-height: 1.4; }
@@ -1313,6 +1324,17 @@
                 <button class="btn" data-click="closeMeetEditor()">Cancel</button>
                 <button class="btn btn-primary" data-once data-click="saveMeet()">Save Meet</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Pending meets notification — left slide-out -->
+    <div class="act-slide-overlay hidden" id="pendingNotif" data-click="closePendingNotif()">
+        <div class="act-slide-panel" data-click="event.stopPropagation()" style="max-width:380px;">
+            <div class="act-slide-head">
+                <h3>Pending Responses</h3>
+                <button class="act-slide-close" data-click="closePendingNotif()">&times;</button>
+            </div>
+            <div class="act-slide-body" id="pendingNotifList"></div>
         </div>
     </div>
 
@@ -1913,25 +1935,6 @@
         }
         return { start: a.start || "", end: a.end || "" };
     }
-    function actScheduleIsUniform(a) {
-        if (!a.schedule || !a.schedule.length) return true;
-        const seen = new Set();
-        a.schedule.forEach(x => seen.add((x.s || "") + "|" + (x.e || "")));
-        return seen.size <= 1;
-    }
-    function actTimeSummary(a) {
-        const fmt = t => t ? fmtTime(t) : "";
-        if (!a.schedule || !a.schedule.length) {
-            const s = fmt(a.start), e = fmt(a.end);
-            return escHtml(s) + (e && e !== s ? " – " + escHtml(e) : "");
-        }
-        const starts = a.schedule.map(x => x.s).filter(Boolean);
-        const ends = a.schedule.map(x => x.e).filter(Boolean);
-        const minS = starts.length ? starts.slice().sort()[0] : a.start;
-        const maxE = ends.length ? ends.slice().sort()[ends.length - 1] : a.end;
-        const txt = fmt(minS) + (fmt(maxE) && fmt(maxE) !== fmt(minS) ? " – " + fmt(maxE) : "");
-        return actScheduleIsUniform(a) ? escHtml(txt) : escHtml(txt) + ' <span style="opacity:.65">(varies)</span>';
-    }
     function collectScheduleRows() {
         const out = [];
         document.querySelectorAll("#actScheduleRows .sched-row").forEach(r => {
@@ -2388,6 +2391,7 @@
             : '<div class="empty-state">Nothing scheduled yet.</div>';
 
         renderOverviewQuickLinks();
+        renderPendingNotif();
     }
 
     function renderOverviewQuickLinks() {
@@ -2468,6 +2472,69 @@
         if (!fullData) return;
         renderMeetsList();
         renderCommitments();
+    }
+
+    function pendingMeetsForUser() {
+        if (!fullData || !userEmail) return [];
+        const active = (fullData.members || []).filter(m => m.isActive);
+        return meetsList().filter(m => {
+            if (m.status !== "Open") return false;
+            if (responseFor(m.id, userEmail)) return false;
+            return responsesFor(m.id).length < active.length;
+        });
+    }
+
+    function renderPendingNotif() {
+        const pending = pendingMeetsForUser();
+        const list = $("pendingNotifList");
+        if (!list) return;
+        if (!pending.length) {
+            list.innerHTML = '<div class="pending-notif-empty">You\'re all caught up!</div>';
+            return;
+        }
+        const active = (fullData.members || []).filter(m => m.isActive).length;
+        list.innerHTML = pending.map(m => {
+            const respCount = responsesFor(m.id).length;
+            const pct = active ? Math.round(respCount / active * 100) : 0;
+            const dateTxt = (m.days || []).map(d => fmtDateMed(d)).join(" · ");
+            return `<div class="pending-notif-card">
+                <h4>${escHtml(m.title)}</h4>
+                <div class="meta">${escHtml(dateTxt)}</div>
+                <div class="resp-rate">${respCount}/${active} responded<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div></div>
+                <button class="pending-notif-respond" data-click="goToMeetFromNotif('${m.id}')">Respond now →</button>
+            </div>`;
+        }).join("");
+        const ov = $("pendingNotif");
+        const dismissKey = "ebdb_notif_dismissed";
+        const dismissed = JSON.parse(localStorage.getItem(dismissKey) || "null");
+        const currentIds = pending.map(m => m.id).sort().join(",");
+        if (!dismissed || dismissed.ids !== currentIds) {
+            openPendingNotif();
+        }
+    }
+
+    function openPendingNotif() {
+        const ov = $("pendingNotif");
+        ov.classList.remove("hidden");
+        void ov.offsetWidth;
+        ov.classList.add("open");
+        ov.querySelector(".act-slide-panel").classList.add("open");
+    }
+
+    function closePendingNotif() {
+        const ov = $("pendingNotif");
+        if (ov.classList.contains("hidden")) return;
+        ov.classList.remove("open");
+        ov.querySelector(".act-slide-panel").classList.remove("open");
+        const pending = pendingMeetsForUser();
+        const currentIds = pending.map(m => m.id).sort().join(",");
+        localStorage.setItem("ebdb_notif_dismissed", JSON.stringify({ ids: currentIds, ts: Date.now() }));
+    }
+
+    function goToMeetFromNotif(meetId) {
+        closePendingNotif();
+        showPanel("meets");
+        setTimeout(function () { openMeetModal(meetId); }, 80);
     }
 
     function renderMeetsList() {
