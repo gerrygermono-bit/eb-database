@@ -26,6 +26,7 @@
         --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
         --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.05);
         --shadow-lg: 0 20px 40px -8px rgba(0,0,0,0.10), 0 8px 16px -6px rgba(0,0,0,0.05);
+        --overlay-bg: rgba(15, 23, 42, 0.35);
     }
 
     [data-theme="dark"] {
@@ -60,6 +61,14 @@
     @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
     .hidden { display: none !important; }
+
+    /* CSS containment: isolate layout/paint scope for large containers */
+    [id^="panel"] { contain: layout style; }
+    .modal-overlay { contain: layout style; }
+    .act-slide-overlay { contain: layout style; }
+    .filter-sidebar-overlay { contain: layout style; }
+    .cal-grid { contain: layout style; }
+    .mt-grid { contain: layout style; }
 
     button { font-family: inherit; }
 
@@ -390,12 +399,20 @@
     /* ---------- Meets ---------- */
     .meet-card { cursor: pointer; }
     .mt-scroll { overflow-x: auto; }
-    .mt-grid { display: grid; gap: 3px; min-width: 0; user-select: none; -webkit-user-select: none; touch-action: none; }
+    .mt-grid { display: grid; gap: 3px; min-width: 0; user-select: none; -webkit-user-select: none; touch-action: none; overflow: hidden; }
     .mt-head { text-align: center; font-size: 0.7rem; font-weight: 800; padding: 4px 2px; border-radius: 6px; }
     .mt-head .mini { display: block; font-weight: 700; font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
     .mt-time { font-size: 0.6rem; color: var(--text-muted); text-align: right; padding-right: 5px; align-self: center; white-space: nowrap; }
-    .mt-cell { height: 16px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: transform 0.08s; }
+    .mt-cell { height: 20px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: transform 0.08s; }
     .mt-cell:hover { transform: scale(1.15); }
+    .mt-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 0.65rem; color: var(--text-muted); }
+    .mt-legend-swatch { width: 18px; height: 10px; border-radius: 3px; border: 1px solid var(--border-soft); flex-shrink: 0; }
+    .mt-legend-label { margin: 0 4px; white-space: nowrap; }
+    .meet-tooltip { position: fixed; z-index: 999; pointer-events: none; background: var(--surface-solid); color: var(--text-main); border: 1px solid var(--border-soft); box-shadow: var(--shadow-md); border-radius: 10px; padding: 10px 14px; font-size: 0.75rem; font-weight: 600; line-height: 1.5; max-width: 240px; white-space: normal; opacity: 0; transition: opacity 0.12s; }
+    .meet-tooltip.show { opacity: 1; }
+    .meet-tooltip .tt-header { font-weight: 800; font-size: 0.78rem; margin-bottom: 4px; }
+    .meet-tooltip .tt-divider { height: 1px; background: var(--border-soft); margin: 5px 0; }
+    .meet-tooltip .tt-names { color: var(--text-muted); font-weight: 600; font-size: 0.72rem; }
     .mt-cell.mine { background: var(--accent); border-color: var(--accent); }
     .mt-cell.mine:hover { filter: brightness(1.1); }
     .meet-actions-row { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -585,21 +602,6 @@
 
     /* ---------- Links ---------- */
     .cat-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px 34px; align-items: start; }
-    .filter-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 16px;
-        height: 16px;
-        padding: 0 4px;
-        margin-left: 2px;
-        border-radius: 999px;
-        background: var(--dlsu-green);
-        color: #fff;
-        font-size: 0.62rem;
-        font-weight: 800;
-        line-height: 1;
-    }
     @media (max-width: 900px) { .cat-columns { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .cat-columns { grid-template-columns: 1fr; } }
     .cat-col { min-width: 0; }
@@ -681,6 +683,12 @@
 
     /* ---------- Meet grids ---------- */
     .avail-scroll { overflow-x: auto; }
+    .resp-progress { height: 4px; background: var(--border-soft); border-radius: 99px; overflow: hidden; margin-bottom: 4px; max-width: 160px; }
+    .resp-bar { height: 100%; background: var(--dlsu-green); border-radius: 99px; transition: width 0.3s; min-width: 2px; }
+    .mt-resp-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 3px; vertical-align: middle; flex-shrink: 0; }
+    .mt-resp-dot.responded { background: var(--accent); }
+    .mt-resp-dot.pending-dot { background: transparent; border: 1.5px solid var(--border-soft); }
+    .mt-hour-band { background: rgba(16,185,129,0.02); }
 
     .edit-note { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-canvas); border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
 
@@ -736,10 +744,9 @@
 
     .sched-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
     .sched-row .sched-date { font-size: 0.8rem; font-weight: 700; min-width: 96px; color: var(--text-main); }
-    .sched-row input[type="time"] { width: 110px; padding: 7px 8px; border: 1px solid var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.8rem; background: var(--bg-canvas); color: var(--text-main); }
-    .sched-row input[type="time"]:focus { outline: none; border-color: var(--dlsu-green); }
-    .sched-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-soft); flex-wrap: wrap; }
+    .sched-row input[type="time"],
     .sched-toolbar input[type="time"] { width: 110px; padding: 7px 8px; border: 1px solid var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.8rem; background: var(--bg-canvas); color: var(--text-main); }
+    .sched-row input[type="time"]:focus,
     .sched-toolbar input[type="time"]:focus { outline: none; border-color: var(--dlsu-green); }
     .sched-toolbar .sched-date { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -833,7 +840,7 @@
 
     /* ---------- Filter sidebar ---------- */
     .filter-sidebar-overlay {
-        position: fixed; inset: 0; background: rgba(15,23,42,0.35); z-index: 250;
+        position: fixed; inset: 0; background: var(--overlay-bg); z-index: 250;
         opacity: 0; pointer-events: none; transition: opacity 0.25s;
     }
     .filter-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
@@ -871,7 +878,7 @@
 
     /* ---------- Activity detail / edit slide-out (left side) ---------- */
     .act-slide-overlay {
-        position: fixed; inset: 0; background: rgba(15,23,42,0.35); z-index: 260;
+        position: fixed; inset: 0; background: var(--overlay-bg); z-index: 260;
         opacity: 0; pointer-events: none; transition: opacity 0.25s;
     }
     .act-slide-overlay.open { opacity: 1; pointer-events: auto; }
@@ -1324,7 +1331,15 @@
                 <div id="meetHeatmapWrap" class="hidden" style="margin-top:12px;">
                     <div id="meetOverlapStrip" style="margin-bottom:12px;"></div>
                     <div class="avail-scroll"><div id="meetHeatmap"></div></div>
-                    <div class="hint" style="margin-top:6px;">Darker cells = more EBs available. Hover a cell to see who.</div>
+                    <div class="hint" style="margin-top:6px;">Colored cells show availability density. Hover a cell to see who.</div>
+                    <div class="mt-legend">
+                        <span class="mt-legend-label">Fewer</span>
+                        <span class="mt-legend-swatch" style="background:#fde68a;"></span>
+                        <span class="mt-legend-swatch" style="background:#86efac;"></span>
+                        <span class="mt-legend-swatch" style="background:#22c55e;"></span>
+                        <span class="mt-legend-swatch" style="background:#047857;"></span>
+                        <span class="mt-legend-label">More available</span>
+                    </div>
                     <div id="meetRespondents" style="margin-top:14px;"></div>
                 </div>
                 <div id="meetMyAvailWrap" class="hidden" style="margin-top:14px;">
@@ -1711,6 +1726,8 @@
         </div>
     </div>
 
+    <div class="meet-tooltip" id="meetTooltip"></div>
+
     <script>
     // ============================================================
     //  SETUP CONSTANTS — EDIT THESE AFTER DEPLOYING THE BACKEND
@@ -1767,6 +1784,9 @@
     }
 
     let calYear, calMonth;
+    let _cachedFilteredActs = null;
+    let _calGridEl = null;
+    let _calOverlapEl = null;
     let linkSearchText = "";
     let linkCatSelection = [];
     let meetFinalPick = null;
@@ -2209,6 +2229,12 @@
 
     let currentPanel = "overview";
     const VALID_PANELS = ["overview", "meets", "calendar", "links", "members"];
+    const _panelRendered = { overview: false, meets: false, calendar: false, links: false, members: false };
+
+    function markPanelsDirty() {
+        Object.keys(_panelRendered).forEach(k => { _panelRendered[k] = false; });
+    }
+
     function showPanel(name) {
         currentPanel = name;
         try { localStorage.setItem("ebdb_last_panel", name); } catch (e) {}
@@ -2223,11 +2249,11 @@
         }[name];
         if (target) {
             $(target).classList.remove("hidden");
-            if (name === "overview") renderOverview();
-            if (name === "meets") renderMeets();
-            if (name === "calendar") renderCalendarView();
-            if (name === "links") renderLinksHub();
-            if (name === "members") renderMembersPanel();
+            if (name === "overview" && !_panelRendered.overview) { renderOverview(); _panelRendered.overview = true; }
+            if (name === "meets" && !_panelRendered.meets) { renderMeets(); _panelRendered.meets = true; }
+            if (name === "calendar" && !_panelRendered.calendar) { renderCalendarView(); _panelRendered.calendar = true; }
+            if (name === "links" && !_panelRendered.links) { renderLinksHub(); _panelRendered.links = true; }
+            if (name === "members" && !_panelRendered.members) { renderMembersPanel(); _panelRendered.members = true; }
         }
     }
 
@@ -2263,6 +2289,7 @@
         fullData = data;
         gridTerm = fullData.currentTerm || (fullData.termList && fullData.termList[0]) || "";
         if (!pinPendingPins) lastSavedPins = (fullData.pinnedLinkCats || []).slice();
+        markPanelsDirty();
     }
 
     function fetchUserData(cb, opts) {
@@ -2410,6 +2437,33 @@
         return `${escHtml(weekdayShort(iso))}<span class="mini">${escHtml(fmtDateMed(iso))}</span>`;
     }
 
+    function heatmapColor(count, total) {
+        if (!count) return { bg: 'transparent', border: 'transparent', light: false };
+        const t = Math.min(count / total, 1);
+        const stops = [
+            { t: 0,    r: 253, g: 230, b: 138 },
+            { t: 0.33, r: 134, g: 239, b: 172 },
+            { t: 0.66, r:  34, g: 197, b:  94 },
+            { t: 1,    r:   4, g: 120, b:  87 }
+        ];
+        let lo = stops[0], hi = stops[stops.length - 1];
+        for (let i = 0; i < stops.length - 1; i++) {
+            if (t >= stops[i].t && t <= stops[i + 1].t) { lo = stops[i]; hi = stops[i + 1]; break; }
+        }
+        const range = hi.t - lo.t || 1;
+        const f = (t - lo.t) / range;
+        const r = Math.round(lo.r + (hi.r - lo.r) * f);
+        const g = Math.round(lo.g + (hi.g - lo.g) * f);
+        const b = Math.round(lo.b + (hi.b - lo.b) * f);
+        const bg = `rgb(${r},${g},${b})`;
+        const br = Math.max(0, r - 25);
+        const bg2 = Math.max(0, g - 25);
+        const b2 = Math.max(0, b - 25);
+        const border = `rgb(${br},${bg2},${b2})`;
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return { bg, border, light: luminance > 0.55 };
+    }
+
     function renderMeets() {
         if (!fullData) return;
         renderMeetsList();
@@ -2432,6 +2486,7 @@
                 <div class="grow">
                     <h4>${escHtml(m.title)} ${meetStatusBadge(m.status)}</h4>
                     <div class="meta">${escHtml((m.days || []).map(d => fmtDateMed(d)).join(" · "))}</div>
+                    <div class="resp-progress"><div class="resp-bar" style="width:${activeCount ? Math.round(respCount / activeCount * 100) : 0}%"></div></div>
                     <div class="meta">${respCount}/${activeCount} responded</div>
                     ${finalLine}
                 </div>
@@ -2541,15 +2596,16 @@
             });
         });
         const total = Math.max(resp.length, 1);
-        let html = `<div class="mt-grid" style="grid-template-columns:56px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
+        let html = `<div class="mt-grid" style="grid-template-columns:64px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
         html += `<div></div>` + days.map(d => `<div class="mt-head">${mtDayHead(d)}</div>`).join("");
         slots.forEach((s, si) => {
-            html += `<div class="mt-time">${s % 60 === 0 ? escHtml(fmtTime(minToHHMM(s))) : ""}</div>`;
+            const isHour = s % 60 === 0;
+            html += `<div class="mt-time">${isHour ? escHtml(fmtTime(minToHHMM(s))) : ""}</div>`;
             days.forEach(d => {
                 const c = counts[d][si];
-                const alpha = c ? (0.18 + 0.72 * (c / total)) : 0;
-                const title = c ? `${c} free — ${who[d][si].join(", ")}` : "Nobody available";
-                html += `<div class="mt-cell" title="${escHtml(title)}" style="${c ? `background:rgba(16,185,129,${alpha.toFixed(2)});border-color:rgba(16,185,129,${Math.min(1, alpha + 0.15).toFixed(2)});` : ""}"></div>`;
+                const hc = heatmapColor(c, total);
+                const names = who[d][si].join(", ");
+                html += `<div class="mt-cell" data-tt-c="${c}" data-tt-t="${c ? escHtml(names) : ''}" style="${c ? `background:${hc.bg};border-color:${hc.border};` : ''}"></div>`;
             });
         });
         html += `</div>`;
@@ -2578,10 +2634,11 @@
         $("meetOverlapStrip").innerHTML = `<div class="edit-note" style="margin-bottom:0;">${overlapMsg}</div>`;
 
         const respEmails = new Set(resp.map(r => r.email));
-        $("meetRespondents").innerHTML = '<div class="mt-respondents"><span class="sub" style="font-size:0.75rem;font-weight:700;">Responded:</span>' +
+        $("meetRespondents").innerHTML = '<div class="mt-respondents"><span class="sub" style="font-size:0.75rem;font-weight:700;">' +
+            `${resp.length} of ${activeMembers.length} responded</span>` +
             activeMembers.map(mem => {
                 const did = respEmails.has(mem.email);
-                return `<span class="mt-respondent${did ? "" : " pending"}">${did ? "✓" : "…"} ${escHtml(mem.fullName || mem.email)}</span>`;
+                return `<span class="mt-respondent${did ? "" : " pending"}"><span class="mt-resp-dot ${did ? "responded" : "pending-dot"}"></span>${escHtml(mem.fullName || mem.email)}</span>`;
             }).join("") + '</div>';
 
         const mine = responseFor(m.id, userEmail);
@@ -2628,7 +2685,25 @@
             editWrap.classList.toggle("hidden", !opening);
             if (opening) heatWrap.classList.add("hidden");
         }
-        renderMeetDetail();
+        const m = meetById(currentMeetId);
+        if (!m) return;
+        const isOpen = m.status === "Open";
+        const resp = responsesFor(m.id);
+        const heatOpen = !heatWrap.classList.contains("hidden");
+        const editOpen = !editWrap.classList.contains("hidden");
+        $("toggleHeatmapBtn").innerHTML = heatOpen
+            ? "▾ Hide responses heatmap"
+            : `▸ View responses heatmap${resp.length ? ` (${resp.length})` : ""}`;
+        const editBtn = $("toggleEditorBtn");
+        if (isOpen) {
+            editBtn.classList.remove("hidden");
+            const mine = responseFor(m.id, userEmail);
+            editBtn.innerHTML = editOpen
+                ? "▾ Hide my availability"
+                : (mine ? "✎ Update my availability ✓" : "✎ Add my availability");
+        } else {
+            editBtn.classList.add("hidden");
+        }
     }
 
     // ----- Availability editor -----
@@ -2640,7 +2715,7 @@
     function renderMeetEditGrid(m) {
         const slots = meetSlotsOf(m);
         const days = m.days || [];
-        let html = `<div class="mt-grid" style="grid-template-columns:56px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
+        let html = `<div class="mt-grid" style="grid-template-columns:64px repeat(${Math.max(days.length, 1)}, minmax(44px, 1fr));">`;
         html += `<div></div>` + days.map(d => `<div class="mt-head">${mtDayHead(d)}</div>`).join("");
         slots.forEach((s, si) => {
             html += `<div class="mt-time">${s % 60 === 0 ? escHtml(fmtTime(minToHHMM(s))) : ""}</div>`;
@@ -2740,6 +2815,54 @@
     document.addEventListener("pointercancel", endMeetDrag);
 
     window.addEventListener("blur", function () { meetDrag = null; });
+
+    // ----- Heatmap tooltip -----
+    (function () {
+        const tip = $("meetTooltip");
+        let _moveRaf = null;
+        let _lastMoveEvt = null;
+        function cellData(el) {
+            const cell = el && el.closest ? el.closest("#meetHeatmap .mt-cell") : null;
+            if (!cell) return null;
+            const c = parseInt(cell.getAttribute("data-tt-c"), 10);
+            const t = cell.getAttribute("data-tt-t");
+            return (c && t !== null) ? { c, t } : null;
+        }
+        function showTip(e) {
+            const d = cellData(e.target);
+            if (!d) { hideTip(); return; }
+            const total = Math.max(responsesFor(currentMeetId).length, 1);
+            tip.innerHTML =
+                '<div class="tt-header">' + d.c + ' of ' + total + ' available</div>' +
+                (d.t ? '<div class="tt-divider"></div><div class="tt-names">' + d.t + '</div>' : '');
+            tip.classList.add("show");
+            _applyTipPos(e);
+        }
+        function _applyTipPos(e) {
+            if (!tip.classList.contains("show")) return;
+            const pad = 14;
+            let x = e.clientX + pad, y = e.clientY + pad;
+            const tw = tip.offsetWidth, th = tip.offsetHeight;
+            if (x + tw > window.innerWidth - pad) x = e.clientX - tw - pad;
+            if (y + th > window.innerHeight - pad) y = e.clientY - th - pad;
+            tip.style.left = Math.max(pad, x) + "px";
+            tip.style.top = Math.max(pad, y) + "px";
+        }
+        function moveTip(e) {
+            _lastMoveEvt = e;
+            if (_moveRaf) return;
+            _moveRaf = requestAnimationFrame(function () {
+                _moveRaf = null;
+                if (_lastMoveEvt) _applyTipPos(_lastMoveEvt);
+            });
+        }
+        function hideTip() { tip.classList.remove("show"); }
+        document.addEventListener("mouseover", showTip);
+        document.addEventListener("mousemove", moveTip);
+        document.addEventListener("mouseout", function (e) {
+            if (!cellData(e.relatedTarget)) hideTip();
+        });
+    })();
 
     function saveMeetResponse() {
         const slots = {};
@@ -3249,12 +3372,15 @@
     function renderCalendarView() {
         if (!fullData) return;
         $("calMonthLabel").textContent = monthLabel();
+        _cachedFilteredActs = filteredActivities();
         renderCalGrid();
         renderOverlapBanner();
+        _cachedFilteredActs = null;
         renderWorkshopList();
     }
 
     function filteredActivities() {
+        if (_cachedFilteredActs) return _cachedFilteredActs;
         return (fullData.activities || []).filter(a => {
             if (filterCatSet.size && !filterCatSet.has(a.category)) return false;
             if (filterStatus && a.status !== filterStatus) return false;
@@ -3307,6 +3433,46 @@
         return lanes.map(l => l.acts);
     }
 
+    function renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments) {
+        if (!inMonth) return `<div class="cal-day out"></div>`;
+        const dayActs = acts.filter(a => covers(a, iso));
+        const overlaps = findOverlapIds(dayActs, iso);
+        const cls = "cal-day" + (iso === today ? " today" : "");
+        let pills = "";
+        const visibleLanes = Math.min(lanes.length, MAX_LANES);
+        for (let li = 0; li < visibleLanes; li++) {
+            const a = lanes[li].find(x => covers(x, iso));
+            if (!a) { pills += `<div class="cal-spacer"></div>`; continue; }
+            const color = catColor(a.category);
+            const dim = isPastActivity(a) ? " dim" : "";
+            const multi = isMultiDay(a);
+            const isStart = a.startDate === iso;
+            const isEnd = (a.endDate || a.startDate) === iso;
+            const ov = overlaps.has(a.id) ? "⚠ " : "";
+            const dt = dayTimeFor(a, iso);
+            const label = (dt.start ? fmtTime(dt.start) + " " : "") + escHtml(a.title);
+            if (multi) {
+                const barCls = isStart ? "start" : isEnd ? "end" : "mid";
+                const barText = isStart ? `${ov}${label}` : "";
+                pills += `<div class="cal-bar ${barCls}${dim}" style="background:${color};" title="${escHtml(a.title)}">${barText}</div>`;
+            } else {
+                pills += `<div class="cal-pill single${dim}" style="background:${color};">${ov}${escHtml(label)}</div>`;
+            }
+        }
+        let moreCount = 0;
+        for (let li = MAX_LANES; li < lanes.length; li++) {
+            if (lanes[li].some(x => covers(x, iso))) moreCount++;
+        }
+        if (moreCount) pills += `<div class="cal-more">+${moreCount} more</div>`;
+        const ovBadge = overlaps.size ? `<div class="cal-ov"></div>` : "";
+        const commitCount = commitments.filter(c => c.date === iso).length;
+        const dot = commitCount ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#7c3aed;margin-left:3px;" title="${commitCount} commitment(s)"></span>` : "";
+        return `<div class="${cls}" data-click="openDayDrawer('${iso}')">
+                <span class="day-num">${dayNum}${dot}</span>${ovBadge}
+                ${pills}
+            </div>`;
+    }
+
     function renderCalGrid() {
         const first = new Date(calYear, calMonth, 1);
         const startIdx = first.getDay();
@@ -3317,7 +3483,6 @@
         const acts = filteredActivities();
         const MAX_LANES = 3;
 
-        // Stable lanes across the whole grid so multi-day bands never jump rows.
         const firstIso = (() => {
             const dayNum = 0 - startIdx + 1;
             return dayNum < 1 ? isoFor(calYear, calMonth - 1, prevDays + dayNum) : isoFor(calYear, calMonth, dayNum);
@@ -3327,6 +3492,7 @@
             return dayNum > daysInMonth ? isoFor(calYear, calMonth + 1, dayNum - daysInMonth) : isoFor(calYear, calMonth, dayNum);
         })();
         const lanes = assignCalLanes(acts, firstIso, lastIso);
+        const commitments = fullData.commitments || [];
 
         let html = `<div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div>`;
 
@@ -3337,50 +3503,10 @@
             else if (dayNum > daysInMonth) { iso = isoFor(calYear, calMonth + 1, dayNum - daysInMonth); inMonth = false; }
             else { iso = isoFor(calYear, calMonth, dayNum); }
 
-            if (!inMonth) {
-                html += `<div class="cal-day out"></div>`;
-                continue;
-            }
-
-            const dayActs = acts.filter(a => covers(a, iso));
-            const overlaps = findOverlapIds(dayActs, iso);
-            const cls = "cal-day" + (inMonth ? "" : " out") + (iso === today ? " today" : "");
-            let pills = "";
-            const visibleLanes = Math.min(lanes.length, MAX_LANES);
-            for (let li = 0; li < visibleLanes; li++) {
-                const a = lanes[li].find(x => covers(x, iso));
-                if (!a) { pills += `<div class="cal-spacer"></div>`; continue; }
-                const color = catColor(a.category);
-                const dim = isPastActivity(a) ? " dim" : "";
-                const multi = isMultiDay(a);
-                const isStart = a.startDate === iso;
-                const isEnd = (a.endDate || a.startDate) === iso;
-                const ov = overlaps.has(a.id) ? "⚠ " : "";
-                const dt = dayTimeFor(a, iso);
-                const label = (dt.start ? fmtTime(dt.start) + " " : "") + escHtml(a.title);
-                if (multi) {
-                    const barCls = isStart ? "start" : isEnd ? "end" : "mid";
-                    const barText = isStart ? `${ov}${label}` : "";
-                    pills += `<div class="cal-bar ${barCls}${dim}" style="background:${color};" title="${escHtml(a.title)}">${barText}</div>`;
-                } else {
-                    pills += `<div class="cal-pill single${dim}" style="background:${color};">${ov}${escHtml(label)}</div>`;
-                }
-            }
-            let moreCount = 0;
-            for (let li = MAX_LANES; li < lanes.length; li++) {
-                if (lanes[li].some(x => covers(x, iso))) moreCount++;
-            }
-            if (moreCount) pills += `<div class="cal-more">+${moreCount} more</div>`;
-            const ovBadge = overlaps.size ? `<div class="cal-ov"></div>` : "";
-            const commitCount = (fullData.commitments || []).filter(c => c.date === iso).length;
-            const dot = commitCount ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#7c3aed;margin-left:3px;" title="${commitCount} commitment(s)"></span>` : "";
-
-            html += `<div class="${cls}" data-click="openDayDrawer('${iso}')">
-                <span class="day-num">${dayNum}${dot}</span>${ovBadge}
-                ${pills}
-            </div>`;
+            html += renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments);
         }
-        $("calGrid").innerHTML = html;
+        if (!_calGridEl) _calGridEl = $("calGrid");
+        _calGridEl.innerHTML = html;
     }
 
     function renderOverlapBanner() {
@@ -3401,7 +3527,8 @@
             const n = findOverlapIds(dayActs, iso).size;
             if (n > 0) { days++; overlapCount += n; }
         }
-        $("calOverlapBanner").innerHTML = overlapCount
+        if (!_calOverlapEl) _calOverlapEl = $("calOverlapBanner");
+        _calOverlapEl.innerHTML = overlapCount
             ? `<div class="overlap-banner ${overlapCount >= 5 ? "warn" : ""}">⚠ ${overlapCount} activity overlap(s) across ${days} day(s) this month — click a marked day to inspect.</div>`
             : "";
     }
@@ -4081,6 +4208,71 @@
     // ============================================================
     //  EVENT DELEGATION + BOOT
     // ============================================================
+    const _clickHandlers = {
+        "showPanel": showPanel,
+        "toggleTheme": toggleTheme,
+        "openFeedbackModal": openFeedbackModal,
+        "toggleMenu": toggleMenu,
+        "doSignout": doSignout,
+        "openSetTermModal": openSetTermModal,
+        "openMeetEditor": function() { openMeetEditor(null); },
+        "openCommitmentModal": function() { openCommitmentModal(null); },
+        "openFilterSidebar": openFilterSidebar,
+        "openActivityModal": function() { openActivityModal(null); },
+        "openLinkModal": function() { openLinkModal(null); },
+        "openMemberModal": function() { openMemberModal(null); },
+        "calGoToday": calGoToday,
+        "calNav": calNav,
+        "switchCalView": switchCalView,
+        "toggleLinkFilterRow": toggleLinkFilterRow,
+        "toggleCatColorEditor": toggleCatColorEditor,
+        "toggleMeetSection": toggleMeetSection,
+        "meetCalShift": meetCalShift,
+        "clearMyMeetSlots": clearMyMeetSlots,
+        "saveMeetResponse": saveMeetResponse,
+        "saveCommitment": saveCommitment,
+        "saveLink": saveLink,
+        "saveMember": saveMember,
+        "saveTerm": saveTerm,
+        "saveMeet": saveMeet,
+        "submitFeedback": submitFeedback,
+        "resetFilters": resetFilters,
+        "applyFilters": applyFilters,
+        "closeFilterSidebar": closeFilterSidebar,
+        "closeMeetEditor": closeMeetEditor,
+        "closeActivityDetail": closeActivityDetail,
+        "closeActivityEdit": closeActivityEdit,
+        "resolveConfirm": resolveConfirm
+    };
+
+    function _execDataClick(code, el, e) {
+        const m = code.match(/^(\w+)\((.*)?\)$/);
+        if (m) {
+            const name = m[1];
+            const argStr = m[2] || "";
+            if (_clickHandlers[name]) {
+                if (argStr) {
+                    const args = argStr.split(",").map(s => {
+                        s = s.trim();
+                        if ((s.startsWith("'") && s.endsWith("'")) || (s.startsWith('"') && s.endsWith('"')))
+                            return s.slice(1, -1);
+                        if (s === "null") return null;
+                        if (s === "event" || s === "e") return e;
+                        return s;
+                    });
+                    _clickHandlers[name].apply(el, args);
+                } else {
+                    _clickHandlers[name].call(el);
+                }
+                return;
+            }
+            if (name === "closeModal") { closeModal(argStr.replace(/['"]/g, "")); return; }
+            if (name === "openModal") { openModal(argStr.replace(/['"]/g, "")); return; }
+        }
+        if (code === "event.stopPropagation()") { e.stopPropagation(); return; }
+        (new Function("e", "event", code)).call(el, e, e);
+    }
+
     document.addEventListener("click", function (e) {
         const el = e.target.closest("[data-click]");
         if (el) {
@@ -4088,7 +4280,7 @@
             const code = el.getAttribute("data-click");
             if (code) {
                 if (busyAction && el.hasAttribute("data-once")) return;
-                (new Function("e", "event", code)).call(el, e, e);
+                _execDataClick(code, el, e);
             }
         }
     });
