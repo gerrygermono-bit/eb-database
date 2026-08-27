@@ -72,6 +72,13 @@
 
     button { font-family: inherit; }
 
+    /* Site-wide themed scrollbars */
+    * { scrollbar-width: thin; scrollbar-color: var(--border-soft) transparent; }
+    *::-webkit-scrollbar { width: 6px; height: 6px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 99px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
     /* ---------- Header ---------- */
     header {
         background: var(--surface-card);
@@ -564,19 +571,21 @@
     .tracker-card {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 4px 10px;
-        padding: 8px 10px;
+        gap: 5px 10px;
+        padding: 9px 12px;
         border: 1px solid var(--border-soft);
         border-radius: 10px;
         background: var(--surface-card);
-        transition: background 0.15s;
+        transition: background 0.15s, border-color 0.15s;
         cursor: pointer;
     }
-    .tracker-card:hover { background: rgba(16,185,129,0.04); }
+    .tracker-card:hover { background: rgba(16,185,129,0.04); border-color: var(--text-muted); }
     .tracker-card .tc-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .tracker-card .tc-title { font-size: 0.8rem; font-weight: 800; line-height: 1.2; }
+    .tracker-card .tc-title { font-size: 0.82rem; font-weight: 800; line-height: 1.25; }
+    .tracker-card .tc-date { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-top: 1px; }
+    .tracker-card .tc-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .tracker-card .tc-badges { display: flex; gap: 4px; flex-wrap: wrap; }
-    .tracker-card.dim { opacity: 0.5; }
+    .tracker-card.dim { opacity: 0.65; }
     .tracker-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem; }
 
     @media (max-width: 1024px) {
@@ -1119,7 +1128,7 @@
             </div>
             <div class="tbl-wrap">
                 <table class="tbl">
-                    <thead><tr><th>Name</th><th>Position</th><th>Section</th><th>Role</th><th>Status</th><th></th></tr></thead>
+                    <thead><tr><th>Name</th><th>Position</th><th>Section</th><th>Status</th><th></th></tr></thead>
                     <tbody id="memberRows"></tbody>
                 </table>
             </div>
@@ -2958,7 +2967,7 @@
     }
 
     function meetCalShift(dir) {
-        meetCalMonth.m += dir;
+        meetCalMonth.m += (+dir);
         if (meetCalMonth.m < 0) { meetCalMonth.m = 11; meetCalMonth.y--; }
         if (meetCalMonth.m > 11) { meetCalMonth.m = 0; meetCalMonth.y++; }
         renderMeetCalendar();
@@ -3420,7 +3429,7 @@
     }
 
     function calNav(delta) {
-        calMonth += delta;
+        calMonth += (+delta);
         if (calMonth < 0) { calMonth = 11; calYear--; }
         if (calMonth > 11) { calMonth = 0; calYear++; }
         renderCalendarView();
@@ -3674,14 +3683,18 @@
             const color = catColor(a.category);
             const sColor = STATUS_META[a.status] || "#64748b";
             const dim = isPastActivity(a) ? " dim" : "";
+            const when = activityDateRange(a) + (a.start ? " · " + fmtTime(a.start) + (a.end && a.end !== a.start ? " – " + fmtTime(a.end) : "") : "");
             return `<div class="tracker-card${dim}" data-click="openActivityDetail('${a.id}')">
                 <div class="tc-top">
                     <span class="tc-title">${escHtml(a.title)}</span>
+                </div>
+                <div class="tc-meta">
                     <div class="tc-badges">
                         <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
                         <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
                         ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}
                     </div>
+                    ${when ? `<span class="tc-date">${escHtml(when)}</span>` : ""}
                 </div>
             </div>`;
         }).join("") || '<div class="tracker-empty">No activities match.</div>';
@@ -4148,7 +4161,6 @@
                 </td>
                 <td>${escHtml(m.position || "—")}</td>
                 <td>${escHtml(m.section || "—")}</td>
-                <td>${m.isManager ? '<span class="sbadge" style="background:rgba(124,58,237,0.12);color:#7c3aed;">Top 3</span>' : '<span class="sbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">EB</span>'}</td>
                 <td>${m.isActive ? '<span class="sbadge" style="background:rgba(16,185,129,0.12);color:var(--dlsu-green);">Active</span>' : '<span class="sbadge" style="background:rgba(239,68,68,0.12);color:var(--danger);">Inactive</span>'}</td>
                 <td>
                     ${fullData.isManager || m.email === userEmail ? `<div class="row-actions">
@@ -4156,7 +4168,7 @@
                         ${fullData.isManager ? `<button class="btn btn-sm btn-ghost" data-click="deleteMember('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>` : ""}
                     </div>` : ""}
                 </td>
-            </tr>`).join("") || '<tr><td colspan="6"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
+            </tr>`).join("") || '<tr><td colspan="5"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
     }
 
     function openMemberModal(email) {
