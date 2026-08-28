@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EB Database</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -663,6 +664,12 @@
     @media (max-width: 900px) { .cat-columns { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .cat-columns { grid-template-columns: 1fr; } }
     .cat-col { min-width: 0; }
+    #linkGrid { transition: opacity 0.15s ease, transform 0.15s ease; }
+    #linkGrid.entering { opacity: 0; transform: translateY(4px); }
+    @keyframes linkItemIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     .cat-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
     .cat-badge {
         display: inline-block;
@@ -746,7 +753,7 @@
 
     /* ---------- Meet grids ---------- */
     .avail-scroll { overflow-x: auto; }
-    .resp-progress { height: 4px; background: var(--border-soft); border-radius: 99px; overflow: hidden; margin-bottom: 4px; max-width: 160px; }
+    .resp-progress { height: 4px; background: var(--border-soft); border-radius: 99px; overflow: hidden; margin: 8px 0 4px; max-width: 160px; }
     .resp-bar { height: 100%; background: var(--dlsu-green); border-radius: 99px; transition: width 0.3s; min-width: 2px; }
     .mt-resp-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 3px; vertical-align: middle; flex-shrink: 0; }
     .mt-resp-dot.responded { background: var(--accent); }
@@ -768,6 +775,8 @@
         padding: 40px 16px;
         overflow-y: auto;
     }
+    /* Confirmation/alert overlays appear on top of whatever modal opened them. */
+    #confirmModal, #alertModal { z-index: 300; }
     .modal {
         background: var(--surface-solid);
         border: 1px solid var(--border-soft);
@@ -945,6 +954,23 @@
     .cat-add-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
     .cat-add-row input[type="text"] { flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid var(--border-soft); border-radius: 7px; font-family: inherit; font-size: 0.75rem; background: var(--bg-canvas); color: var(--text-main); }
     .cat-add-row input[type="color"] { width: 32px; height: 22px; border: 1px solid var(--border-soft); border-radius: 6px; background: none; padding: 0; cursor: pointer; flex-shrink: 0; }
+
+    /* Link category reorder UI */
+    .lcdrag-list { list-style: none; margin: 0; padding: 0; }
+    .lcdrag-row { display: flex; align-items: center; gap: 7px; padding: 6px 5px; border: 1px solid transparent; border-radius: 8px; background: transparent; transition: background 0.15s ease, transform 0.15s ease; }
+    .lcdrag-row.sorted-chosen { background: var(--bg-canvas); border-color: var(--border-soft); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .lcdrag-row.sorted-drag { opacity: 0.9; }
+    .lcdrag-row .drag-handle { flex-shrink: 0; cursor: grab; color: var(--text-muted); opacity: 0.5; display: inline-flex; padding: 2px 4px; }
+    .lcdrag-row .drag-handle:hover { opacity: 1; }
+    .lcdrag-row .drag-handle:active { cursor: grabbing; }
+    .lcdrag-row .lcdrag-name { flex: 1; min-width: 0; padding: 4px 7px; border: 1px solid var(--border-soft); border-radius: 6px; font-family: inherit; font-size: 0.75rem; font-weight: 600; background: var(--bg-canvas); color: var(--text-main); }
+    .lcdrag-pin { flex-shrink: 0; border: none; background: none; cursor: pointer; color: var(--text-muted); display: inline-flex; padding: 3px 5px; border-radius: 6px; line-height: 1; }
+    .lcdrag-pin svg { width: 13px; height: 13px; }
+    .lcdrag-pin:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
+    .lcdrag-row.pinned { background: rgba(239, 68, 68, 0.06); }
+    .lcdrag-row.pinned .lcdrag-pin { color: var(--danger); }
+    .lcdrag-section-label { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 14px 0 4px; }
+    .lcdrag-empty { font-size: 0.75rem; color: var(--text-muted); font-style: italic; padding: 2px 5px; }
 
     /* ---------- Activity detail / edit slide-out (left side) ---------- */
     .act-slide-overlay {
@@ -1173,6 +1199,7 @@
                     Filter
                     <span class="filter-badge hidden" id="linkFilterBadge"></span>
                 </button>
+                <button class="btn btn-sm btn-ghost" id="linkCatEditBtn" data-click="showLinkCatEditor()" style="display:none;">Edit Categories</button>
             </div>
             <div class="legend hidden" id="linkFilterRow"></div>
             <div id="linkGrid" class="cat-columns"></div>
@@ -1822,6 +1849,17 @@
         </div>
     </div>
 
+    <!-- Link category editor — left slide-out (Top 3 only) -->
+    <div class="act-slide-overlay hidden" id="linkCatEditorOverlay" data-click="closeLinkCatEditor()">
+        <div class="act-slide-panel" data-click="event.stopPropagation()" style="max-width:360px;">
+            <div class="act-slide-head">
+                <h3>Edit Link Categories</h3>
+                <button class="act-slide-close" data-click="closeLinkCatEditor()">&times;</button>
+            </div>
+            <div class="act-slide-body" id="linkCatEditorBody"></div>
+        </div>
+    </div>
+
     <div class="meet-tooltip" id="meetTooltip"></div>
 
     <script>
@@ -1916,6 +1954,7 @@
     let _calGridEl = null;
     let _calOverlapEl = null;
     let linkSearchText = "";
+    let _linkSearchToken = 0;
     let linkCatSelection = [];
     let meetFinalPick = null;
     let meetFinalOpen = false;
@@ -2670,7 +2709,6 @@
             <div class="item-row meet-card" data-click="openMeetModal('${m.id}')">
                 <div class="grow">
                     <h4>${escHtml(m.title)} ${meetStatusBadge(m.status)}</h4>
-                    <div class="meta">${escHtml((m.days || []).map(d => fmtDateMed(d)).join(" · "))}</div>
                     <div class="resp-progress"><div class="resp-bar" style="width:${activeCount ? Math.round(respCount / activeCount * 100) : 0}%"></div></div>
                     <div class="meta">${respCount}/${activeCount} responded</div>
                     ${finalLine}
@@ -4082,10 +4120,12 @@
     //  LINKS HUB
     // ============================================================
     function linkCategoryOrder() {
+        const defaults = (fullData && fullData.linkCategories && fullData.linkCategories.length)
+            ? fullData.linkCategories : LINK_CATEGORIES;
         const seen = new Set();
         const allCats = [];
         const pushCat = c => { if (c && !seen.has(c)) { seen.add(c); allCats.push(c); } };
-        LINK_CATEGORIES.forEach(pushCat);
+        defaults.forEach(pushCat);
         (fullData.links || []).forEach(l => pushCat(l.category));
         const pinned = (fullData.pinnedLinkCats || []).filter(c => allCats.indexOf(c) >= 0);
         return pinned.concat(allCats.filter(c => pinned.indexOf(c) < 0));
@@ -4177,6 +4217,9 @@
         if (!fullData) return;
         const q = ($("linkSearch").value || "").toLowerCase().trim();
 
+        const editBtn = $("linkCatEditBtn");
+        if (editBtn) editBtn.style.display = (fullData.isManager ? "" : "none");
+
         const links = (fullData.links || []).filter(l => l.active)
             .filter(l => !q || (l.name || "").toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q))
             .filter(l => !linkCatSelection.length || linkCatSelection.indexOf(l.category) >= 0)
@@ -4184,8 +4227,34 @@
 
         renderLinkFilterPills(linkCategoryOrder());
 
-        $("linkGrid").innerHTML = buildLinkCatsHtml(links)
+        const grid = $("linkGrid");
+        const html = buildLinkCatsHtml(links)
             || '<div class="empty-state" style="grid-column:1/-1;">No links here yet.</div>';
+        if (!grid) return;
+
+        const searchChanged = q !== linkSearchText;
+        linkSearchText = q;
+
+        if (!searchChanged) {
+            grid.innerHTML = html;
+            return;
+        }
+
+        const animId = ++_linkSearchToken;
+        grid.classList.add("entering");
+        setTimeout(() => {
+            if (animId !== _linkSearchToken) return;
+            grid.classList.remove("entering");
+            grid.innerHTML = html;
+            const cols = grid.querySelectorAll(".cat-col");
+            cols.forEach((el, i) => {
+                el.style.animation = "linkItemIn 0.24s ease " + Math.min(i * 30, 240) + "ms both";
+            });
+            const lis = grid.querySelectorAll(".cat-list li");
+            lis.forEach(el => {
+                if (!el.style.animation) el.style.animation = "linkItemIn 0.24s ease 0.06s both";
+            });
+        }, 160);
     }
 
     // Smoothly expand/collapse an element that uses the .hidden (display:none)
@@ -4260,6 +4329,188 @@
         }
     }
 
+    // ---- Link category editor (Top 3 only) ----
+    function showLinkCatEditor() {
+        if (!fullData || !fullData.isManager) return;
+        renderLinkCatEditor();
+        const ov = $("linkCatEditorOverlay");
+        ov.classList.remove("hidden");
+        void ov.offsetWidth;
+        ov.classList.add("open");
+        ov.querySelector(".act-slide-panel").classList.add("open");
+    }
+    function closeLinkCatEditor() {
+        const ov = $("linkCatEditorOverlay");
+        if (ov.classList.contains("hidden")) return;
+        ov.classList.remove("open");
+        ov.querySelector(".act-slide-panel").classList.remove("open");
+    }
+    function linkCatGroups() {
+        const order = linkCategoryOrder();
+        const pinnedSet = new Set(fullData.pinnedLinkCats || []);
+        const pinned = (fullData.pinnedLinkCats || []).filter(c => order.indexOf(c) >= 0);
+        const nonPinned = order.filter(c => !pinnedSet.has(c));
+        return { pinned, nonPinned };
+    }
+    function lcRowHtml(c, pinned) {
+        const catArg = c.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+        const grip = `<span class="drag-handle" title="Drag to reorder"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>`;
+        const pinBtn = pinned
+            ? `<button type="button" class="lcdrag-pin" data-click="upinLinkCat('${catArg}')" title="Unpin category"><svg><use href="#icon-pin"/></svg></button>`
+            : `<button type="button" class="lcdrag-pin" data-click="pinLinkCat('${catArg}')" title="Pin to top"><svg><use href="#icon-pin"/></svg></button>`;
+        const del = `<button type="button" class="cat-del" data-click="removeLinkCat('${catArg}')" title="Delete category">&times;</button>`;
+        return `<li class="lcdrag-row${pinned ? " pinned" : ""}" data-cat="${escHtml(c)}">
+            ${grip}
+            <input type="text" class="lcdrag-name" value="${escHtml(c)}" data-change="renameLinkCat('${jsQ(c)}', this.value)" title="Rename category">
+            ${pinBtn}
+            ${pinned ? "" : del}
+        </li>`;
+    }
+    function renderLinkCatEditor() {
+        const ed = $("linkCatEditorBody");
+        if (!ed) return;
+        if (!window.Sortable) {
+            ed.innerHTML = '<div class="cat-color-head">Link Categories</div><div class="lcdrag-empty">Drag support unavailable (SortableJS not loaded).</div>';
+            return;
+        }
+        const { pinned, nonPinned } = linkCatGroups();
+        let html = `<div class="cat-color-head">Link Categories</div>`;
+        html += `<div class="cat-add-row">
+            <input type="text" id="newLinkCatName" placeholder="New category name...">
+            <button type="button" class="btn btn-sm" data-click="addLinkCat()">Add</button>
+        </div>`;
+        html += `<div class="lcdrag-section-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#icon-pin"/></svg>Pinned (shown first)</div>`;
+        html += pinned.length
+            ? `<ul class="lcdrag-list" id="lcdragPinnedList">${pinned.map(c => lcRowHtml(c, true)).join("")}</ul>`
+            : `<div class="lcdrag-empty">No pinned categories. Pin one to keep it on top.</div>`;
+        html += `<div class="lcdrag-section-label">Other categories</div>`;
+        html += nonPinned.length
+            ? `<ul class="lcdrag-list" id="lcdragNormalList">${nonPinned.map(c => lcRowHtml(c, false)).join("")}</ul>`
+            : `<div class="lcdrag-empty">No other categories.</div>`;
+        ed.innerHTML = html;
+        ["lcdragPinnedList", "lcdragNormalList"].forEach(function (id) {
+            const ul = document.getElementById(id);
+            if (ul && !ul.__sortableInited) {
+                ul.__sortableInited = true;
+                Sortable.create(ul, {
+                    animation: 150,
+                    handle: ".drag-handle",
+                    draggable: ".lcdrag-row",
+                    ghostClass: "sorted-ghost",
+                    chosenClass: "sorted-chosen",
+                    dragClass: "sorted-drag",
+                    onEnd: function () { saveLinkCatOrder(); }
+                });
+            }
+        });
+    }
+    function currentLinkCatOrderFromDom() {
+        const read = id => Array.from(document.querySelectorAll("#" + id + " .lcdrag-row"))
+            .map(li => li.getAttribute("data-cat"));
+        return { pinned: read("lcdragPinnedList"), nonPinned: read("lcdragNormalList") };
+    }
+    let linkCatSaveTimer = null;
+    let linkCatPending = null;
+    function saveLinkCatOrder() {
+        const { pinned, nonPinned } = currentLinkCatOrderFromDom();
+        const combined = pinned.concat(nonPinned);
+        fullData.linkCategories = combined.slice();
+        fullData.pinnedLinkCats = pinned.slice();
+        linkCatPending = { categories: combined, pinned: pinned.slice() };
+        if (linkCatSaveTimer) clearTimeout(linkCatSaveTimer);
+        linkCatSaveTimer = setTimeout(flushLinkCatSave, 350);
+        renderLinksHub();
+        renderOverviewQuickLinks();
+    }
+    function flushLinkCatSave() {
+        linkCatSaveTimer = null;
+        if (!linkCatPending) return;
+        const desired = linkCatPending;
+        linkCatPending = null;
+        sendPostRequest({ action: "Save Link Categories", categories: desired.categories, pinned: desired.pinned })
+            .then(res => {
+                if (res && res.linkCategories) fullData.linkCategories = res.linkCategories;
+                if (res && res.pinnedLinkCats) fullData.pinnedLinkCats = res.pinnedLinkCats;
+                renderLinkCatEditor();
+                renderLinksHub();
+                renderOverviewQuickLinks();
+            })
+            .catch(() => {});
+    }
+    function pinLinkCat(name) {
+        const n = String(name || "").trim();
+        if (!n) return;
+        const { pinned, nonPinned } = linkCatGroups();
+        const idx = nonPinned.indexOf(n);
+        if (idx < 0) return;
+        nonPinned.splice(idx, 1);
+        pinned.push(n);
+        applyLinkCatOrder(pinned, nonPinned);
+    }
+    function upinLinkCat(name) {
+        const n = String(name || "").trim();
+        if (!n) return;
+        const { pinned, nonPinned } = linkCatGroups();
+        const idx = pinned.indexOf(n);
+        if (idx < 0) return;
+        pinned.splice(idx, 1);
+        nonPinned.push(n);
+        applyLinkCatOrder(pinned, nonPinned);
+    }
+    function applyLinkCatOrder(pinned, nonPinned) {
+        const combined = pinned.concat(nonPinned);
+        fullData.linkCategories = combined.slice();
+        fullData.pinnedLinkCats = pinned.slice();
+        renderLinkCatEditor();
+        renderLinksHub();
+        renderOverviewQuickLinks();
+        linkCatPending = { categories: combined, pinned: pinned.slice() };
+        if (linkCatSaveTimer) clearTimeout(linkCatSaveTimer);
+        linkCatSaveTimer = setTimeout(flushLinkCatSave, 350);
+    }
+    function addLinkCat() {
+        const name = $("newLinkCatName").value.trim();
+        if (!name) return;
+        sendPostRequest({ action: "Add Link Category", name: name })
+            .then(res => {
+                if (res && res.linkCategories) fullData.linkCategories = res.linkCategories;
+                renderLinkCatEditor();
+                renderLinksHub();
+                toast("Category added.");
+            })
+            .catch(() => {});
+    }
+    function renameLinkCat(oldName, newName) {
+        const o = String(oldName || "").trim();
+        const n = String(newName || "").trim();
+        if (!o || !n || o === n) { renderLinkCatEditor(); return; }
+        sendPostRequest({ action: "Rename Link Category", oldName: o, newName: n })
+            .then(res => {
+                if (res && res.linkCategories) fullData.linkCategories = res.linkCategories;
+                const idx = linkCatSelection.indexOf(o);
+                if (idx >= 0) linkCatSelection[idx] = n;
+                renderLinkCatEditor();
+                renderLinksHub();
+                toast("Category renamed.");
+            })
+            .catch(() => { renderLinkCatEditor(); });
+    }
+    function removeLinkCat(name) {
+        showConfirm(`Delete category "${name}"? Links under it move to General.`).then(yes => {
+            if (!yes) return;
+            sendPostRequest({ action: "Remove Link Category", name: name })
+                .then(res => {
+                    if (res && res.linkCategories) fullData.linkCategories = res.linkCategories;
+                    const idx = linkCatSelection.indexOf(name);
+                    if (idx >= 0) linkCatSelection.splice(idx, 1);
+                    renderLinkCatEditor();
+                    renderLinksHub();
+                    toast("Category removed.");
+                })
+                .catch(() => {});
+        });
+    }
+
     function toggleLinkDesc(btn, id) {
         btn.classList.toggle("open");
         const desc = document.getElementById("lnkdesc-" + id);
@@ -4284,8 +4535,7 @@
         editingLinkId = id || null;
         $("linkModalTitle").textContent = id ? "Edit Link" : "Add Link";
         // Build dynamic category list
-        const allCats = new Set(LINK_CATEGORIES);
-        (fullData.links || []).forEach(l => { if (l.category) allCats.add(l.category); });
+        const allCats = new Set(linkCategoryOrder());
         const dynamicCategories = [...allCats];
         const catSel = $("linkCategory");
         catSel.innerHTML = dynamicCategories.map(c => `<option>${escHtml(c)}</option>`).join("") + '<option value="__other__">Other (specify)...</option>';
@@ -4551,6 +4801,7 @@
         "closeMeetEditor": closeMeetEditor,
         "closeActivityDetail": closeActivityDetail,
         "closeActivityEdit": closeActivityEdit,
+        "closeLinkCatEditor": closeLinkCatEditor,
         "resolveConfirm": resolveConfirm
     };
 
