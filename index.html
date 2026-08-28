@@ -62,6 +62,13 @@
 
     .hidden { display: none !important; }
 
+    /* Smooth expand/collapse for toggleable sections (smoothToggle drives
+       max-height/opacity inline; these give it the transition). */
+    #linkFilterRow, #meetHeatmapWrap, #meetMyAvailWrap, #catColorEditor {
+        transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease;
+        overflow: hidden;
+    }
+
     /* CSS containment: isolate layout/paint scope for large containers */
     [id^="panel"] { contain: layout style; }
     .modal-overlay { contain: layout style; }
@@ -111,14 +118,14 @@
         -webkit-text-fill-color: transparent;
     }
     .brand h1:hover {
-        background: linear-gradient(90deg, #ff0000, #ff7700, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000);
-        background-size: 200% 100%;
+        background: linear-gradient(100deg, #ff6b6b, #ffa94d, #ffd43b, #7bc96f, #4dabf7, #b197fc, #e599f7, #ff6b6b);
+        background-size: 300% 100%;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: brandRainbow 2s linear infinite;
+        animation: brandRainbow 7s ease-in-out infinite;
     }
-    @keyframes brandRainbow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    @keyframes brandRainbow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
     .header-controls { display: flex; align-items: center; gap: 10px; position: relative; }
 
@@ -298,6 +305,9 @@
     [data-theme="dark"] .guide-nav-btn {
         filter: brightness(1.7) saturate(0.85);
     }
+    [data-theme="dark"] .item-row .badges .tbadge {
+        filter: brightness(1.7) saturate(0.85);
+    }
     .tbadge {
         display: inline-block;
         font-size: 0.68rem;
@@ -372,6 +382,8 @@
     .item-row h4 { font-size: 0.88rem; font-weight: 700; }
     .item-row .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
     .item-row .desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+    .item-row .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .item-row .badges .tbadge { margin-left: 0; font-weight: 700; }
 
     .empty-state {
         text-align: center;
@@ -402,6 +414,8 @@
     .tbl tr:last-child td { border-bottom: none; }
     .tbl tbody tr:hover td { background: rgba(16,185,129,0.04); }
     .tbl .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    #memberRows .row-actions .btn { opacity: 0; transform: translateX(-4px); transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+    #memberRows tr:hover .row-actions .btn { opacity: 1; transform: translateX(0); }
 
     /* ---------- Meets ---------- */
     .meet-card { cursor: pointer; }
@@ -410,8 +424,8 @@
     .mt-head { text-align: center; font-size: 0.7rem; font-weight: 800; padding: 4px 2px; border-radius: 6px; }
     .mt-head .mini { display: block; font-weight: 700; font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
     .mt-time { font-size: 0.6rem; color: var(--text-muted); text-align: right; padding-right: 5px; align-self: center; white-space: nowrap; }
-    .mt-cell { height: 20px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: transform 0.08s; }
-    .mt-cell:hover { transform: scale(1.15); }
+    .mt-cell { height: 20px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-soft); cursor: pointer; transition: transform 0.22s cubic-bezier(0.34, 1.3, 0.64, 1), box-shadow 0.22s ease; will-change: transform; }
+    .mt-cell:hover { transform: scale(1.3); z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
     .mt-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 0.65rem; color: var(--text-muted); }
     .mt-legend-swatch { width: 18px; height: 10px; border-radius: 3px; border: 1px solid var(--border-soft); flex-shrink: 0; }
     .mt-legend-label { margin: 0 4px; white-space: nowrap; }
@@ -582,8 +596,8 @@
     .tracker-card:hover { background: rgba(16,185,129,0.04); border-color: var(--text-muted); }
     .tracker-card .tc-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .tracker-card .tc-title { font-size: 0.82rem; font-weight: 800; line-height: 1.25; }
-    .tracker-card .tc-date { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-top: 1px; }
-    .tracker-card .tc-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .tracker-card .tc-date { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-top: 1px; font-variant-numeric: tabular-nums; }
+    .tracker-card .tc-meta { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 5px; }
     .tracker-card .tc-badges { display: flex; gap: 4px; flex-wrap: wrap; }
     .tracker-card.dim { opacity: 0.65; }
     .tracker-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem; }
@@ -595,6 +609,29 @@
         .cal-view-toggle { display: flex; }
         .cal-left.hidden-mobile, .cal-right.hidden-mobile { display: none; }
     }
+
+    .cal-left .toolbar { flex-wrap: nowrap; justify-content: space-between; }
+    .cal-left .toolbar .btn { flex-shrink: 0; padding-inline: 8px; }
+    .cal-left #calMonthLabel { min-width: 0; flex-shrink: 1; }
+
+    .cal-nav-btn {
+        background: var(--surface-card);
+        border: 1px solid var(--border-soft);
+        cursor: pointer;
+        padding: 0;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        color: var(--text-main);
+        flex-shrink: 0;
+        transition: background 0.18s ease, border-color 0.18s ease, transform 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+    .cal-nav-btn:hover { background: var(--bg-canvas); border-color: var(--text-muted); color: var(--dlsu-green); transform: scale(1.08); }
+    .cal-nav-btn:active { transform: scale(0.96); }
+    .cal-nav-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
     .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .overlap-banner {
@@ -679,16 +716,21 @@
     .lnk-info:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
     .lnk-info.open { transform: rotate(180deg); color: var(--dlsu-green); }
     .lnk-desc {
-        display: none;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
         font-size: 0.76rem;
         color: var(--text-muted);
         line-height: 1.5;
-        margin-top: 4px;
+        margin-top: 0;
         padding-left: 2px;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, margin-top 0.3s ease;
     }
-    .lnk-desc.open { display: block; }
-    .lnk-actions { display: none; gap: 2px; flex-shrink: 0; }
-    .cat-list li:hover .lnk-actions { display: inline-flex; }
+    .lnk-desc.open { max-height: 200px; opacity: 1; margin-top: 4px; }
+    .lnk-actions { gap: 2px; flex-shrink: 0; max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap; transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease; }
+    .lnk-actions .btn { opacity: 0; transform: translateX(-4px); transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+    .cat-list li:hover .lnk-actions { max-width: 72px; opacity: 1; }
+    .cat-list li:hover .lnk-actions .btn { opacity: 1; transform: translateX(0); }
 
     /* ---------- Meet grids ---------- */
     .avail-scroll { overflow-x: auto; }
@@ -721,10 +763,10 @@
         width: 100%;
         max-width: 540px;
         box-shadow: var(--shadow-lg);
-        animation: modalIn 0.2s ease;
+        animation: modalIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
     }
     .modal.lg { max-width: 920px; }
-    @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-soft); }
     .modal-head h3 { font-size: 1rem; font-weight: 800; }
     .modal-close { background: none; border: none; font-size: 1.5rem; line-height: 1; color: var(--text-muted); cursor: pointer; padding: 2px 6px; border-radius: 6px; }
@@ -747,8 +789,8 @@
     }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--dlsu-green); }
     .form-group textarea { min-height: 80px; resize: vertical; }
-    .form-row { display: flex; gap: 12px; }
-    .form-row .form-group { flex: 1; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .form-row .form-group { flex: 1 1 190px; min-width: 0; }
     .hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
 
     .sched-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
@@ -850,14 +892,14 @@
     /* ---------- Filter sidebar ---------- */
     .filter-sidebar-overlay {
         position: fixed; inset: 0; background: var(--overlay-bg); z-index: 250;
-        opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
     .filter-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
     .filter-sidebar {
         position: fixed; top: 0; left: 0; bottom: 0; width: 320px; max-width: 90vw;
         background: var(--surface-solid); border-right: 1px solid var(--border-soft);
         box-shadow: var(--shadow-lg); z-index: 251; transform: translateX(-100%);
-        transition: transform 0.25s ease; display: flex; flex-direction: column;
+        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.34, 1); display: flex; flex-direction: column;
     }
     .filter-sidebar.open { transform: translateX(0); }
     .filter-sidebar-head {
@@ -884,18 +926,25 @@
     .cat-color-row { display: flex; align-items: center; gap: 7px; padding: 3px 2px; }
     .cat-color-name { font-size: 0.75rem; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cat-color-row input[type="color"] { width: 34px; height: 22px; border: 1px solid var(--border-soft); border-radius: 6px; background: none; padding: 0; cursor: pointer; }
+    .cat-color-row input[type="text"].cat-color-name-inp { flex: 1; min-width: 0; padding: 4px 7px; border: 1px solid var(--border-soft); border-radius: 6px; font-family: inherit; font-size: 0.75rem; font-weight: 600; background: var(--bg-canvas); color: var(--text-main); }
+    .cat-color-row input[type="text"].cat-color-name-inp:disabled { opacity: 0.6; }
+    .cat-del { border: none; background: none; color: var(--danger); cursor: pointer; font-size: 0.95rem; line-height: 1; padding: 2px 5px; border-radius: 6px; flex-shrink: 0; }
+    .cat-del:hover { background: rgba(239, 68, 68, 0.12); }
+    .cat-add-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+    .cat-add-row input[type="text"] { flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid var(--border-soft); border-radius: 7px; font-family: inherit; font-size: 0.75rem; background: var(--bg-canvas); color: var(--text-main); }
+    .cat-add-row input[type="color"] { width: 32px; height: 22px; border: 1px solid var(--border-soft); border-radius: 6px; background: none; padding: 0; cursor: pointer; flex-shrink: 0; }
 
     /* ---------- Activity detail / edit slide-out (left side) ---------- */
     .act-slide-overlay {
         position: fixed; inset: 0; background: var(--overlay-bg); z-index: 260;
-        opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
     .act-slide-overlay.open { opacity: 1; pointer-events: auto; }
     .act-slide-panel {
         position: fixed; top: 0; left: 0; bottom: 0; width: 480px; max-width: 92vw;
         background: var(--surface-solid); border-right: 1px solid var(--border-soft);
         box-shadow: var(--shadow-lg); z-index: 261; transform: translateX(-100%);
-        transition: transform 0.25s ease; display: flex; flex-direction: column;
+        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.34, 1); display: flex; flex-direction: column;
     }
     .act-slide-panel.open { transform: translateX(0); }
     .act-slide-head {
@@ -1090,8 +1139,8 @@
                     <div class="toolbar">
                         <span id="calMonthLabel" style="font-weight:800;font-size:0.95rem;min-width:130px;"></span>
                         <button class="btn btn-sm btn-ghost" data-click="calGoToday()">Today</button>
-                        <button class="btn btn-sm" data-click="calNav(-1)">← Prev</button>
-                        <button class="btn btn-sm" data-click="calNav(1)">Next →</button>
+                        <button class="cal-nav-btn" data-click="calNav(-1)" title="Previous month"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                        <button class="cal-nav-btn" data-click="calNav(1)" title="Next month"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     </div>
                     <div id="calOverlapBanner"></div>
                     <div class="cal-shell"><div class="cal-grid" id="calGrid"></div></div>
@@ -1188,7 +1237,9 @@
                         <li style="margin-bottom:4px;">If you're new, ask a Top 3 member to add you to the <code>EB_Members</code> roster first.</li>
                         <li style="margin-bottom:4px;">Toggle <strong>Light</strong> and <strong>Dark</strong> mode with the sun/moon icon in the header.</li>
                         <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Meets</strong>, <strong>Calendar</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
-                        <li style="margin-bottom:4px;">Everything is saved to the EB Database sheet and refreshes automatically (about 30 seconds).</li>
+                        <li style="margin-bottom:4px;">Everything is saved straight to the EB Database sheet — open the app and it loads your latest data, then refreshes silently in the background as you work.</li>
+                        <li style="margin-bottom:4px;">When a meet is waiting on your availability, a <strong>response drawer</strong> slides in on your left with the meet title, the response rate, and a <strong>"Respond now"</strong> shortcut that jumps you straight to it.</li>
+                        <li style="margin-bottom:4px;">On mobile, use the <strong>☰ menu</strong> in the header to switch panels and sign out.</li>
                     </ul>
                 </div>
 
@@ -1213,7 +1264,7 @@
                         Calendar
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">The tracker and calendar are shown <strong>side-by-side</strong> on desktop (tracker on the left, calendar on the right). On mobile, use the <strong>toggle bar</strong> (Both / Calendar / Tracker) to switch views.</li>
+                        <li style="margin-bottom:4px;">The calendar and tracker are shown <strong>side-by-side</strong> on desktop (calendar on the left, tracker on the right). On mobile, use the <strong>toggle bar</strong> (Both / Calendar / Tracker) to switch views, and <strong>search</strong> the tracker box to narrow activities.</li>
                         <li style="margin-bottom:4px;">Use the <strong>Filter</strong> button to narrow activities by category, status, section, classification, involved group, and mode. Active filters show a badge count.</li>
                         <li style="margin-bottom:4px;">Multi-day events show as <strong>connected colored bars</strong> across calendar days, similar to Google Calendar.</li>
                         <li style="margin-bottom:4px;">Set the activity <strong>status</strong>: Planned, Confirmed, Ongoing, Completed, or Cancelled.</li>
@@ -1233,10 +1284,10 @@
                         Links Hub
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">One place for all pertinent files — templates, email templates, policies &amp; TOR, sourcing &amp; speaker forms, ARW materials, and Google Drive files.</li>
-                        <li style="margin-bottom:4px;">Links are grouped into <strong>category columns</strong> (three per row). Use the <strong>search box</strong> to filter; empty categories are hidden automatically.</li>
-                        <li style="margin-bottom:4px;">Click the <strong>▼</strong> beside a link to reveal its description.</li>
-                        <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category.</li>
+                        <li style="margin-bottom:4px;">One place for all pertinent files, grouped into categories: <strong>Templates, Email Templates, Policies &amp; TOR, Sourcing &amp; Speakers, SMO, ARW, GDrive (Google Drive), and General</strong>.</li>
+                        <li style="margin-bottom:4px;">Links are grouped into <strong>category columns</strong> (three per row) and pinned categories stay at the front. Use the <strong>search box</strong> to filter by name, or the <strong>Filter</strong> button to show only chosen categories (the button shows a count badge). Empty categories are hidden automatically.</li>
+                        <li style="margin-bottom:4px;">Click the <strong>▼</strong> beside a link to reveal its description, or the pencil / trash icons on hover to edit or delete it.</li>
+                        <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category, and hit the <strong>pin icon</strong> on any category header to keep that category always at the front (it will also appear on the Overview — Quick Links).</li>
                         <li style="margin-bottom:4px;">The <strong>Order</strong> field controls sorting; uncheck <strong>Active</strong> to hide a link from the hub without deleting it.</li>
                     </ul>
                 </div>
@@ -1519,6 +1570,8 @@
                 </div>
             </div>
             <div class="modal-foot">
+                <button class="btn btn-danger hidden" id="memberDeleteBtn" data-click="deleteCurrentMember()">Delete Member</button>
+                <span style="flex:1;"></span>
                 <button class="btn" data-click="closeModal('memberModal')">Cancel</button>
                 <button class="btn btn-primary" data-once data-click="saveMember()">Save Member</button>
             </div>
@@ -1583,6 +1636,7 @@
             <div class="filter-section">
                 <label>Status</label>
                 <select id="filterStatus" style="width:100%;padding:8px 10px;border:1px solid var(--border-soft);border-radius:8px;font-family:inherit;font-size:0.82rem;background:var(--bg-canvas);color:var(--text-main);">
+                    <option value="__active__">Active (hide completed/cancelled)</option>
                     <option value="">All statuses</option>
                     <option>Planned</option><option>Confirmed</option><option>Ongoing</option><option>Completed</option><option>Cancelled</option>
                 </select>
@@ -1797,7 +1851,39 @@
         const custom = fullData && fullData.categoryColors;
         return (custom && custom[c]) || CATEGORY_COLORS[c] || CATEGORY_COLORS.Other;
     }
+    // Shorthand for classification pills: "Internal Event" -> "Internal",
+    // "External Event" -> "External". Falls back to the raw value otherwise.
+    function shortClass(c) {
+        return String(c || "").replace(/^(.+?)\s+Event$/, "$1") || String(c || "");
+    }
     const CATEGORY_ORDER = ["Workshop", "ARW", "SMOOGA", "LMW", "Lakan", "General Assembly", "Orgwide Event", "Meeting", "Other"];
+    // Server-managed category list (Top 3 editor), falling back to the built-ins
+    // for older cached payloads that predate activityCategories.
+    function getActivityCats() {
+        return (fullData && fullData.activityCategories && fullData.activityCategories.length)
+            ? fullData.activityCategories : CATEGORY_ORDER;
+    }
+    // Escape a string for embedding inside a single-quoted JS string literal in
+    // a data-click / data-change attribute.
+    function jsQ(s) {
+        return String(s == null ? "" : s).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+    // Fills the activity form's Category dropdown (including custom names).
+    // A generic "Other" is only reachable via the "Other (specify)..." option.
+    function renderActivityCategorySelect(selectedCat, customCat) {
+        const sel = $("actCategory");
+        const cats = getActivityCats().filter(c => c !== "Other");
+        sel.innerHTML = cats.map(c => `<option ${c === selectedCat ? "selected" : ""}>${escHtml(c)}</option>`).join("")
+            + (selectedCat === "__other__" ? '<option value="__other__" selected>Other (specify)...</option>' : '<option value="__other__">Other (specify)...</option>');
+        const customInp = $("actCategoryCustom");
+        if (selectedCat === "__other__") {
+            customInp.classList.remove("hidden");
+            customInp.value = customCat || "";
+        } else {
+            customInp.classList.add("hidden");
+            customInp.value = "";
+        }
+    }
     const ACT_SECTIONS = ["Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan", "Orgwide"];
     const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Top 3", "SMO/SMC"];
     const CLASSIFICATION_OPTIONS = ["Internal Event", "External Event"];
@@ -1848,7 +1934,7 @@
     let filterCatSet = new Set();
     let filterSectionSet = new Set();
     let filterInvolvedSet = new Set();
-    let filterStatus = "";
+    let filterStatus = "__active__";
     let filterClassification = "";
     let filterMode = "";
 
@@ -1891,6 +1977,14 @@
         const ap = h >= 12 ? "PM" : "AM";
         h = h % 12 || 12;
         return h + ":" + pad(mm) + " " + ap;
+    }
+    // Compact range: "3:00–6:30 PM" (shared AM/PM shown once), otherwise
+    // "3:00 AM – 6:30 PM". Single time stays "3:00 PM".
+    function fmtTimeRange(start, end) {
+        const s = fmtTime(start);
+        if (!end || end === start) return s;
+        const e = fmtTime(end);
+        return (s.slice(-2) === e.slice(-2)) ? s.slice(0, -3) + "–" + e : s + " – " + e;
     }
     function dateOnly(v) {
         if (v instanceof Date) return isoFromDate(v);
@@ -2414,11 +2508,15 @@
     function activityRowHtml(a, iso, badge) {
         const color = catColor(a.category);
         const dt = iso ? dayTimeFor(a, iso) : { start: a.start, end: a.end };
+        const catPill = `<span class="tbadge" style="color:${color};background:${color}1f;">${escHtml(a.category || "Other")}</span>`;
+        const todayPill = badge ? `<span class="tbadge" style="background:#10b981;color:#fff;">Today</span>` : "";
+        const classPill = a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(shortClass(a.classification))}</span>` : "";
         return `
         <div class="item-row">
             <div class="grow" style="cursor:pointer;" data-click="openDayDrawer('${a.startDate}')">
-                <h4>${escHtml(a.title)} ${badge ? `<span class="tbadge" style="background:#10b981;color:#fff;">Today</span> ` : ""}<span class="tbadge" style="color:#fff;background:${color};">${escHtml(a.category || "Other")}</span>${a.classification ? ` <span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}</h4>
+                <h4>${escHtml(a.title)}</h4>
                 <div class="meta">${escHtml(activityDateRange(a))}</div>
+                <div class="badges">${todayPill}${catPill}${classPill}</div>
             </div>
         </div>`;
     }
@@ -2752,21 +2850,24 @@
 
     function toggleMeetSection(which) {
         const heatWrap = $("meetHeatmapWrap"), editWrap = $("meetMyAvailWrap");
+        const heatIsOpen = !heatWrap.classList.contains("hidden");
+        const editIsOpen = !editWrap.classList.contains("hidden");
+        let heatOpen, editOpen;
         if (which === "heatmap") {
-            const opening = heatWrap.classList.contains("hidden");
-            heatWrap.classList.toggle("hidden", !opening);
-            if (opening) editWrap.classList.add("hidden");
+            heatOpen = !heatIsOpen;
+            smoothToggle(heatWrap, 3000, !heatOpen);
+            smoothToggle(editWrap, 3000, true);
+            editOpen = false;
         } else {
-            const opening = editWrap.classList.contains("hidden");
-            editWrap.classList.toggle("hidden", !opening);
-            if (opening) heatWrap.classList.add("hidden");
+            editOpen = !editIsOpen;
+            smoothToggle(editWrap, 3000, !editOpen);
+            smoothToggle(heatWrap, 3000, true);
+            heatOpen = false;
         }
         const m = meetById(currentMeetId);
         if (!m) return;
         const isOpen = m.status === "Open";
         const resp = responsesFor(m.id);
-        const heatOpen = !heatWrap.classList.contains("hidden");
-        const editOpen = !editWrap.classList.contains("hidden");
         $("toggleHeatmapBtn").innerHTML = heatOpen
             ? "▾ Hide responses heatmap"
             : `▸ View responses heatmap${resp.length ? ` (${resp.length})` : ""}`;
@@ -3292,9 +3393,9 @@
     }
     function renderFilterChecks() {
         let catHtml = "";
-        CATEGORY_ORDER.forEach(c => {
+        getActivityCats().forEach(c => {
             const color = catColor(c);
-            catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${c}')"><span class="filter-dot" style="background:${color};"></span>${escHtml(c)}</span>`;
+            catHtml += `<span class="filter-check${filterCatSet.has(c) ? " active" : ""}" data-click="toggleFilterCat('${jsQ(c)}')"><span class="filter-dot" style="background:${color};"></span>${escHtml(c)}</span>`;
         });
         $("filterCatChecks").innerHTML = catHtml;
         renderCatColorEditor();
@@ -3315,9 +3416,12 @@
     // — calendar bars, filter dots, badges, and lists.
     let catEditorOpen = false;
     function toggleCatColorEditor() {
-        catEditorOpen = !catEditorOpen;
+        if (catEditorOpen) { catEditorOpen = false; smoothToggle($("catColorEditor"), 600); return; }
+        catEditorOpen = true;
         renderFilterChecks();
+        smoothToggle($("catColorEditor"), 600);
     }
+
     function renderCatColorEditor() {
         const ed = $("catColorEditor");
         const btn = $("catColorEditBtn");
@@ -3330,27 +3434,94 @@
         if (btn) btn.style.display = "";
         if (!catEditorOpen) { ed.classList.add("hidden"); ed.innerHTML = ""; return; }
         ed.classList.remove("hidden");
-        let rows = `<div class="cat-color-head">Category colors</div>`;
-        CATEGORY_ORDER.forEach(c => {
+        let rows = `<div class="cat-color-head">Categories</div>`;
+        rows += `<div class="cat-add-row">
+            <input type="text" id="newCatName" placeholder="New category name...">
+            <input type="color" id="newCatColor" value="#0ea5e9">
+            <button type="button" class="btn btn-sm" data-click="addActivityCat()">Add</button>
+        </div>`;
+        getActivityCats().forEach(c => {
+            const isOther = c === "Other";
             rows += `<div class="cat-color-row">
                 <span class="filter-dot" style="background:${catColor(c)};flex-shrink:0;"></span>
-                <span class="cat-color-name">${escHtml(c)}</span>
-                <input type="color" value="${catColor(c)}" data-change="setCatColor('${c}', this.value)" title="Pick a color for ${escHtml(c)}">
+                <input type="text" class="cat-color-name-inp" value="${escHtml(c)}" data-change="renameActivityCat('${jsQ(c)}', this.value)" title="Rename category" ${isOther ? "disabled" : ""}>
+                <input type="color" value="${catColor(c)}" data-change="setCatColor('${jsQ(c)}', this.value)" title="Pick a color for ${escHtml(c)}">
+                ${isOther ? "" : `<button type="button" class="cat-del" data-click="removeActivityCat('${jsQ(c)}')" title="Delete category">&times;</button>`}
             </div>`;
         });
         rows += `<button type="button" class="btn btn-sm" style="width:100%;margin-top:6px;" data-click="resetCatColors()">Reset to defaults</button>`;
         ed.innerHTML = rows;
     }
+    function addActivityCat() {
+        if (!fullData || !fullData.isManager) return;
+        const name = ($("newCatName").value || "").trim();
+        const color = $("newCatColor").value;
+        if (!name) { toast("Enter a category name first."); return; }
+        if (getActivityCats().indexOf(name) >= 0) { toast("That category already exists."); return; }
+        sendPostRequest({ action: "Add Activity Category", name: name, color: /^#[0-9a-fA-F]{6}$/.test(color) ? color.toUpperCase() : "" })
+            .then(res => {
+                if (res && res.activityCategories) fullData.activityCategories = res.activityCategories;
+                if (res && res.categoryColors) fullData.categoryColors = res.categoryColors;
+                renderFilterChecks();
+                renderAll();
+                toast("Category added.");
+            })
+            .catch(() => {});
+    }
+    function renameActivityCat(oldName, newName) {
+        if (!fullData || !fullData.isManager) return;
+        const n = String(newName || "").trim();
+        const o = String(oldName || "").trim();
+        if (!n || !o || n === o) return;
+        sendPostRequest({ action: "Rename Activity Category", oldName: o, newName: n })
+            .then(res => {
+                if (res && res.activityCategories) fullData.activityCategories = res.activityCategories;
+                if (res && res.categoryColors) fullData.categoryColors = res.categoryColors;
+                (fullData.activities || []).forEach(a => {
+                    if (a.category === o) a.category = n;
+                    if (a.categoryCustom === o) a.categoryCustom = n;
+                });
+                if (filterCatSet.has(o)) { filterCatSet.delete(o); filterCatSet.add(n); }
+                renderFilterChecks();
+                renderAll();
+                toast("Category renamed to " + n + ".");
+            })
+            .catch(() => {});
+    }
+    function removeActivityCat(name) {
+        if (!fullData || !fullData.isManager) return;
+        const n = String(name || "").trim();
+        if (!n) return;
+        showConfirm("Remove this category? Existing activities using it will be moved to \"Other\".").then(function (yes) {
+            if (!yes) return;
+            sendPostRequest({ action: "Remove Activity Category", name: n })
+                .then(res => {
+                    if (res && res.activityCategories) fullData.activityCategories = res.activityCategories;
+                    if (res && res.categoryColors) fullData.categoryColors = res.categoryColors;
+                    (fullData.activities || []).forEach(a => {
+                        if (a.category === n) { a.category = "Other"; a.categoryCustom = ""; }
+                        if (a.categoryCustom === n) a.categoryCustom = "";
+                    });
+                    if (filterCatSet.has(n)) filterCatSet.delete(n);
+                    renderFilterChecks();
+                    renderAll();
+                    toast("Category removed.");
+                })
+                .catch(() => {});
+        });
+    }
     function setCatColor(cat, hex) {
+        const catName = String(cat || "").trim();
         if (!/^#[0-9a-fA-F]{6}$/.test(hex || "")) return;
+        if (!catName) return;
         const colors = Object.assign({}, (fullData && fullData.categoryColors) || {});
-        colors[cat] = hex.toUpperCase();
+        colors[catName] = hex.toUpperCase();
         sendPostRequest({ action: "Set Category Colors", colors: colors })
             .then(() => {
                 fullData.categoryColors = colors;
                 renderFilterChecks();
                 renderAll();
-                toast("Color updated for " + cat + ".");
+                toast("Color updated for " + catName + ".");
             })
             .catch(() => {});
     }
@@ -3389,14 +3560,14 @@
     }
     function resetFilters() {
         filterCatSet.clear(); filterSectionSet.clear(); filterInvolvedSet.clear();
-        filterStatus = ""; filterClassification = ""; filterMode = "";
+        filterStatus = "__active__"; filterClassification = ""; filterMode = "";
         closeFilterSidebar();
         renderCalendarView();
         updateFilterBadge();
     }
     function updateFilterBadge() {
         let count = filterCatSet.size + filterSectionSet.size + filterInvolvedSet.size;
-        if (filterStatus) count++;
+        if (filterStatus && filterStatus !== "__active__") count++;
         if (filterClassification) count++;
         if (filterMode) count++;
         const badge = $("filterBadge");
@@ -3459,7 +3630,11 @@
         if (_cachedFilteredActs) return _cachedFilteredActs;
         return (fullData.activities || []).filter(a => {
             if (filterCatSet.size && !filterCatSet.has(a.category)) return false;
-            if (filterStatus && a.status !== filterStatus) return false;
+            if (filterStatus === "__active__") {
+                if (a.status === "Completed" || a.status === "Cancelled") return false;
+            } else if (filterStatus && a.status !== filterStatus) {
+                return false;
+            }
             if (filterClassification && a.classification !== filterClassification) return false;
             if (filterMode && a.mode !== filterMode) return false;
             if (filterSectionSet.size) {
@@ -3526,7 +3701,7 @@
             const isEnd = (a.endDate || a.startDate) === iso;
             const ov = overlaps.has(a.id) ? "⚠ " : "";
             const dt = dayTimeFor(a, iso);
-            const label = (dt.start ? fmtTime(dt.start) + " " : "") + escHtml(a.title);
+            const label = escHtml(a.title);
             if (multi) {
                 const barCls = isStart ? "start" : isEnd ? "end" : "mid";
                 const barText = isStart ? `${ov}${label}` : "";
@@ -3627,7 +3802,7 @@
                     <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                         <span class="tbadge" style="background:${color};color:#fff;font-size:0.7rem;">${escHtml(a.category)}</span>
                         <span class="sbadge" style="background:${sColor}22;color:${sColor};font-size:0.7rem;">${escHtml(a.status)}</span>
-                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);font-size:0.7rem;">${escHtml(a.classification)}</span>` : ""}
+                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);font-size:0.7rem;">${escHtml(shortClass(a.classification))}</span>` : ""}
                     </div>
                     <h4 style="margin:0 0 6px;">${escHtml(a.title)}</h4>
                     <div style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text-muted);">
@@ -3683,7 +3858,7 @@
             const color = catColor(a.category);
             const sColor = STATUS_META[a.status] || "#64748b";
             const dim = isPastActivity(a) ? " dim" : "";
-            const when = activityDateRange(a) + (a.start ? " · " + fmtTime(a.start) + (a.end && a.end !== a.start ? " – " + fmtTime(a.end) : "") : "");
+            const when = activityDateRange(a) + (a.start ? " · " + fmtTimeRange(a.start, a.end) : "");
             return `<div class="tracker-card${dim}" data-click="openActivityDetail('${a.id}')">
                 <div class="tc-top">
                     <span class="tc-title">${escHtml(a.title)}</span>
@@ -3692,7 +3867,7 @@
                     <div class="tc-badges">
                         <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
                         <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
-                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}
+                        ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(shortClass(a.classification))}</span>` : ""}
                     </div>
                     ${when ? `<span class="tc-date">${escHtml(when)}</span>` : ""}
                 </div>
@@ -3705,7 +3880,7 @@
         if (!a) return;
         const color = catColor(a.category);
         const sColor = STATUS_META[a.status] || "#64748b";
-        const when = activityDateRange(a) + (a.start ? " · " + fmtTime(a.start) + (a.end && a.end !== a.start ? " – " + fmtTime(a.end) : "") : "");
+        const when = activityDateRange(a) + (a.start ? " · " + fmtTimeRange(a.start, a.end) : "");
         let links = [];
         if (a.link) {
             try { const p = JSON.parse(a.link); if (Array.isArray(p)) links = p; else links = [a.link]; } catch(e) { links = [a.link]; }
@@ -3723,7 +3898,7 @@
                 <div class="act-detail-badges">
                     <span class="tbadge" style="background:${color};color:#fff;">${escHtml(a.category)}</span>
                     <span class="sbadge" style="background:${sColor}22;color:${sColor};">${escHtml(a.status)}</span>
-                    ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.classification)}</span>` : ""}
+                    ${a.classification ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(shortClass(a.classification))}</span>` : ""}
                     ${a.mode ? `<span class="tbadge" style="background:rgba(100,116,139,0.12);color:var(--text-muted);">${escHtml(a.mode)}</span>` : ""}
                 </div>
             </div>
@@ -3762,8 +3937,6 @@
         const sel = $("actOwner");
         sel.innerHTML = (fullData.members || []).filter(m => m.isActive)
             .map(m => `<option value="${m.email}" ${m.email === userEmail ? "selected" : ""}>${escHtml(m.fullName || m.email)}</option>`).join("");
-        $("actCategoryCustom").classList.add("hidden");
-        $("actCategoryCustom").value = "";
         $("actInvolvedCustom").classList.add("hidden");
         $("actInvolvedCustom").value = "";
         $("actSectionCustom").classList.add("hidden");
@@ -3774,13 +3947,12 @@
             if (a) {
                 $("actTitle").value = a.title;
                 const cat = a.category || "Workshop";
-                const stdCats = CATEGORY_ORDER.slice(0, -1);
-                if (stdCats.includes(cat)) {
-                    $("actCategory").value = cat;
+                if (cat !== "Other" && getActivityCats().includes(cat)) {
+                    renderActivityCategorySelect(cat);
                 } else {
-                    $("actCategory").value = "__other__";
-                    $("actCategoryCustom").value = cat;
-                    $("actCategoryCustom").classList.remove("hidden");
+                    // A generic "Other" or an unlisted legacy category drops into
+                    // "Other (specify)..." so it can be re-saved under a real name.
+                    renderActivityCategorySelect("__other__", cat === "Other" && a.categoryCustom ? a.categoryCustom : (cat === "Other" ? "" : cat));
                 }
                 $("actStatus").value = a.status || "Planned";
                 $("actClassification").value = a.classification || "";
@@ -3803,7 +3975,7 @@
             }
         } else {
             $("actTitle").value = "";
-            $("actCategory").value = "Workshop";
+            renderActivityCategorySelect("Workshop");
             $("actStatus").value = "Planned";
             $("actClassification").value = "";
             $("actStartDate").value = todayISO();
@@ -3835,8 +4007,8 @@
         let categoryCustom = "";
         if (category === "__other__") {
             categoryCustom = $("actCategoryCustom").value.trim();
-            if (!categoryCustom) { showAlert("Missing category", "Please enter a category name."); return; }
-            category = "Other";
+            // A typed name becomes the category; leaving it blank keeps "Other".
+            category = categoryCustom || "Other";
         }
         const links = collectLinkInputs();
         const common = {
@@ -3998,8 +4170,43 @@
             || '<div class="empty-state" style="grid-column:1/-1;">No links here yet.</div>';
     }
 
+    // Smoothly expand/collapse an element that uses the .hidden (display:none)
+    // class by animating its scrollHeight via max-height/opacity.
+    function smoothToggle(el, openMax, forceHidden) {
+        if (!el) return;
+        openMax = openMax || 2000;
+        const isHidden = el.classList.contains("hidden");
+        const targetHidden = (typeof forceHidden === "boolean") ? forceHidden : isHidden;
+        const animate = function (targetHidden) {
+            el.classList.remove("hidden");
+            el.style.overflow = "hidden";
+            if (targetHidden) {
+                el.style.maxHeight = el.scrollHeight + "px";
+                el.style.opacity = "1";
+                el.offsetHeight;
+                el.style.maxHeight = "0px";
+                el.style.opacity = "0";
+                el.addEventListener("transitionend", function onEnd() {
+                    el.removeEventListener("transitionend", onEnd);
+                    el.style.maxHeight = ""; el.style.opacity = ""; el.style.overflow = "";
+                    el.classList.add("hidden");
+                }, false);
+            } else {
+                el.style.maxHeight = "0px"; el.style.opacity = "0";
+                el.offsetHeight;
+                el.style.maxHeight = Math.min(el.scrollHeight, openMax) + "px";
+                el.style.opacity = "1";
+                el.addEventListener("transitionend", function onEnd() {
+                    el.removeEventListener("transitionend", onEnd);
+                    el.style.maxHeight = ""; el.style.opacity = ""; el.style.overflow = "";
+                }, false);
+            }
+        };
+        animate(targetHidden);
+    }
+
     function toggleLinkFilterRow() {
-        $("linkFilterRow").classList.toggle("hidden");
+        smoothToggle($("linkFilterRow"), 400);
     }
 
     function renderLinkFilterPills(cats) {
@@ -4165,7 +4372,6 @@
                 <td>
                     ${fullData.isManager || m.email === userEmail ? `<div class="row-actions">
                         <button class="btn btn-sm btn-ghost" data-click="openMemberModal('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
-                        ${fullData.isManager ? `<button class="btn btn-sm btn-ghost" data-click="deleteMember('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-trash"/></svg></button>` : ""}
                     </div>` : ""}
                 </td>
             </tr>`).join("") || '<tr><td colspan="5"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
@@ -4175,6 +4381,7 @@
         editingMemberEmail = email || null;
         const managerView = !!(fullData && fullData.isManager);
         $("memberModalTitle").textContent = email ? "Edit Member" : "Add Member";
+        $("memberDeleteBtn").classList.toggle("hidden", !(email && managerView));
         if (email) {
             const m = memberByEmail(email);
             if (m) {
@@ -4234,6 +4441,12 @@
                     .then(() => { toast("Member removed."); refresh(); })
                     .catch(() => {});
             });
+    }
+
+    function deleteCurrentMember() {
+        if (!editingMemberEmail) return;
+        closeModal("memberModal");
+        deleteMember(editingMemberEmail);
     }
 
     function openSetTermModal() {
@@ -4299,7 +4512,7 @@
         "openFilterSidebar": openFilterSidebar,
         "openActivityModal": function() { openActivityModal(null); },
         "openLinkModal": function() { openLinkModal(null); },
-        "openMemberModal": function() { openMemberModal(null); },
+        "openMemberModal": openMemberModal,
         "calGoToday": calGoToday,
         "calNav": calNav,
         "switchCalView": switchCalView,
@@ -4312,6 +4525,7 @@
         "saveCommitment": saveCommitment,
         "saveLink": saveLink,
         "saveMember": saveMember,
+        "deleteCurrentMember": deleteCurrentMember,
         "saveTerm": saveTerm,
         "saveMeet": saveMeet,
         "submitFeedback": submitFeedback,
