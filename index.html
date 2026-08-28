@@ -867,6 +867,8 @@
 
     @media (max-width: 640px) {
         .cal-day { min-height: 54px; }
+        /* Start-bar labels on phones are width-capped to the band by JS
+           (renderCalGrid -> renderCalDayCell), so they don't spill past it. */
     }
 
     /* ---------- Multi-select dropdown ---------- */
@@ -3740,7 +3742,7 @@
         return lanes.map(l => l.acts);
     }
 
-    function renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments) {
+    function renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments, bandW) {
         if (!inMonth) return `<div class="cal-day out"></div>`;
         const dayActs = acts.filter(a => covers(a, iso));
         const overlaps = findOverlapIds(dayActs, iso);
@@ -3761,7 +3763,9 @@
             if (multi) {
                 const barCls = isStart ? "start" : isEnd ? "end" : "mid";
                 const barText = isStart ? `${ov}${label}` : "";
-                pills += `<div class="cal-bar ${barCls}${dim}" style="background:${color};" title="${escHtml(a.title)}">${barText}</div>`;
+                const bw = bandW && bandW.get(a.id);
+                const extraStyle = (isStart && bw) ? `width:${bw}px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;` : "";
+                pills += `<div class="cal-bar ${barCls}${dim}" style="background:${color};${extraStyle}" title="${escHtml(a.title)}">${barText}</div>`;
             } else {
                 pills += `<div class="cal-pill single${dim}" style="background:${color};">${ov}${escHtml(label)}</div>`;
             }
@@ -3801,6 +3805,22 @@
         const lanes = assignCalLanes(acts, firstIso, lastIso);
         const commitments = fullData.commitments || [];
 
+        // On narrow screens, cap start-bar labels to each band's rendered width
+        // (computed in px) so long titles clip at the band end, not per cell.
+        const gridEl = $("calGrid");
+        const calNarrow = window.matchMedia("(max-width: 640px)").matches;
+        const bandW = new Map();
+        if (calNarrow) {
+            const cellW = (((gridEl && gridEl.clientWidth) || 620) / 7);
+            const daySpan = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 86400000);
+            lanes.forEach(lane => lane.forEach(a => {
+                const s = (a.startDate || "") > firstIso ? a.startDate : firstIso;
+                const e = ((a.endDate || a.startDate) || "") < lastIso ? (a.endDate || a.startDate) : lastIso;
+                if (!s || !e || e < s) return;
+                bandW.set(a.id, Math.max(40, (daySpan(s, e) + 1) * cellW - 8));
+            }));
+        }
+
         let html = `<div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div>`;
 
         for (let i = 0; i < total; i++) {
@@ -3810,7 +3830,7 @@
             else if (dayNum > daysInMonth) { iso = isoFor(calYear, calMonth + 1, dayNum - daysInMonth); inMonth = false; }
             else { iso = isoFor(calYear, calMonth, dayNum); }
 
-            html += renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments);
+            html += renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments, bandW);
         }
         if (!_calGridEl) _calGridEl = $("calGrid");
         _calGridEl.innerHTML = html;
@@ -4190,6 +4210,17 @@
                 token: CLIENT_API_TOKEN, email: userEmail, action: "Set Pinned Cats", cats: desired
             }));
         } catch (err) {}
+    });
+
+    // Re-render the calendar when the viewport crosses the narrow breakpoint,
+    // since bar labels use different width/overflow logic per screen size.
+    let _calResizeTimer = null;
+    window.addEventListener("resize", function () {
+        if (_calResizeTimer) clearTimeout(_calResizeTimer);
+        _calResizeTimer = setTimeout(function () {
+            _calResizeTimer = null;
+            if (currentPanel === "calendar" && fullData) renderCalendarView();
+        }, 120);
     });
 
     function buildLinkCatsHtml(links) {
