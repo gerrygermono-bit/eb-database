@@ -502,7 +502,24 @@
 
     /* ---------- Calendar ---------- */
     .cal-shell { border: 1px solid var(--border-soft); border-radius: 16px; overflow: hidden; background: var(--surface-card); box-shadow: var(--shadow-sm); }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); min-height: 210px; }
+
+    @keyframes calSlideLeftOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-34px); opacity: 0; } }
+    @keyframes calSlideLeftIn  { from { transform: translateX(34px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes calSlideRightOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(34px); opacity: 0; } }
+    @keyframes calSlideRightIn  { from { transform: translateX(-34px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .cal-grid.cal-anim-left-out  { animation: calSlideLeftOut 0.16s ease both; }
+    .cal-grid.cal-anim-left-in   { animation: calSlideLeftIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .cal-grid.cal-anim-right-out { animation: calSlideRightOut 0.16s ease both; }
+    .cal-grid.cal-anim-right-in  { animation: calSlideRightIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .cal-grid.cal-anim-pop-in    { animation: calPopIn 0.24s ease both; }
+    @keyframes calPopIn { from { transform: translateY(6px) scale(0.985); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+    #calMonthLabel.cal-anim-out { animation: calLabelOut 0.14s ease both; }
+    #calMonthLabel.cal-anim-in  { animation: calLabelIn 0.22s ease both; }
+    @keyframes calLabelOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+    @keyframes calLabelIn  { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
     .cal-weekday { padding: 9px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); background: rgba(226,232,240,0.25); text-transform: uppercase; }
     /* The hardcoded light tint above turns into a muddy gray strip over dark
        surfaces and washes out the light-gray label. Use a faint cool tint in
@@ -623,7 +640,7 @@
         .cal-left.hidden-mobile, .cal-right.hidden-mobile { display: none; }
     }
 
-    .cal-left .toolbar { flex-wrap: nowrap; justify-content: space-between; }
+    .cal-left .toolbar { flex-wrap: nowrap; justify-content: flex-start; }
     .cal-left .toolbar .btn { flex-shrink: 0; padding-inline: 8px; }
     .cal-left #calMonthLabel { min-width: 0; flex-shrink: 1; }
 
@@ -1952,6 +1969,7 @@
     }
 
     let calYear, calMonth;
+    let calAnimateDirection = null;
     let _cachedFilteredActs = null;
     let _calGridEl = null;
     let _calOverlapEl = null;
@@ -3658,15 +3676,42 @@
     }
 
     function calNav(delta) {
-        calMonth += (+delta);
-        if (calMonth < 0) { calMonth = 11; calYear--; }
-        if (calMonth > 11) { calMonth = 0; calYear++; }
-        renderCalendarView();
+        const dir = (+delta > 0) ? "left" : "right";
+        calAnimateDirection = dir;
+        const grid = $("calGrid");
+        const label = $("calMonthLabel");
+        if (grid) {
+            grid.classList.remove("cal-anim-left-out", "cal-anim-right-out", "cal-anim-left-in", "cal-anim-right-in", "cal-anim-pop-in");
+            void grid.offsetWidth;
+            grid.classList.add(dir === "left" ? "cal-anim-left-out" : "cal-anim-right-out");
+        }
+        if (label) {
+            label.classList.remove("cal-anim-out", "cal-anim-in");
+            void label.offsetWidth;
+            label.classList.add("cal-anim-out");
+        }
+        const finish = () => {
+            calMonth += (+delta);
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderCalendarView();
+        };
+        if (grid && grid.animate) {
+            grid.addEventListener("animationend", function handler(ev) {
+                if (ev.target !== grid) return;
+                if (ev.animationName !== (dir === "left" ? "calSlideLeftOut" : "calSlideRightOut")) return;
+                grid.removeEventListener("animationend", handler);
+                finish();
+            }, { once: true });
+        } else {
+            finish();
+        }
     }
     function calGoToday() {
         const now = new Date();
         calYear = now.getFullYear();
         calMonth = now.getMonth();
+        calAnimateDirection = "pop";
         renderCalendarView();
     }
 
@@ -3676,7 +3721,13 @@
 
     function renderCalendarView() {
         if (!fullData) return;
-        $("calMonthLabel").textContent = monthLabel();
+        const label = $("calMonthLabel");
+        label.textContent = monthLabel();
+        label.classList.remove("cal-anim-out", "cal-anim-in");
+        if (calAnimateDirection === "pop") {
+            void label.offsetWidth;
+            label.classList.add("cal-anim-in");
+        }
         _cachedFilteredActs = filteredActivities();
         renderCalGrid();
         renderOverlapBanner();
@@ -3833,7 +3884,12 @@
             html += renderCalDayCell(dayNum, iso, inMonth, today, acts, lanes, MAX_LANES, commitments, bandW);
         }
         if (!_calGridEl) _calGridEl = $("calGrid");
+        _calGridEl.classList.remove("cal-anim-left-out", "cal-anim-right-out", "cal-anim-left-in", "cal-anim-right-in", "cal-anim-pop-in");
         _calGridEl.innerHTML = html;
+        if (calAnimateDirection === "left") { void _calGridEl.offsetWidth; _calGridEl.classList.add("cal-anim-left-in"); }
+        else if (calAnimateDirection === "right") { void _calGridEl.offsetWidth; _calGridEl.classList.add("cal-anim-right-in"); }
+        else if (calAnimateDirection === "pop") { void _calGridEl.offsetWidth; _calGridEl.classList.add("cal-anim-pop-in"); }
+        calAnimateDirection = null;
     }
 
     function renderOverlapBanner() {
