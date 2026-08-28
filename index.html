@@ -189,7 +189,11 @@
         z-index: 120;
     }
     .nav-menu.show { display: flex; }
-    .nav-menu button {
+    .nav-menu.show .nav-user,
+    .nav-menu.show .nav-sep {
+        animation: navItemIn 0.25s ease both;
+    }
+    .nav-menu.show button {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -204,11 +208,28 @@
         border-radius: 10px;
         cursor: pointer;
         transition: background 0.15s;
+        animation: navItemIn 0.3s ease both;
     }
+    .nav-menu.show button:nth-of-type(1) { animation-delay: 0.03s; }
+    .nav-menu.show button:nth-of-type(2) { animation-delay: 0.06s; }
+    .nav-menu.show button:nth-of-type(3) { animation-delay: 0.09s; }
+    .nav-menu.show button:nth-of-type(4) { animation-delay: 0.12s; }
+    .nav-menu.show button:nth-of-type(5) { animation-delay: 0.15s; }
+    .nav-menu.show button:nth-of-type(6) { animation-delay: 0.21s; }
     .nav-menu button:hover { background: var(--bg-canvas); }
     .nav-menu .nav-sep { border-top: 1px solid var(--border-soft); margin: 6px 4px; }
     .nav-menu .nav-signout { color: var(--danger); }
     .nav-menu .nav-user { font-size: 0.72rem; color: var(--text-muted); padding: 6px 12px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @keyframes navItemIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes navItemOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+    .nav-menu.show.closing .nav-user,
+    .nav-menu.show.closing .nav-sep { animation: navItemOut 0.15s ease both; }
+    .nav-menu.show.closing button:nth-of-type(6) { animation: navItemOut 0.15s ease both; }
+    .nav-menu.show.closing button:nth-of-type(5) { animation: navItemOut 0.15s ease both; animation-delay: 0.02s; }
+    .nav-menu.show.closing button:nth-of-type(4) { animation: navItemOut 0.15s ease both; animation-delay: 0.04s; }
+    .nav-menu.show.closing button:nth-of-type(3) { animation: navItemOut 0.15s ease both; animation-delay: 0.06s; }
+    .nav-menu.show.closing button:nth-of-type(2) { animation: navItemOut 0.15s ease both; animation-delay: 0.08s; }
+    .nav-menu.show.closing button:nth-of-type(1) { animation: navItemOut 0.15s ease both; animation-delay: 0.10s; }
 
     /* ---------- Login ---------- */
     .login-box-container { display: flex; align-items: center; justify-content: center; min-height: 60vh; padding: 20px; }
@@ -703,7 +724,7 @@
     [data-theme="dark"] .cat-badge.pinned { background: rgba(239, 68, 68, 0.18); }
     [data-theme="dark"] .cat-badge { background: rgba(0, 177, 106, 0.16); }
     .cat-pin {
-        display: none;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         width: 22px;
@@ -715,12 +736,21 @@
         cursor: pointer;
         color: var(--text-muted);
         flex-shrink: 0;
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        transform: translateX(-4px);
+        transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease, transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .cat-pin svg { width: 13px; height: 13px; }
     .cat-pin:hover { background: var(--bg-canvas); color: var(--dlsu-green); }
-    .cat-head:hover .cat-pin { display: inline-flex; }
-    .cat-badge.pinned + .cat-pin, .cat-head:hover .cat-pin { display: inline-flex; }
+    .cat-head:hover .cat-pin { max-width: 22px; opacity: 1; transform: translateX(0); }
     .cat-badge.pinned + .cat-pin { color: var(--danger); }
+    .cat-badge.pinned + .cat-pin:hover { background: var(--bg-canvas); color: var(--danger); }
+    @media (hover: none), (max-width: 640px) {
+        .cat-pin { max-width: 22px; opacity: 1; transform: translateX(0); }
+    }
     .cat-list { list-style: none; margin: 0; padding: 0; }
     .cat-list li { position: relative; padding: 7px 0 7px 18px; }
     .cat-list li::before {
@@ -960,7 +990,7 @@
     .filter-check:hover { border-color: var(--text-muted); }
     .filter-check.active { background: var(--dlsu-green); border-color: var(--dlsu-green); color: #fff; }
     .filter-check .filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    /* Category color customizer (Top 3) in the filter sidebar */
+    /* Category color customizer (Website Admin) in the filter sidebar */
     .cat-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .cat-color-head { font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 14px 0 4px; }
     .cat-color-row { display: flex; align-items: center; gap: 7px; padding: 3px 2px; }
@@ -1292,7 +1322,7 @@
                     </h4>
                     <ul style="margin:0 0 8px;padding-left:20px;font-size:0.9rem;list-style-type:disc;">
                         <li style="margin-bottom:4px;">Sign in with your official <code>@dlsu.edu.ph</code> Google account. Access is restricted to members listed in the EB roster.</li>
-                        <li style="margin-bottom:4px;">If you're new, ask a Top 3 member to add you to the <code>EB_Members</code> roster first.</li>
+                        <li style="margin-bottom:4px;">If you're new, ask a Website Admin member to add you to the <code>EB_Members</code> roster first.</li>
                         <li style="margin-bottom:4px;">Toggle <strong>Light</strong> and <strong>Dark</strong> mode with the sun/moon icon in the header.</li>
                         <li style="margin-bottom:4px;">Use the panels to navigate: <strong>Overview</strong>, <strong>Meets</strong>, <strong>Calendar</strong>, <strong>Links Hub</strong>, and <strong>EB Members</strong>.</li>
                         <li style="margin-bottom:4px;">Everything is saved straight to the EB Database sheet — open the app and it loads your latest data, then refreshes silently in the background as you work.</li>
@@ -1311,7 +1341,7 @@
                         <li style="margin-bottom:4px;">Open a meet and paint your availability on the grid: <strong>click or drag</strong> across half-hour cells for each day you're free. Hit <strong>Save My Availability</strong> when done.</li>
                         <li style="margin-bottom:4px;">The heatmap shows how many EBs are free per slot — darker means more people. Hover a cell to see exactly who.</li>
                         <li style="margin-bottom:4px;">The <strong>Best overlaps</strong> strip lists time windows where everyone who responded is free.</li>
-                        <li style="margin-bottom:4px;">The creator (or Top 3) can edit, close, reopen, or delete a meet, and <strong>Finalize</strong> it once the group settles on a day and time.</li>
+                        <li style="margin-bottom:4px;">The creator (or Website Admin) can edit, close, reopen, or delete a meet, and <strong>Finalize</strong> it once the group settles on a day and time.</li>
                         <li style="margin-bottom:4px;"><strong>Add Commitment</strong> (bottom of the Meets tab) is still the place for one-off dates that don't repeat, e.g. exams or events. These also appear in the Calendar's day drawer.</li>
                     </ul>
                 </div>
@@ -1326,7 +1356,7 @@
                         <li style="margin-bottom:4px;">Use the <strong>Filter</strong> button to narrow activities by category, status, section, classification, involved group, and mode. Active filters show a badge count.</li>
                         <li style="margin-bottom:4px;">Multi-day events show as <strong>connected colored bars</strong> across calendar days, similar to Google Calendar.</li>
                         <li style="margin-bottom:4px;">Set the activity <strong>status</strong>: Planned, Confirmed, Ongoing, Completed, or Cancelled.</li>
-                        <li style="margin-bottom:4px;"><strong>Involved</strong> lets you tag who's involved using a multi-select dropdown (Orgwide, Editorial Board, Section Editors, Managers, Top 3, SMO/SMC). You can select multiple and add custom values.</li>
+                        <li style="margin-bottom:4px;"><strong>Involved</strong> lets you tag who's involved using a multi-select dropdown (Orgwide, Editorial Board, Section Editors, Managers, Website Admin, SMO/SMC). You can select multiple and add custom values.</li>
                         <li style="margin-bottom:4px;"><strong>Section</strong> is a multi-select dropdown — tag multiple sections or add custom values.</li>
                         <li style="margin-bottom:4px;"><strong>Classification</strong> marks whether an activity is an Internal Event or External Event.</li>
                         <li style="margin-bottom:4px;">You can add multiple <strong>Relevant Links</strong> per activity using the "+ Add Link" button.</li>
@@ -1342,7 +1372,7 @@
                         Links Hub
                     </h4>
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
-                        <li style="margin-bottom:4px;">One place for all pertinent files, grouped into categories: <strong>Templates, Email Templates, Policies &amp; TOR, Sourcing &amp; Speakers, SMO, ARW, GDrive (Google Drive), and General</strong>.</li>
+                        <li style="margin-bottom:4px;">One place for all pertinent files, grouped into categories.</li>
                         <li style="margin-bottom:4px;">Links are grouped into <strong>category columns</strong> (three per row) and pinned categories stay at the front. Use the <strong>search box</strong> to filter by name, or the <strong>Filter</strong> button to show only chosen categories (the button shows a count badge). Empty categories are hidden automatically.</li>
                         <li style="margin-bottom:4px;">Click the <strong>▼</strong> beside a link to reveal its description, or the pencil / trash icons on hover to edit or delete it.</li>
                         <li style="margin-bottom:4px;">When adding or editing a link, you can pick <strong>"Other (specify)..."</strong> to create a custom category, and hit the <strong>pin icon</strong> on any category header to keep that category always at the front (it will also appear on the Overview — Quick Links).</li>
@@ -1358,9 +1388,9 @@
                     <ul style="margin:0 0 12px;padding-left:20px;font-size:0.88rem;list-style-type:disc;">
                         <li style="margin-bottom:4px;">The <strong>EB Members</strong> panel lists the roster with positions and sections.</li>
                         <li style="margin-bottom:4px;">Being on the roster with <strong>Active = TRUE</strong> is what grants access to the database.</li>
-                        <li style="margin-bottom:4px;"><strong>Top 3 only:</strong> add or remove members, toggle <strong>Top 3</strong> / <strong>Active</strong> flags, and <strong>Set Term</strong>.</li>
-                        <li style="margin-bottom:4px;">Top 3 can also manage any meet and edit any EB member's commitments; EB members can only edit their own.</li>
-                        <li style="margin-bottom:4px;">The last active Top 3 cannot be removed, so the team never loses admin access.</li>
+                        <li style="margin-bottom:4px;"><strong>Website Admin only:</strong> add or remove members, toggle <strong>Website Admin</strong> / <strong>Active</strong> flags, and <strong>Set Term</strong>.</li>
+                        <li style="margin-bottom:4px;">Website Admin can also manage any meet and edit any EB member's commitments; EB members can only edit their own.</li>
+                        <li style="margin-bottom:4px;">The last active Website Admin cannot be removed, so the team never loses admin access.</li>
                     </ul>
                 </div>
 
@@ -1618,7 +1648,7 @@
                 </div>
                 <div class="form-group">
                     <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:0.85rem;">
-                        <input type="checkbox" id="memberManager" style="width:auto;"> Top 3 (can manage roster, terms, edit anyone's availability)
+                        <input type="checkbox" id="memberManager" style="width:auto;"> Website Admin (can manage roster, terms, edit anyone's availability)
                     </label>
                 </div>
                 <div class="form-group">
@@ -1868,7 +1898,7 @@
         </div>
     </div>
 
-    <!-- Link category editor — left slide-out (Top 3 only) -->
+    <!-- Link category editor — left slide-out (Website Admin only) -->
     <div class="act-slide-overlay hidden" id="linkCatEditorOverlay" data-click="closeLinkCatEditor()">
         <div class="act-slide-panel" data-click="event.stopPropagation()" style="max-width:360px;">
             <div class="act-slide-head">
@@ -1913,7 +1943,7 @@
         "Completed": "#64748b",
         "Cancelled": "#ef4444"
     };
-    // Resolves a category's display color: Top 3-customized color first,
+    // Resolves a category's display color: Website Admin-customized color first,
     // then the built-in default. Used everywhere colors are shown.
     function catColor(c) {
         const custom = fullData && fullData.categoryColors;
@@ -1925,7 +1955,7 @@
         return String(c || "").replace(/^(.+?)\s+Event$/, "$1") || String(c || "");
     }
     const CATEGORY_ORDER = ["Workshop", "ARW", "SMOOGA", "LMW", "Lakan", "General Assembly", "Orgwide Event", "Meeting", "Other"];
-    // Server-managed category list (Top 3 editor), falling back to the built-ins
+    // Server-managed category list (Website Admin editor), falling back to the built-ins
     // for older cached payloads that predate activityCategories.
     function getActivityCats() {
         return (fullData && fullData.activityCategories && fullData.activityCategories.length)
@@ -1953,7 +1983,7 @@
         }
     }
     const ACT_SECTIONS = ["Orgwide", "Art", "Poetry", "Photo", "Prose", "Screen/Play", "Marketing and Events", "Layout", "PropMan"];
-    const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Top 3", "SMO/SMC"];
+    const INVOLVED_OPTIONS = ["Orgwide", "Editorial Board", "Section Editors", "Managers", "Website Admin", "SMO/SMC"];
     const CLASSIFICATION_OPTIONS = ["Internal Event", "External Event"];
     const LINK_CATEGORIES = ["Templates", "Policies & TOR", "Sourcing & Speakers", "SMO", "ARW", "GDrive", "General", "Email Templates"];
     // ============================================================
@@ -2296,7 +2326,7 @@
             fetchUserData(function () {
                 if (!appBootstrapped) {
                     hideLoader();
-                    showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Top 3 member to add you to the <code>EB_Members</code> tab if you should have access.");
+                    showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Website Admin member to add you to the <code>EB_Members</code> tab if you should have access.");
                     localStorage.removeItem("userEmail");
                     userEmail = "";
                 }
@@ -2307,7 +2337,7 @@
         fetchUserData(function () {
             if (!appBootstrapped) {
                 hideLoader();
-                showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Top 3 member to add you to the <code>EB_Members</code> tab if you should have access.");
+                showAlert("Editorial Board only", "Your account is not in the EB roster. Ask a Website Admin member to add you to the <code>EB_Members</code> tab if you should have access.");
                 localStorage.removeItem("userEmail");
                 clearCachedPayload();
                 userEmail = "";
@@ -2324,7 +2354,7 @@
         document.getElementById("loginView").classList.remove("hidden");
         document.getElementById("mainDashboard").classList.add("hidden");
         document.getElementById("headerControls").style.display = "none";
-        document.getElementById("navMenu").classList.remove("show");
+        closeNavMenu();
         if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
         renderGoogleSignInButton(document.documentElement.getAttribute("data-theme") || "light");
     }
@@ -2399,9 +2429,21 @@
     // ============================================================
     function toggleMenu(e) {
         e.stopPropagation();
-        $("navMenu").classList.toggle("show");
+        const menu = $("navMenu");
+        if (menu.classList.contains("show")) {
+            closeNavMenu();
+        } else {
+            menu.classList.remove("closing");
+            menu.classList.add("show");
+        }
     }
-    document.addEventListener("click", function () { $("navMenu").classList.remove("show"); });
+    function closeNavMenu() {
+        const menu = $("navMenu");
+        if (!menu.classList.contains("show") || menu.classList.contains("closing")) return;
+        menu.classList.add("closing");
+        setTimeout(function () { menu.classList.remove("show", "closing"); }, 230);
+    }
+    document.addEventListener("click", closeNavMenu);
 
     let currentPanel = "overview";
     const VALID_PANELS = ["overview", "meets", "calendar", "links", "members"];
@@ -2415,7 +2457,7 @@
         currentPanel = name;
         try { localStorage.setItem("ebdb_last_panel", name); } catch (e) {}
         ["panelOverview", "panelMeets", "panelCalendar", "panelLinks", "panelMembers"].forEach(id => $(id).classList.add("hidden"));
-        $("navMenu").classList.remove("show");
+        closeNavMenu();
         const target = {
             "overview": "panelOverview",
             "meets": "panelMeets",
@@ -2571,7 +2613,7 @@
         const pins = fullData.pinnedLinkCats || [];
         const links = (fullData.links || []).filter(l => l.active && pins.indexOf(l.category) >= 0)
             .sort((a, b) => a.order - b.order);
-        $("quickLinks").innerHTML = buildLinkCatsHtml(links)
+        $("quickLinks").innerHTML = buildLinkCatsHtml(links, false)
             || '<div class="empty-state">No pinned categories yet — pin some in the Links Hub.</div>';
     }
 
@@ -2786,7 +2828,7 @@
 
         const btns = [];
         if (canManage && m.status !== "Finalized") btns.push(`<button class="btn btn-sm" data-click="openMeetEditor('${m.id}')">Edit</button>`);
-        if (canManage && m.status !== "Finalized") btns.push(`<button class="btn btn-sm" data-click="setMeetStatus('${m.id}','${isOpen ? "Closed" : "Open"}')">${isOpen ? "Close" : "Reopen"}</button>`);
+        if (canManage && m.status !== "Finalized") btns.push(`<button class="btn btn-sm" data-once data-click="setMeetStatus('${m.id}','${isOpen ? "Closed" : "Open"}')">${isOpen ? "Close" : "Reopen"}</button>`);
         if (canManage) btns.push(`<button class="btn btn-sm btn-danger" data-click="deleteMeet('${m.id}')">Delete</button>`);
         const manageRow = $("meetManageRow");
         manageRow.innerHTML = btns.join("");
@@ -2800,7 +2842,7 @@
             finRow.classList.remove("hidden");
             const allIn = resp.length >= activeMembers.length;
             if (!allIn) {
-                finRow.innerHTML = `<button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--text-muted);" data-click="toast('${resp.length} of ${activeMembers.length} responded. Finalize unlocks when everyone has responded.')">Finalize meet · ${resp.length}/${activeMembers.length} responded</button>`;
+                finRow.innerHTML = `<button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--text-muted);" data-click="confirmEarlyFinalize()">Finalize meet · ${resp.length}/${activeMembers.length} responded</button>`;
             } else if (!meetFinalOpen) {
                 finRow.innerHTML = `<button class="btn btn-sm btn-primary" style="width:100%;justify-content:center;" data-click="toggleMeetFinal()">Finalize meet</button>`;
             } else {
@@ -3218,6 +3260,12 @@
             .catch(() => {});
     }
 
+    function confirmEarlyFinalize() {
+        showConfirm("Not all members have responded yet. Finalize anyway?").then(function (yes) {
+            if (yes) toggleMeetFinal();
+        });
+    }
+
     function deleteMeet(id) {
         showConfirm("Delete this meet? All responses will be removed too.").then(function (yes) {
             if (!yes) return;
@@ -3480,7 +3528,7 @@
         });
         $("filterInvolvedChecks").innerHTML = invHtml;
     }
-    // Top 3-only inline editor: revealed via the "Edit" button beside the
+    // Website Admin-only inline editor: revealed via the "Edit" button beside the
     // Category label. One color picker per category, auto-saved on change.
     // Custom colors are stored server-side (Settings) and apply for everyone
     // — calendar bars, filter dots, badges, and lists.
@@ -3508,7 +3556,7 @@
         rows += `<div class="cat-add-row">
             <input type="text" id="newCatName" placeholder="New category name...">
             <input type="color" id="newCatColor" value="#0ea5e9">
-            <button type="button" class="btn btn-sm" data-click="addActivityCat()">Add</button>
+            <button type="button" class="btn btn-sm" data-once data-click="addActivityCat()">Add</button>
         </div>`;
         getActivityCats().forEach(c => {
             const isOther = c === "Other";
@@ -4279,10 +4327,10 @@
         }, 120);
     });
 
-    function buildLinkCatsHtml(links) {
+    function buildLinkCatsHtml(links, showPin) {
         let html = "";
         let totalShown = 0;
-        const canPin = !!(fullData && fullData.isManager);
+        const canPin = showPin !== false && !!(fullData && fullData.isManager);
         const pins = (fullData && fullData.pinnedLinkCats) || [];
         linkCategoryOrder().forEach(cat => {
             const items = links.filter(l => l.category === cat);
@@ -4416,7 +4464,7 @@
         }
     }
 
-    // ---- Link category editor (Top 3 only) ----
+    // ---- Link category editor (Website Admin only) ----
     function showLinkCatEditor() {
         if (!fullData || !fullData.isManager) return;
         renderLinkCatEditor();
@@ -4464,7 +4512,7 @@
         let html = `<div class="cat-color-head">Link Categories</div>`;
         html += `<div class="cat-add-row">
             <input type="text" id="newLinkCatName" placeholder="New category name...">
-            <button type="button" class="btn btn-sm" data-click="addLinkCat()">Add</button>
+            <button type="button" class="btn btn-sm" data-once data-click="addLinkCat()">Add</button>
         </div>`;
         html += `<div class="lcdrag-section-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#icon-pin"/></svg>Pinned (shown first)</div>`;
         html += pinned.length
@@ -4727,7 +4775,7 @@
                         <button class="btn btn-sm btn-ghost" data-click="openMemberModal('${m.email}')"><svg style="width:13px;height:13px;"><use href="#icon-pencil"/></svg></button>
                     </div>` : ""}
                 </td>
-            </tr>`).join("") || '<tr><td colspan="5"><div class="empty-state">No members yet. A Top 3 member must add the roster in the EB_Members tab.</div></td></tr>';
+            </tr>`).join("") || '<tr><td colspan="5"><div class="empty-state">No members yet. A Website Admin member must add the roster in the EB_Members tab.</div></td></tr>';
     }
 
     function openMemberModal(email) {
