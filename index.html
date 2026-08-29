@@ -2760,7 +2760,7 @@
         list.innerHTML = pending.map(m => {
             const respCount = responsesFor(m.id).length;
             const pct = active ? Math.round(respCount / active * 100) : 0;
-            const dateTxt = (m.days || []).map(d => fmtDateMed(d)).join(" Â· ");
+            const dateTxt = (m.days || []).map(d => fmtDateMed(d)).join(" · ");
             return `<div class="pending-notif-card">
                 <h4>${escHtml(m.title)}</h4>
                 <div class="meta">${escHtml(dateTxt)}</div>
@@ -2810,7 +2810,7 @@
         $("meetsList").innerHTML = meets.length ? meets.map(m => {
             const respCount = responsesFor(m.id).length;
             const finalLine = m.status === "Finalized" && m.finalDay
-                ? `<div class="meta" style="color:var(--dlsu-green);font-weight:700;">✓ ${escHtml(fmtDateMed(m.finalDay))} Â· ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`
+                ? `<div class="meta" style="color:var(--dlsu-green);font-weight:700;">✓ ${escHtml(fmtDateMed(m.finalDay))} · ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`
                 : "";
             return `
             <div class="item-row meet-card" data-click="openMeetModal('${m.id}')">
@@ -2858,7 +2858,7 @@
             dateTxt = sameMonth
                 ? `${a.toLocaleDateString("en-US", { month: "short", day: "numeric" })}–${b.getDate()}, ${b.getFullYear()}`
                 : `${a.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${fmtDateMed(dLast)}`;
-            if (days.length > 2) dateTxt += ` Â· ${days.length} days`;
+            if (days.length > 2) dateTxt += ` · ${days.length} days`;
         }
         $("meetMetaRow").innerHTML =
             `<div class="mm-top">` +
@@ -2882,12 +2882,12 @@
         const finRow = $("meetFinalizeRow");
         if (m.status === "Finalized") {
             finRow.classList.remove("hidden");
-            finRow.innerHTML = `<div style="font-weight:800;color:var(--dlsu-green);">✓ Finalized: ${escHtml(fmtDateMed(m.finalDay))} Â· ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`;
+            finRow.innerHTML = `<div style="font-weight:800;color:var(--dlsu-green);">✓ Finalized: ${escHtml(fmtDateMed(m.finalDay))} · ${escHtml(fmtTime(m.finalStart))} – ${escHtml(fmtTime(m.finalEnd))}</div>`;
         } else if (canManage && isOpen && days.length) {
             finRow.classList.remove("hidden");
             const allIn = resp.length >= activeMembers.length;
             if (!allIn) {
-                finRow.innerHTML = `<button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--text-muted);" data-click="confirmEarlyFinalize()">Finalize meet Â· ${resp.length}/${activeMembers.length} responded</button>`;
+                finRow.innerHTML = `<button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--text-muted);" data-click="confirmEarlyFinalize()">Finalize meet · ${resp.length}/${activeMembers.length} responded</button>`;
             } else if (!meetFinalOpen) {
                 finRow.innerHTML = `<button class="btn btn-sm btn-primary" style="width:100%;justify-content:center;" data-click="toggleMeetFinal()">Finalize meet</button>`;
             } else {
@@ -2958,7 +2958,7 @@
             });
             best.sort((a, b) => (b.e - b.s) - (a.e - a.s));
             overlapMsg = best.length
-                ? `<strong>Best overlaps</strong> (all ${resp.length} respondents): ${best.slice(0, 3).map(b => `${fmtDateMed(b.d)} ${fmtTime(minToHHMM(b.s))}–${fmtTime(minToHHMM(b.e))}`).join(" Â· ")}`
+                ? `<strong>Best overlaps</strong> (all ${resp.length} respondents): ${best.slice(0, 3).map(b => `${fmtDateMed(b.d)} ${fmtTime(minToHHMM(b.s))}–${fmtTime(minToHHMM(b.e))}`).join(" · ")}`
                 : `No common window across all ${resp.length} respondents yet.`;
         }
         $("meetOverlapStrip").innerHTML = `<div class="edit-note" style="margin-bottom:0;">${overlapMsg}</div>`;
@@ -3354,7 +3354,7 @@
                 <div class="item-row">
                     <div class="grow">
                         <h4>${escHtml(c.type || "Commitment")} <span class="tbadge type-badge-${escHtml(c.type)}">${escHtml(c.type || "Other")}</span></h4>
-                        <div class="meta">${escHtml(fmtDateMed(c.date))}${c.start ? " Â· " + escHtml(fmtTime(c.start)) + " – " + escHtml(fmtTime(c.end)) : ""}${fullData.isManager ? " Â· " + escHtml(c.fullName || c.email) : ""}</div>
+                        <div class="meta">${escHtml(fmtDateMed(c.date))}${c.start ? " · " + escHtml(fmtTime(c.start)) + " – " + escHtml(fmtTime(c.end)) : ""}${fullData.isManager ? " · " + escHtml(c.fullName || c.email) : ""}</div>
                         ${c.notes ? `<div class="desc">${escHtml(c.notes)}</div>` : ""}
                     </div>
                     <div style="display:flex;gap:6px;">
@@ -4011,7 +4011,7 @@
 
     function openDayDrawer(iso) {
         dayDrawerDate = iso;
-        $("dayDrawerTitle").textContent = fmtDateLong(iso) + " Â· " + weekdayShort(iso);
+        $("dayDrawerTitle").textContent = fmtDateLong(iso) + " · " + weekdayShort(iso);
         const acts = (fullData.activities || [])
             .filter(a => covers(a, iso))
             .sort((a, b) => a.start.localeCompare(b.start));
@@ -4047,7 +4047,7 @@
                 <h4>${escHtml(c.type)} <span class="tbadge type-badge-${escHtml(c.type)}">${escHtml(c.type)}</span></h4>
                 <div class="meta" style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">
                     ${escHtml(c.fullName || c.email)}
-                    ${c.start ? " Â· " + escHtml(fmtTime(c.start)) + " – " + escHtml(fmtTime(c.end)) : ""}
+                    ${c.start ? " · " + escHtml(fmtTime(c.start)) + " – " + escHtml(fmtTime(c.end)) : ""}
                 </div>
                 ${c.notes ? `<div style="font-size:0.8rem;margin-top:6px;">${escHtml(c.notes)}</div>` : ""}
             </div>`).join("");
@@ -4064,7 +4064,7 @@
             try { const p = JSON.parse(linkStr); if (Array.isArray(p)) urls = p; else urls = [linkStr]; } catch(e) { urls = [linkStr]; }
         }
         if (!urls.length) return "";
-        return urls.map(u => ' Â· <a href="' + escHtml(u) + '" target="_blank" rel="noopener" style="color:var(--dlsu-green);font-weight:700;">link</a>').join("");
+        return urls.map(u => ' · <a href="' + escHtml(u) + '" target="_blank" rel="noopener" style="color:var(--dlsu-green);font-weight:700;">link</a>').join("");
     }
     function renderDayDrawerLinks(linkStr) {
         let urls = [];
@@ -4083,7 +4083,7 @@
             const color = catColor(a.category);
             const sColor = STATUS_META[a.status] || "#64748b";
             const dim = isPastActivity(a) ? " dim" : "";
-            const when = activityDateRange(a) + (a.start ? " Â· " + fmtTimeRange(a.start, a.end) : "");
+            const when = activityDateRange(a) + (a.start ? " · " + fmtTimeRange(a.start, a.end) : "");
             return `<div class="tracker-card${dim}" data-click="openActivityDetail('${a.id}')">
                 <div class="tc-top">
                     <span class="tc-title">${escHtml(a.title)}</span>
@@ -4105,7 +4105,7 @@
         if (!a) return;
         const color = catColor(a.category);
         const sColor = STATUS_META[a.status] || "#64748b";
-        const when = activityDateRange(a) + (a.start ? " Â· " + fmtTimeRange(a.start, a.end) : "");
+        const when = activityDateRange(a) + (a.start ? " · " + fmtTimeRange(a.start, a.end) : "");
         let links = [];
         if (a.link) {
             try { const p = JSON.parse(a.link); if (Array.isArray(p)) links = p; else links = [a.link]; } catch(e) { links = [a.link]; }
@@ -4808,7 +4808,7 @@
                         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--dlsu-green),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.78rem;">${escHtml(initialsFor(m.fullName || m.email))}</div>
                         <div>
                             <div style="font-weight:700;">${escHtml(m.fullName || m.email)}</div>
-                            <div style="font-size:0.72rem;color:var(--text-muted);">${escHtml(m.email)}${m.nickname ? " Â· " + escHtml(m.nickname) : ""}${m.pronouns ? " Â· " + escHtml(m.pronouns) : ""}</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">${escHtml(m.email)}${m.nickname ? " · " + escHtml(m.nickname) : ""}${m.pronouns ? " · " + escHtml(m.pronouns) : ""}</div>
                         </div>
                     </div>
                 </td>
